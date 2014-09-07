@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<group name="Sigmoid" description="minimal example module">
+
+	<description type="text">
+		Outputs a sigmoid
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="Sigmoid"
+			name="Sigmoid"
+			alpha = "0.1"
+			shift = "0"
+		/>
+	</example>
+
+	<parameter name="alpha" type="float" default="1.0" description="Rate of change" />
+	<parameter name="shift" type="float" default="0.0" description="Time shift in steps" />
+
+<input name="INPUT" description="Target value" size="1" />
+<!--<input name="INPUT2" description="The second input" />-->
+
+<output name="OUTPUT" description="Sigmoid function output" size="1" />
+
+	<module class="Sigmoid" />
+
+	<author>
+		<name>Trond Arild Tjøstheim</name>
+		<email>kog13ttj@student.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage>http://www.lucs.lu.se/</homepage>
+	</author>
+
+   <files>
+   		<file>Sigmoid.h</file>
+   		<file>Sigmoid.cc</file>
+   		<file>Sigmoid.ikc</file>
+   </files>
+
+</group>
+
