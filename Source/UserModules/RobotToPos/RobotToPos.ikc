@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<group name="RobotToPos" description="Move robot arm to position">
+
+	<description type="text">
+		Angle module for servo 1
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="RobotToPos"
+			name="RobotToPos"
+			angle = "0.0"
+		/>
+	</example>
+
+	<parameter name="angle" type="float" default="0.0" description="Servo1 angle" />
+
+
+	<input name="INPUT" description="The first input"  size="1" />
+
+	<output name="OUTPUT" description="The first output" size="1" />
+
+
+	<module class="RobotToPos" />
+
+	<author>
+		<name>Christian Balkenius</name>
+		<email>christian.balkenius@lucs.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage>http://www.lucs.lu.se/Christian.Balkenius</homepage>
+	</author>
+
+   <files>
+   		<file>RobotToPos.h</file>
+   		<file>RobotToPos.cc</file>
+   		<file>RobotToPos.ikc</file>
+   </files>
+
+</group>
+

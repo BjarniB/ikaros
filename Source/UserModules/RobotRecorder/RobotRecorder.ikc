@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<group name="RobotRecorder" description="Record and replay robot movement">
+
+	<description type="text">
+		Angle module for servo 1
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="RobotRecorder"
+			name="RobotRecorder"
+			maxTicks = "10000"
+			state = "0"
+		/>
+	</example>
+
+	<parameter name="maxTicks" type="int" default="0" description="Max ticks" />
+	<parameter name="state" type="int" default="0" description="State: 0 - record, 1 - replay" />
+
+	<input name="INPUT" description="The first input"  size="1" />
+	<!--<input name="INPUT_STATE" description="State as input"  size="1" />-->
+	
+	<output name="OUTPUT" description="The first output" size="1" />
+	
+	
+
+
+	<module class="RobotRecorder" />
+
+	<author>
+		<name>Christian Balkenius</name>
+		<email>christian.balkenius@lucs.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage>http://www.lucs.lu.se/Christian.Balkenius</homepage>
+	</author>
+
+   <files>
+   		<file>RobotRecorder.h</file>
+   		<file>RobotRecorder.cc</file>
+   		<file>RobotRecorder.ikc</file>
+   </files>
+
+</group>
+
