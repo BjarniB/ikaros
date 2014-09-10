@@ -104,7 +104,6 @@
 	
 	
 	<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	 = "RobotRecorder1" target  = "INPUT" />
-	<connection sourcemodule  = "Speed" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "MOVING_SPEED" />
 	<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	 = "RobotRecorder2" target  = "INPUT" />
 	<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	 = "RobotRecorder3" target  = "INPUT" />
 	
