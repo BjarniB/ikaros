@@ -77,10 +77,13 @@
 		data = "1"
 		/>
 		
+		<!-- look here! -->
 		<module
 			class="RobotRecorder"
 			name="RobotRecorder2"
 			maxTicks = "10000"
+			_index =  0 or 1 or 2
+			_inputsize = 3
 		/>
 	
 
