@@ -2,73 +2,57 @@
 
 <group title="RobotToPos Example">
 
-	<module
+	<!-- Control all the servos -->
+<module
         class = "Dynamixel"
-        name = "Dynamixel2"
-	_device = "/dev/ttyUSB0"
-	device  = "/dev/cu.usbserial-A600cUuc"
+        name = "Dynamixel"
+	device = "/dev/ttyUSB0"
         servo_id = "1 2 3"
-        _servo_id = "1"
-        _servo_id = "2"
-        _servo_id = "3"
-        _servo_id = "1 2"
-        _servo_id = "2 3"
-        _servo_id = "3 2"
-        _servo_id = "3 2 1"
-
         index_mode = "indirect"
         printf_info ="none"
         use_feedback ="true"
-    	baud_rate = "1000000"
-    	angle_unit = "degrees"
-    	/>
-	
-    <module
-		class		=	"FunctionGenerator"
-		name		=	"GoalPosition1"
-		type		=	"sin"
-		frequency	=	"0"
-		offset      	=	"180"
-		amplitude	=	"0"
-		shift		=	"0.0"
-	/>
-	<module
-		class		=	"FunctionGenerator"
-		name		=	"GoalPosition2"
-		type		=	"sin"
-		frequency	=	"0"
-		offset      	=	"180"
-		amplitude	=	"0"
-		shift		=	"0"
+	baud_rate = "1000000"
+	angle_unit = "degrees"
+    />
+<!-- This module reads only one of the servos and sends only one servo -->
+<module
+  class="RobotRecorder"
+  name="RobotRecorder1"
+  maxTicks = "10000"
+  servo = "1"
+  />
+<module
+  class="RobotRecorder"
+  name="RobotRecorder2"
+  maxTicks = "10000"
+  servo = "2"
+/>
+<module
+  class="RobotRecorder"
+  name="RobotRecorder3"
+  maxTicks = "10000"
+  servo = "3"
+/>
+<!-- new module that just merges inputs from RobotRecorder to a array of 3 element that can be sent to the dynamixel monitor module -->
+<module
+  class="ServoController" 
+  name="ServoController"
+  maxTicks = "10000"
+  servo = "1"
+/>
+  
+<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	= "RobotRecorder1" target  = "INPUT" />
+<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	= "RobotRecorder2" target  = "INPUT" />
+<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	= "RobotRecorder3" target  = "INPUT" />
+<connection sourcemodule  = "RobotRecorder1" source  = "OUTPUT" targetmodule	= "ServoController" target  = "INPUT1" />	
+<connection sourcemodule  = "RobotRecorder2" source  = "OUTPUT" targetmodule	= "ServoController" target  = "INPUT2" />	
+<connection sourcemodule  = "RobotRecorder3" source  = "OUTPUT" targetmodule	= "ServoController" target  = "INPUT3" />	
+<connection sourcemodule  = "ServoController" source  = "OUTPUT" targetmodule	= "Dynamixel" target  = "GOAL_POSITION" />
 
-	/>
-	<module
-		class		=	"FunctionGenerator"
-		name		=	"GoalPosition3"
-		type		=	"sin"
-		frequency	=	"0"
-		offset     	 =	"180"
-		amplitude	=	"0"
-		shift		=	"0"
-	/>
-	<module
-		class		=	"FunctionGenerator"
-		name		=	"Speed"
-		type		=	"sin"
-		frequency	=	"0"
-		offset     	=	"0.5"
-		amplitude	=	"0"
-		shift		=	"0"
-	/>
-		<module
-		class		=	"FunctionGenerator"
-		name		=	"Torque"
-		type		=	"sin"
-		frequency	=	"0.0"
-		offset      	=	"0"
-		amplitude	=	"0"
-		shift		=	"0"
-	/>
+
+
+<connection sourcemodule  = "RecordingState" source  = "OUTPUT" targetmodule	= "RobotRecorder" target  = "INPUT_STATE" />
+		
 		
 		<module
 		class = "Constant"
@@ -77,14 +61,7 @@
 		data = "1"
 		/>
 		
-		<!-- look here! -->
-		<module
-			class="RobotRecorder"
-			name="RobotRecorder2"
-			maxTicks = "10000"
-			_index =  0 or 1 or 2
-			_inputsize = 3
-		/>
+
 	
 
 
