@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<group name="RobotPlayer" description="Record and replay robot movement">
+
+	<description type="text">
+		Angle module for servo 1
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="RobotPlayer"
+			name="RobotPlayer"
+			maxTicks = "10000"
+			state = "0"
+		/>
+	</example>
+
+	<parameter name="maxTicks" type="int" default="0" description="Max ticks" />
+	<parameter name="state" type="int" default="0" description="State: 0 - record, 1 - replay" />
+
+	<input name="INPUT" description="The first input"  size="3" />
+	<input name="INPUT_STATE" description="State as input"  size="1" />
+	<input name="INPUT_LOAD" description="Load input"  size="3" />
+	
+	<output name="OUTPUT" description="The first output" size="3" />
+	<output name="OUTPUT_LOAD" description="The load output" size="3" />
+	
+	<output name="OUTPUT_DIFF" description="The first output" size="3" />
+	
+	
+
+
+	<module class="RobotPlayer" />
+
+	<author>
+		<name>Christian Balkenius</name>
+		<email>christian.balkenius@lucs.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage>http://www.lucs.lu.se/Christian.Balkenius</homepage>
+	</author>
+
+   <files>
+   		<file>RobotPlayer.h</file>
+   		<file>RobotPlayer.cc</file>
+   		<file>RobotPlayer.ikc</file>
+   </files>
+
+</group>
+

@@ -1,0 +1,312 @@
+<?xml version="1.0"?>
+
+<group title="RobotToPos Example">
+
+	<module
+        class = "Dynamixel"
+        name = "Dynamixel"
+	device = "/dev/ttyUSB0"
+        servo_id = "1 2 3"
+        index_mode = "indirect"
+        printf_info ="none"
+        use_feedback ="true"
+    	baud_rate = "1000000"
+    	angle_unit = "degrees"
+    	/>
+
+
+  
+  
+	<module
+		class		=	"FunctionGenerator"
+		name		=	"Speed"
+		type		=	"sin"
+		frequency	=	"0"
+		offset     	=	"0.5"
+		amplitude	=	"0"
+		shift		=	"0"
+	/>
+		<module
+		class		=	"FunctionGenerator"
+		name		=	"Torque"
+		type		=	"sin"
+		frequency	=	"0.13"
+		offset      	=	"0.35"
+		amplitude	=	"0.15"
+		shift		=	"100"
+	/>		
+		<module
+		class = "Constant"
+		name = "TorqueEnable"
+		outputsize = "1"
+		data = "1"
+		/>
+		
+		<module
+		class = "Constant"
+		name = "RecordingState"
+		outputsize = "1"
+		data = "0"
+		/>
+		<module
+			class="RobotPlayer"
+			name="RobotPlayer"
+			maxTicks = "10000"
+		/>
+
+
+<connection sourcemodule  = "TorqueEnable" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_ENABLE" />
+<connection sourcemodule  = "TorqueEnable" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_ENABLE" />
+<connection sourcemodule  = "TorqueEnable" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_ENABLE" />
+
+<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+		
+<!-- Order is important -->
+
+<!--
+	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "MOVING_SPEED" />
+	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "MOVING_SPEED" />
+	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "MOVING_SPEED" />
+	
+	<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+	<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+	<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+	-->
+	<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	 = "RobotPlayer" target  = "INPUT" />
+	<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	 = "RobotPlayer" target  = "INPUT" />
+	<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	 = "RobotPlayer" target  = "INPUT" />
+	
+	<connection sourcemodule = "Dynamixel" source="FEEDBACK_PRESENT_SPEED" targetmodule = "RobotPlayer" target="INPUT_LOAD" />
+	<connection sourcemodule = "Dynamixel" source="FEEDBACK_PRESENT_SPEED" targetmodule = "RobotPlayer" target="INPUT_LOAD" />
+	<connection sourcemodule = "Dynamixel" source="FEEDBACK_PRESENT_SPEED" targetmodule = "RobotPlayer" target="INPUT_LOAD" />
+	
+	<connection sourcemodule  = "RecordingState" source  = "OUTPUT" targetmodule	 = "RobotPlayer" target  = "INPUT_STATE" />
+	<connection sourcemodule  = "RecordingState" source  = "OUTPUT" targetmodule	 = "RobotPlayer" target  = "INPUT_STATE" />
+	<connection sourcemodule  = "RecordingState" source  = "OUTPUT" targetmodule	 = "RobotPlayer" target  = "INPUT_STATE" />
+	
+	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "GOAL_POSITION" />
+	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "GOAL_POSITION" />
+	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "GOAL_POSITION" />
+	
+	
+	
+
+		<view name="View">
+		
+		  
+<!-- Servo 1 -->
+<object class="Plot " 
+				title="GoalPosition 1"
+				module="RobotPlayer" 
+				source="OUTPUT" 
+				x="0" y="0" w="1" h="1"
+				select="0"
+				min="0"
+				max="360"
+			/> 
+<object class="Plot " 
+				title="FeedbackPosition 1"
+				module="Dynamixel"
+				source="FEEDBACK_PRESENT_POSITION"
+				x="0" y="1" w="1" h="1"
+				min="0"
+				max="360"
+	color="green"
+	select="0"
+			/> 
+	
+<!--
+<object
+		      class="Slider"
+		      title="Angle servo 1"
+		      module = "GoalPosition1"10000
+		      parameter = "offset"
+		      xindex = "0"
+		      x="0" y="2" h="1"
+			min="30.0"
+		      max="300.0"
+	   	/>
+-->
+<!-- Servo 2 -->
+<object class="Plot " 
+				title="GoalPosition 2 test"
+				module="RobotPlayer" 
+				source="OUTPUT" 
+				x="1" y="0" w="1" h="1"
+				select="1"
+				min="0"
+				max="360"
+			/> 
+<object class="Plot " 
+				title="Feedback GoalPosition 2"
+				module="Dynamixel" 
+				source="FEEDBACK_PRESENT_POSITION" 
+				x="1" y="1" w="1" h="1"
+				min="0"
+				max="360"
+				color="green"
+				select="1"
+			/> 
+<!--
+<object
+		      class="Slider"
+		      title="Angle servo2" 
+		      module = "GoalPosition2"
+		      parameter = "offset"
+		      xindex = "0"
+		      x="1" y="2" h="1"
+			min="30.0"2
+		      max="300.0"
+	   	/>
+-->
+<!-- Servo 3 -->
+<object class="Plot " 
+				title="GoalPosition 3"
+				module="RobotPlayer" 
+				source="OUTPUT"
+	select="2"
+				x="2" y="0" w="1" h="1"
+				min="0"
+				max="360"
+			/> 
+<object class="Plot " 
+				title="FeedbackPosition 3"
+				module="Dynamixel" 
+				source="FEEDBACK_PRESENT_POSITION" 
+				x="2" y="1" w="1" h="1"
+				min="0"
+				max="360"
+	color="green"
+	select="2"
+			/> 
+
+<object class="Plot " 
+				title="Position difference"
+				module="RobotPlayer" 
+				source="OUTPUT_DIFF" 
+				x="2" y="2" w="1" h="1"
+				min="-200"
+				max="200"
+	color="green"
+	select="2"
+			/> 
+
+<object class="Plot " 
+				title="Load"
+				module="RobotPlayer" 
+				source="OUTPUT_LOAD" 
+				x="2" y="3" w="1" h="1"
+				min="-1"
+				max="1"
+	color="green"
+	select="2"
+			/> 
+<!--
+<object 	class="SlidTer"
+		      title="Angle servo 3"
+		      module = "GoalPosition3"
+		      parameter = "offset"
+		      xindex = "0"
+		      x="2" y="2" h="1"
+			min="30.0"
+		      max="300.0"
+	   	/>RobotPlayer1
+-->
+<!-- Speed -->
+<object class="Plot " 
+	title="GoalSpeed"
+				module="Speed" 
+				source="OUTPUT" 
+				x="3" y="0" w="1" h="1"
+				color="blue"
+				min="0"
+				max="1"
+			/> 
+<object class="Plot " 
+	title="FeedbackSpeed"
+				module="Dynamixel" 
+				source="FEEDBACK_MOVING_SPEED" 
+				select="2"
+				x="3" y="1" w="1" h="1"
+				color="orange"
+				min="-1"
+				max="1"
+			/> 
+
+	  
+<object
+		      class="Slider"
+		      title="Speed"
+		      module = "Speed"
+		      parameter = "offset"
+		      xindex = "0"
+		      x="3" y="2" h="1"
+			min="0"
+		      max="1"
+/>
+
+<!-- Torque -->
+<object class="Plot " 
+				title="GoalTorque"
+				module="Torque" 
+				source="OUTPUT" 
+				x="4" y="0" w="1" h="1"
+				color="blue"
+				min="0"
+				max="1"
+			/> 
+<object class="Plot " 
+	title="FeedbackTorque"
+				module="Dynamixel" 
+				source="FEEDBACK_PRESENT_LOAD" 
+				x="4" y="1" w="1" h="1"
+				color="orange"
+				min="-1"
+				max="1"
+			/> 
+<object
+		      class="Slider"
+		      title="Torque"
+		      module = "Torque"
+		      parameter = "offset"
+		      Input = "0"
+		      x="4" y="2" h="1"
+			min="0"
+		      max="1"
+/>
+
+<object
+		      class="Switch"
+		      title="State Switch 1"
+		      module = "RecordingState"
+		      parameter = "data"
+		      xindex = "0"
+		      x="5" y="0" h="1"
+
+/>
+<!--<object
+		      class="Switch"
+		      title="State Switch 2"r
+		      module = "RobotPlayer2"
+		      parameter = "state"
+		      xindex = "0"
+		      x="5" y="1" h="1"
+0
+/>
+<object
+		      class="Switch"
+		      title="State Switch 3"
+		      module = "RobotPlayer3"
+		      parameter = "state"
+		      xindex = "0"
+		      x="5" y="2" h="1"
+
+/>
+-->
+
+		</view>
+
+</group>
+ 
