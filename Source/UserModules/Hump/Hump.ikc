@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<group name="Hump" description="minimal example module">
+
+	<description type="text">
+		Outputs a sigmoid
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="Hump"
+			name="Hump"
+			timescale = "100"
+			scale = "1.0"
+			shift = "0"
+			state = "0"
+			offset = "0"
+		/>
+	</example>
+
+	<parameter name="timescale" type="float" default="100" description="Time in steps to go from 0 to max and back to 0" />
+	<parameter name="scale" type="float" default="1.0" description="Max value" />
+	<parameter name="shift" type="float" default="0.0" description="Time shift in steps" />
+	<parameter name="state" type="float" default="0.0" description="start stop state" />
+	<parameter name="offset" type="float" default="0.0" description="offset" />
+
+<input name="CURRENT_POS" description="Current position reading" size="3" />
+<input name="TARGET_POS" description="Target position reading" size="3" />
+<!--input name="INPUT_STATE" description="Start or stop state" size="1" /-->
+<!--<input name="INPUT2" description="The second input" />-->
+
+<output name="OUTPUT" description="Hump function output" size="1" />
+
+	<module class="Hump" />
+
+	<author>
+		<name>Trond Arild Tjøstheim</name>
+		<email>kog13ttj@student.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage>http://www.lucs.lu.se/</homepage>
+	</author>
+
+   <files>
+   		<file>Hump.h</file>
+   		<file>Hump.cc</file>
+   		<file>Hump.ikc</file>
+   </files>
+
+</group>
+

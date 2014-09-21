@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+
+<group title="Hump Example">
+	
+		
+		<module
+			class = "Hump"
+			name = "HumpInstance"
+			scale  = "0.5"
+			timescale  = "12"
+			shift = "0.5"
+			state = "1"
+			offset = "0.08"
+		/>
+
+		<module
+		class		=	"FunctionGenerator"
+		name		=	"Pos"
+		type		=	"square"
+		frequency	=	"0.01"
+		offset     	=	"41.0"
+		amplitude	=	"200"
+		shift		=	"0"
+		/>
+
+		<module
+			class = "Dynamixel"
+			name = "Dynamixel"
+			device = "/dev/cu.usbserial-A600cUuc"
+			servo_id = "3"
+			index_mode = "indirect"
+			printf_info ="none"
+			use_feedback ="true"
+	    	baud_rate = "1000000"
+	    	angle_unit = "degrees"
+    	/>
+
+		<module class = "Constant" name = "EndPos" outputsize = "1" data = "300" />	
+		
+		<!-- connections -->
+		<connection sourcemodule  = "Pos" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "GOAL_POSITION" />
+
+		<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	 = "HumpInstance" target  = "CURRENT_POS" />
+		<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_GOAL_POSITION" targetmodule	 = "HumpInstance" target  = "TARGET_POS" />
+		<connection sourcemodule  = "HumpInstance" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+		
+
+      <view name="View">
+			<object class="Plot " 
+				module="HumpInstance" 
+				source="OUTPUT" 
+				x="0" y="0" w="1" h="1"
+				min="0"
+				max="1"
+			/>
+			<object class="Plot " 
+				module="Pos" 
+				source="OUTPUT" 
+				x="1" y="0" w="1" h="1"
+				min="0"
+				max="300"
+				color="red"
+			/>
+
+			<object class="Plot " 
+				module="Dynamixel" 
+				source="FEEDBACK_TORQUE_LIMIT" 
+				x="2" y="0" w="1" h="1"
+				min="0"
+				max="1"
+				color="red"
+			/>
+			<object class="Plot " 
+				module="Dynamixel" 
+				source="FEEDBACK_PRESENT_POSITION" 
+				x="0" y="2" w="1" h="1"
+				min="0"
+				max="1"
+				color="red"
+			/>
+			
+	   	<object
+		      class="Slider"
+		      title="Timescale"
+		      module = "HumpInstance"
+		      parameter = "timescale"
+		      xindex = "0"
+		      x="0" y="3" h="1"
+		      min="5" max="17"
+
+			/>
+			<object
+		      class="Slider"
+		      title="Maxtorque"
+		      module = "HumpInstance"
+		      parameter = "scale"
+		      xindex = "0"
+		      x="1" y="3" h="1"
+		      min="0.0" max="1.0"
+
+			/>
+			<object
+		      class="Slider"
+		      title="Offset"
+		      module = "HumpInstance"
+		      parameter = "offset"
+		      xindex = "0"
+		      x="2" y="3" h="1"
+		      min="0.01" max="0.1"
+
+			/>
+			<object
+		      class="Slider"
+		      title="Frequency"
+		      module = "Pos"
+		      parameter = "frequency"
+		      xindex = "0"
+		      x="3" y="0" h="2"
+		      min="0.005" max="0.02"
+
+			/>
+		</view>
+
+</group>
+ 
