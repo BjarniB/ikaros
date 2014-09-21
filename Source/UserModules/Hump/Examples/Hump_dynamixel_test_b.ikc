@@ -111,6 +111,16 @@
 			/>
 			<object
 		      class="Slider"
+		      title="Shift"
+		      module = "HumpInstance"
+		      parameter = "shift"
+		      xindex = "0"
+		      x="3" y="3" h="1"
+		      min="0.0" max="1"
+
+			/>
+			<object
+		      class="Slider"
 		      title="Frequency"
 		      module = "Pos"
 		      parameter = "frequency"

@@ -90,7 +90,7 @@ Hump::Tick()
 
             // this only work from small to large 
             // note: fix pos!
-            float pos = Map_Range(current_pos[i], startpos[i], target_pos[i], 0.0, 1.0);
+            float pos = Map_Range(current_pos[i], startpos[i], target_pos[i], 0.0, 1);
             printf("i=%i, current_pos= %f, targetpos= %f, startpos= %f, pos= %f\n", 
                 i, 
                 current_pos[i],
@@ -110,7 +110,7 @@ Hump::Tick()
 
 /** Note: this should be made inline for efficency
 */
-float
+inline float
 Hump::Map_Range(float value, float low1, float high1, float low2, float high2) {
     return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
