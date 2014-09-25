@@ -17,9 +17,9 @@ for file in $(find . -name "*$ORGNAME*" -type f -maxdepth 2)
         mv "$file" `echo "$file" | sed s/$ORGNAME/$MODULENAME/g`
     done
 ls
-sed -e "s/$ORGNAME/$MODULENAME/" -i "" *.*
+sed -e "s/$ORGNAME/$MODULENAME/; s/~$ORGNAME/~$MODULENAME/; s/\&$ORGNAME/\&$MODULENAME/; s:/$ORGNAME:/$MODULENAME:g;" -i "" *.*
 cd Examples/
 ls
-sed -e "s/$ORGNAME/$MODULENAME/" -i "" *.*
+sed -e "s:/$ORGNAME:/$MODULENAME:g" -i "" *.*
 
 ## search and replace in files
