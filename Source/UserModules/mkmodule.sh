@@ -20,6 +20,5 @@ ls
 sed -e "s/$ORGNAME/$MODULENAME/; s/~$ORGNAME/~$MODULENAME/; s/\&$ORGNAME/\&$MODULENAME/; s:/$ORGNAME:/$MODULENAME:g;" -i "" *.*
 cd Examples/
 ls
-sed -e "s:/$ORGNAME:/$MODULENAME:g" -i "" *.*
-
+sed -e "s/$ORGNAME/$MODULENAME/; s/~$ORGNAME/~$MODULENAME/; s/\&$ORGNAME/\&$MODULENAME/; s:/$ORGNAME:/$MODULENAME:g;" -i "" *.*
 ## search and replace in files
