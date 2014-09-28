@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<group title="Hump Example">
+	
+		
+		<module
+        class = "Dynamixel"
+        name = "Dynamixel"
+        device  = "/dev/cu.usbserial-A600cUuc"
+        servo_id = "3"
+        index_mode = "indirect"
+        printf_info ="none"
+        use_feedback ="true"
+    		baud_rate = "1000000"
+    		angle_unit = "degrees"
+
+    />
+
+		<module
+			class = "Differentiator"
+			name = "Differentiator"
+			gain = "1"
+		/>
+		<module class = "Constant" name = "EndPos" outputsize = "1" data = "300" />	
+		<module class = "Constant" name = "torque" outputsize = "1" data = "0" />	
+		<!-- connections -->
+		<connection sourcemodule  = "torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+
+		<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	 = "Differentiator" target  = "INPUT" />
+
+
+      <view name="View">
+			<object class="Plot " 
+				module="Dynamixel" 
+				source="FEEDBACK_PRESENT_POSITION" 
+				x="1" y="0" w="2" h="2"
+				min="0"
+				max="300"
+			/>
+			<object class="Plot " 
+				module="Differentiator" 
+				source="OUTPUT" 
+				x="1" y="3" w="2" h="2"
+				min="-10"
+				max="10"
+				color="red"
+			/>
+			
+	   	<!--<object
+		      class="Switch"
+		      title="State Switch 1"
+		      module = "HumpInstance"
+		      parameter = "state"
+		      xindex = "0"
+		      x="0" y="0" h="1"
+
+			/>-->
+		</view>
+
+</group>
+ 

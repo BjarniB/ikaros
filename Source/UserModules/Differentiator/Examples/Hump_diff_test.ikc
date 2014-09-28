@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+
+<group title="Hump Example">
+	
+		
+		<module
+			class = "Hump"
+			name = "HumpInstance"
+			scale  = "1.0"
+			timescale  = "15"
+			shift = "0.5"
+			state = "1"
+			offset = "0.1"
+		/>
+
+		<module
+		class		=	"FunctionGenerator"
+		name		=	"Pos"
+		type		=	"ramp"
+		frequency	=	"0.025"
+		offset     	=	"0.0"
+		amplitude	=	"300"
+		shift		=	"0"
+		/>
+
+		<module
+			class = "Differentiator"
+			name = "Differentiator"
+			gain = "10"
+		/>
+		<module class = "Constant" name = "EndPos" outputsize = "1" data = "300" />	
+		<!-- connections -->
+		<connection sourcemodule  = "EndPos" source  = "OUTPUT" targetmodule	 = "HumpInstance" target  = "TARGET_POS" />
+		<connection sourcemodule  = "Pos" source  = "OUTPUT" targetmodule	 = "HumpInstance" target  = "CURRENT_POS" />
+		<connection sourcemodule  = "HumpInstance" source  = "OUTPUT" targetmodule	 = "Differentiator" target  = "INPUT" />
+
+
+      <view name="View">
+			<object class="Plot " 
+				module="HumpInstance" 
+				source="OUTPUT" 
+				x="1" y="0" w="2" h="2"
+				min="0"
+				max="1"
+			/>
+			<object class="Plot " 
+				module="Differentiator" 
+				source="OUTPUT" 
+				x="1" y="3" w="2" h="2"
+				min="-1"
+				max="1"
+				color="red"
+			/>
+			
+	   	<!--<object
+		      class="Switch"
+		      title="State Switch 1"
+		      module = "HumpInstance"
+		      parameter = "state"
+		      xindex = "0"
+		      x="0" y="0" h="1"
+
+			/>-->
+		</view>
+
+</group>
+ 

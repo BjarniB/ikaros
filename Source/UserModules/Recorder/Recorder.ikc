@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<group name="Recorder" description="minimal example module">
+
+	<description type="text">
+		Records and plays back a sequence of numbers
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="Recorder"
+			name="Recorder"
+			maxlength = "1000"
+			repeat = "true"
+		/>
+	</example>
+
+	<parameter name="maxlength" type="float" default="1000" description="Max number of ticks to record" />
+	<parameter name="repeat" type="bool" default="false" description="Whether to repeat on ending" />
+	
+	<input name="INPUT" description="Recording input" />
+	<input name="STATE" description="Record or playback state" />
+	<input name="SYNC" description="Sets the current tick to the given index" />
+
+	<output name="OUTPUT" description="Output for playback" size="10" />
+	
+	<module class="Recorder" />
+
+	<author>
+		<name>Christian Balkenius</name>
+		<email>christian.balkenius@lucs.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage>http://www.lucs.lu.se/Christian.Balkenius</homepage>
+	</author>
+
+   <files>
+   		<file>Recorder.h</file>
+   		<file>Recorder.cc</file>
+   		<file>Recorder.ikc</file>
+   </files>
+
+</group>
+

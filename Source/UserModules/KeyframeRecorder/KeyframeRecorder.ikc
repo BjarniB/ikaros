@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<group name="KeyframeRecorder" description="minimal example module">
+
+	<description type="text">
+		Records position data based on changes in a derivative input. When derivative changes sign, the current position will be recorded, along with the current tick. On playback, the module will output position on POSITION output and corresponding tick on SYNC output.
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="KeyframeRecorder"
+			name="KeyframeRecorder"
+			repeat = "true"
+		/>
+	</example>
+
+	<parameter name="repeat" type="bool" default="false" description="Repeat playback" />
+	<parameter name="equality_tolerance" type="float" default="0.01" description="How close the input value has to be to the keyframe value for them to be deemed equal, and the keyframe counter to advance" />
+
+	<input name="INPUT" description="Position data input" />
+	<input name="DERIVATIVE" description="Derivative of data input. " />
+	<input name="STATE" description="Record or playback." />
+
+	<output name="OUTPUT" description="Position output" size_set="INPUT" />
+	<output name="SYNC" description="Sync/tick output" size_set="INPUT" />
+
+	<module class="KeyframeRecorder" />
+
+	<author>
+		<name>Christian Balkenius</name>
+		<email>christian.balkenius@lucs.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage>http://www.lucs.lu.se/Christian.Balkenius</homepage>
+	</author>
+
+   <files>
+   		<file>KeyframeRecorder.h</file>
+   		<file>KeyframeRecorder.cc</file>
+   		<file>KeyframeRecorder.ikc</file>
+   </files>
+
+</group>
+

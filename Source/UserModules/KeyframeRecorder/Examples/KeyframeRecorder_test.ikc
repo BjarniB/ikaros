@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+
+<group title="KeyframeRecorder Example">
+	
+		<module
+			class = "Constant"
+			name = "State"
+			outputsize  = "1"
+			data  = "0"
+		/>
+
+		<module
+			class = "KeyframeRecorder"
+			name = "KeyframeRecorderInstance"
+			repeat = "true"
+			
+		/>
+
+		<module
+        class       =   "FunctionGenerator"
+        name        =   "Pos"
+        type        =   "sin"
+        frequency   =   "0.0314"
+        offset      =   "1"
+        amplitude   =   "1"
+        shift       =   "0.0"
+   	/>
+		<module 
+			class = "Differentiator" 
+			name = "Differentiator" 
+		/>
+        <connection sourcemodule = "State" source = "OUTPUT" targetmodule = "KeyframeRecorderInstance" target = "STATE" />
+        <connection sourcemodule = "Pos" source = "OUTPUT" targetmodule = "KeyframeRecorderInstance" target = "INPUT" />
+        <connection sourcemodule = "Pos" source = "OUTPUT" targetmodule = "Differentiator" target = "INPUT" />
+        <connection sourcemodule = "Differentiator" source = "OUTPUT" targetmodule = "KeyframeRecorderInstance" target = "DERIVATIVE" />
+
+		<view name="View">
+			<object class="Plot " 
+				module="Differentiator" 
+				source="OUTPUT" 
+				x="0" y="0" w="2" h="2"
+				min="0"
+				max="1"
+				color="red"
+			/>
+			<object class="Plot " 
+				module="Pos" 
+				source="OUTPUT" 
+				x="0" y="2" w="2" h="2"
+				min="0"
+				max="2"
+				color="red"
+			/>
+			<object class="Plot " 
+				module="KeyframeRecorderInstance" 
+				source="POSITION" 
+				x="2" y="2" w="2" h="2"
+				min="0"
+				max="2"
+				color="green"
+			/>
+			<object class="Switch"  module="State" parameter="data" x="3" y="0"  />
+		</view>
+
+</group>
+ 
