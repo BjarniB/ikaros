@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<group title="MovingAverage Example">
+	
+		
+		<module 
+			class = "FunctionGenerator" 
+			name = "FunGen" 
+			type = "sin" 
+			frequency = "0.114" 
+			offset = "0.5" 
+			amplitude = "0.4" 
+			shift = "0.0" 
+		/>
+		<module class = "Noise" name = "Noise" sigma = "0.1" />
+		<module
+			class = "MovingAverage"
+			name = "MovingAverageInstance"
+			buffer_length = "20"
+		/>
+		
+
+        <connection sourcemodule = "FunGen" source = "OUTPUT" targetmodule = "Noise" target = "INPUT" />
+        
+        <connection sourcemodule = "Noise" source = "OUTPUT" targetmodule = "MovingAverageInstance" target = "INPUT" />
+
+		<view name="View">
+			<object class="Plot " 
+				module="Noise" 
+				source="OUTPUT" 
+				x="0" y="0" w="2" h="2"
+				min="0"
+				max="1"
+			/>
+			<object class="Plot " 
+				module="MovingAverageInstance" 
+				source="OUTPUT" 
+				x="0" y="2" w="2" h="2"
+				min="0"
+				max="1"
+			/>
+		</view>
+
+</group>
+ 

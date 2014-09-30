@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<group name="MovingAverage" description="minimal example module">
+
+	<description type="text">
+		Module that can be used as a start for a new module.
+		Simply change all occurrences of "MovingAverage" to the name of your new module in
+		MovingAverage.cc, MyModule.h and MyModule.ikc (this file), rename the files, and fill
+		in the new code and documentation. This module is located in the
+		UserModules directory.
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="MovingAverage"
+			name="MovingAverage"
+			buffer_length = "20"
+		/>
+	</example>
+
+	<parameter name="buffer_length" type="int" default="4" description="The length of the buffer to average over" />
+
+	<input name="INPUT" description="The input" />
+
+	<output name="OUTPUT" description="The output" size_set="INPUT" />
+
+	<module class="MovingAverage" />
+
+	<author>
+		<name>Christian Balkenius</name>
+		<email>christian.balkenius@lucs.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage>http://www.lucs.lu.se/Christian.Balkenius</homepage>
+	</author>
+
+   <files>
+   		<file>MovingAverage.h</file>
+   		<file>MovingAverage.cc</file>
+   		<file>MovingAverage.ikc</file>
+   </files>
+
+</group>
+
