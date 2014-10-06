@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<group title="Reset Example">
+	
+		<module
+			class = "Constant"
+			name = "MyConstant"
+			outputsize  = "1"
+			data  = "5"
+		/>
+		<module
+			class = "Constant"
+			name = "State"
+			outputsize  = "1"
+			data  = "0"
+		/>
+		<module
+			class = "Reset"
+			name = "ResetInstance"
+			debug = "true"
+			delay = "1"
+			equaltolerance = "0.5"
+		/>
+		
+        <connection sourcemodule = "MyConstant" source = "OUTPUT" targetmodule = "ResetInstance" target = "INPUT" />
+        <connection sourcemodule = "State" source = "OUTPUT" targetmodule = "ResetInstance" target = "STATE" />
+
+		<view name="View">
+			<object class="Plot" module="ResetInstance" source="OUTPUT" x="0" y="0" min="0" max="10"/>
+			<object class="Plot" module="MyConstant" source="OUTPUT" x="1" y="0"  min="0" max="10"/>
+			<object class="Plot" module="ResetInstance" source="SYNC" x="2" y="0"  min="0" max="2"/>
+			<object
+		      class="Switch"
+		      title="State Switch 1"
+		      module = "State"
+		      parameter = "data"
+		      x="3" y="1" h="1"
+			/>
+			<object
+		      class="Slider"
+		      title="Pos slider" 
+		      module = "MyConstant"
+		      parameter = "data"
+		      x="4" y="1" h="1"
+			min="0"
+		      max="10"
+	   	/>
+		</view>
+
+</group>
+ 

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<group name="Reset" description="minimal example module">
+
+	<description type="text">
+		Module that can be used as a start for a new module.
+		Simply change all occurrences of "Reset" to the name of your new module in
+		Reset.cc, MyModule.h and MyModule.ikc (this file), rename the files, and fill
+		in the new code and documentation. This module is located in the
+		UserModules directory.
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="Reset"
+			name="Reset"
+			debug = "true"
+			delay = "1"
+			equaltolerance = "0.1"
+		/>
+	</example>
+
+	<parameter name="debug" type="bool" default="true" description="Turns on or off debugmode" />
+	<parameter name="delay" type="int" default="0" description="Delay in ticks after enabling record before snapshot is taken" />
+	<parameter name="equaltolerance" type="float" default="0" description="Tolerance for equality when comparing whether reset position has been reached" default="0.1" />
+
+	<input name="INPUT" description="Input for saving reset position and for comparing when have reached reset position" />
+	<input name="STATE" description="Record or playback" size="1" />
+	
+	<output name="SYNC" description="Sends sync signal when reached reset position" size="1"/>
+	<output name="OUTPUT" description="Outputs reset position" size_set="INPUT" />
+
+	<module class="Reset" />
+
+	<author>
+		<name>Trond Arild Tjöstheim</name>
+		<email>kog13ttj@student.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage></homepage>
+	</author>
+
+   <files>
+   		<file>Reset.h</file>
+   		<file>Reset.cc</file>
+   		<file>Reset.ikc</file>
+   </files>
+
+</group>
+
