@@ -399,6 +399,11 @@ namespace ikaros
 
     void        draw_circle(float ** image, int sizex, int sizey, int x, int y, int radius, float color);
     void        draw_circle(float ** red, float ** green, float ** blue, int sizex, int sizey, int x, int y, int radius, float r, float g, float b);
+
+    // user, misc
+
+    bool equal(float a, float b, float tolerance);
 }
+
 
 #endif

@@ -4154,6 +4154,12 @@ namespace ikaros
         draw_circle(green, sizex, sizey, x, y, radius, g);
         draw_circle(blue, sizex, sizey, x, y, radius, b);
     }
+
+    bool 
+    equal(float a, float b, float tolerance)
+    { 
+    	return abs((float)a-b) <= tolerance;
+    }
     
 }
 
