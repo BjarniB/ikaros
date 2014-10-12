@@ -4161,5 +4161,17 @@ namespace ikaros
     	return abs((float)a-b) <= tolerance;
     }
     
+    bool 
+	 equal(float *a, float *b, int size, float tolerance)
+	 {
+	 	 bool retval = true;
+	    //for (int i = size; i-- && retval;)
+	    for (int i = 0; i < size && retval; ++i)
+	        retval = equal(a[i], b[i], tolerance);
+	    
+	    return retval;
+	 }
+
+    
 }
 

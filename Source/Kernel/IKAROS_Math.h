@@ -403,6 +403,7 @@ namespace ikaros
     // user, misc
 
     bool equal(float a, float b, float tolerance);
+    bool equal(float * a, float * b, int size, float tolerance);
 }
 
 
