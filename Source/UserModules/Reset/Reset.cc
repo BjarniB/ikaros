@@ -31,8 +31,6 @@
 
 using namespace ikaros;
 
-const float cRecording = 0.f;
-const float cPlay = 1.f;
 
 void
 Reset::Init()
@@ -43,13 +41,14 @@ Reset::Init()
 
     input_array = GetInputArray("INPUT");
     input_array_size = GetInputSize("INPUT");
-    state = GetInputArray("STATE");
+    command = GetInputArray("COMMAND");    
     
     sync = GetOutputArray("SYNC");
     sync[0] = 0.f;
     output_array = GetOutputArray("OUTPUT");
 
     internal_array = create_array(input_array_size);
+    current_state = eStart;
 }
 
 
@@ -60,35 +59,72 @@ Reset::~Reset()
     destroy_array(internal_array);
 }
 
+/**
+State transitions:
 
+start -> off
 
+*/
 void
 Reset::Tick()
 {
-    // bug: delay can overflow and begin at 0 again
-    if(state[0] == cRecording && !delay--)
+    Command cmd = (Command)command[0];
+
+    switch (current_state)
     {
-        copy_array(internal_array, input_array, input_array_size);
-        if(debugmode)
-            printf("reset got %f\n", input_array[0]);
-        //done = true;
-        //delay--;
-    }
-	else if (state[0] == cPlay) 
-    {
-        copy_array(output_array, internal_array, input_array_size);
-        bool ok=true;
-        for (int i = 0; i < input_array_size; ++i)
-            ok = ok && equal(input_array[i], internal_array[i], equaltolerance);
-        if(ok)
-            sync[0] = cPlay;
+        case eStart:
+            //printf("start, ");
+            if(cmd==eStore)
+            {
+                copy_array(internal_array, input_array, input_array_size);
+                current_state = eLoaded;
+            }
+            break;
+        case eLoaded:
+            //printf("loaded, ");
+            if(cmd==eReset)
+            {
+                copy_array(output_array, internal_array, input_array_size);
+                current_state = eResetting;
+            }
+            else if(cmd==eStore)
+                copy_array(internal_array, input_array, input_array_size);
+            break;
+        case eResetting:
+            //printf("resetting, ");
+            if (equal(input_array, internal_array, input_array_size, equaltolerance))
+            {
+                current_state = eAt_Reset;
+                sync[0] = 1.f;
+            }
+            if (cmd==eStop)
+            {
+                set_array(output_array, -1.f, input_array_size);
+                current_state = eLoaded;
+            }
+            break;
+        case eAt_Reset:
+            //printf("at reset, ");
+            if (!equal(input_array, internal_array, input_array_size, equaltolerance))
+            {
+                current_state = eLoaded;
+                sync[0] = 0.f;
+            }
+            if(cmd == eStore)
+              copy_array(internal_array, input_array, input_array_size);
+            break;
+        default:
+            break;
     }
     // all other values do nothing
     if(debugmode)
 	{
 		// print out debug info
         for (int i = 0; i < input_array_size; ++i)
-            printf("reset %i, %f, intput=%f, sync=%f\n, delay=%i\n", i, internal_array[i], input_array[0], sync[0], delay );
+            printf("reset: i=%i, intarray=%f, input=%f, command=%f, sync=%f, current_state=%i\n", i, internal_array[i], input_array[i], command[0], sync[0], current_state );
+        if(cmd==eStore) printf("store\n");
+        if(cmd==eReset) printf("reset\n");
+        if(cmd==eStop) printf("stop\n");
 	}
 }
 

@@ -41,8 +41,8 @@ public:
 
     float *     input_array;
     int         input_array_size;
-    float *     state;
-
+    float *     command;
+    
     float *     output_array;
     float *     sync;
 
@@ -53,6 +53,11 @@ public:
 	bool       	debugmode;
     int         delay;
     float       equaltolerance;
+
+    // internals
+    enum State {eStart=0, eLoaded, eResetting, eAt_Reset};
+    enum Command {eNone=0, eStore, eReset, eStop};
+    State current_state;
 };
 
 #endif
