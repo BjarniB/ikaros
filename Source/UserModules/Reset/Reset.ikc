@@ -10,13 +10,13 @@
 		<module
 			class="Reset"
 			name="Reset"
-			debug = "true"
+			debug = "false"
 			delay = "1"
 			equaltolerance = "0.1"
 		/>
 	</example>
 
-	<parameter name="debug" type="bool" default="true" description="Turns on or off debugmode" />
+	<parameter name="debug" type="bool" default="false" description="Turns on or off debugmode" />
 	<parameter name="delay" type="int" default="0" description="Delay in ticks after enabling record before snapshot is taken" />
 	<parameter name="equaltolerance" type="float" default="0" description="Tolerance for equality when comparing whether reset position has been reached" default="0.1" />
 

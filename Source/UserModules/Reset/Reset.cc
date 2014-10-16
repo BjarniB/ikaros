@@ -30,7 +30,7 @@
 // this is preferred to using math.h
 
 using namespace ikaros;
-
+const float cNull = 0.f;
 
 void
 Reset::Init()
@@ -95,11 +95,12 @@ Reset::Tick()
             if (equal(input_array, internal_array, input_array_size, equaltolerance))
             {
                 current_state = eAt_Reset;
+                set_array(output_array, cNull, input_array_size);   
                 sync[0] = 1.f;
             }
             if (cmd==eStop)
             {
-                set_array(output_array, -1.f, input_array_size);
+                set_array(output_array, cNull, input_array_size);
                 current_state = eLoaded;
             }
             break;

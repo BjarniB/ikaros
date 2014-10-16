@@ -22,7 +22,7 @@
 	<input name="STATE" description="Record or playback state" />
 	<input name="SYNC" description="Sets the current tick to the given index" />
 
-	<output name="OUTPUT" description="Output for playback" size="10" />
+	<output name="OUTPUT" description="Output for playback" size_set="INPUT" />
 	
 	<module class="Recorder" />
 

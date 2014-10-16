@@ -47,7 +47,7 @@ public:
     float *     output_array;
 
     // internal data storage
-    std::deque<float>     buffer;     
+    std::deque<float>  *   buffer;     
 
     // parameter values
     int         buffer_length;

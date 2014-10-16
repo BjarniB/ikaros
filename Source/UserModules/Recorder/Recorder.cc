@@ -110,8 +110,10 @@ Recorder::Tick()
         if(state[0] == cRecording)
         {
             // recording
-            for (int i = 0; i < input_array_size; ++i)
+            for (int i = 0; i < input_array_size; ++i){
                 recording[tick][i] = input_array[i];
+                //printf("recorder store %i, %f\n", i, input_array[i]);
+            }
         } 
         else 
         {

@@ -5,7 +5,8 @@
 	<module
         class = "Dynamixel"
         name = "Dynamixel"
-	device = "/dev/ttyUSB0"
+	_device = "/dev/ttyUSB0"
+	device  = "/dev/cu.usbserial-A600cUuc"
         servo_id = "1 2 3"
         index_mode = "indirect"
         printf_info ="none"

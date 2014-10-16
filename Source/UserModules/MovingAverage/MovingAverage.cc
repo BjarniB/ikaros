@@ -49,6 +49,7 @@ MovingAverage::Init()
     // Allocate some data structures to use internaly
     // in the module
     avg_factor = 1.0/buffer_length;
+    buffer = new std::deque<float>[input_array_size];
 
 }
 
@@ -57,7 +58,7 @@ MovingAverage::Init()
 MovingAverage::~MovingAverage()
 {
     // Destroy data structures that you allocated in Init.
-
+    delete[] buffer;
 
     // Do NOT destroy data structures that you got from the
     // kernel with GetInputArray, GetInputMatrix etc.
@@ -71,15 +72,15 @@ MovingAverage::Tick()
     
     for (int i = 0; i < input_array_size; ++i)
     {
-        buffer.push_back(input_array[i]);
+        buffer[i].push_back(input_array[i]);
         // fill buffer before doing avg
-        if(buffer.size() == buffer_length)
+        if(buffer[i].size() == buffer_length)
         {
             float sum=0;
-            for (int i = 0; i < buffer.size(); ++i)
-                sum+=buffer.at(i);
+            for (int j = 0; j < buffer[i].size(); ++j)
+                sum+=buffer[i].at(j);
             output_array[i] = avg_factor * sum;
-            buffer.pop_front();
+            buffer[i].pop_front();
         }
     }
 }

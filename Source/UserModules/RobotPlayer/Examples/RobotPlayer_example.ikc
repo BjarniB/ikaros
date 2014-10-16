@@ -5,7 +5,8 @@
 	<module
         class = "Dynamixel"
         name = "Dynamixel"
-	device = "/dev/ttyUSB0"
+	_device = "/dev/ttyUSB0"
+			device  = "/dev/cu.usbserial-A600cUuc"
         servo_id = "1 2 3"
         index_mode = "indirect"
         printf_info ="none"
@@ -16,31 +17,33 @@
 
 
   
-  
-	<module
-		class		=	"FunctionGenerator"
-		name		=	"Speed"
-		type		=	"sin"
-		frequency	=	"0"
-		offset     	=	"0.5"
-		amplitude	=	"0"
-		shift		=	"0"
-	/>
+
 		<module
 		class		=	"FunctionGenerator"
 		name		=	"Torque"
 		type		=	"sin"
-		frequency	=	"0.13"
-		offset      	=	"0.35"
-		amplitude	=	"0.15"
-		shift		=	"100"
-	/>		
+		frequency	=	"0"
+		offset      	=	"0"
+		amplitude	=	"0"
+		shift		=	"0"
+	/>	
+		
+		<module
+		class		=	"FunctionGenerator"
+		name		=	"Speed"
+		type		=	"sin"
+		frequency	=	"0"
+		offset      	=	"0"
+		amplitude	=	"0"
+		shift		=	"0"
+	/>	
 		<module
 		class = "Constant"
 		name = "TorqueEnable"
 		outputsize = "1"
 		data = "1"
 		/>
+		
 		
 		<module
 		class = "Constant"
@@ -54,22 +57,30 @@
 			maxTicks = "10000"
 		/>
 
-
-<connection sourcemodule  = "TorqueEnable" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_ENABLE" />
-<connection sourcemodule  = "TorqueEnable" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_ENABLE" />
-<connection sourcemodule  = "TorqueEnable" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_ENABLE" />
-
-<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
-<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
-<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
 		
+<connection sourcemodule  = "Speed" source  = "OUTPUT" targetmodule = "Dynamixel" target  = "MOVING_SPEED" />
+<connection sourcemodule  = "Speed" source  = "OUTPUT" targetmodule = "Dynamixel" target  = "MOVING_SPEED" />
+<connection sourcemodule  = "Speed" source  = "OUTPUT" targetmodule = "Dynamixel" target  = "MOVING_SPEED" />
+<!--
+<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule = "Dynamixel" target  = "TORQUE_LIMIT" />
+<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule = "Dynamixel" target  = "TORQUE_LIMIT" />
+<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule = "Dynamixel" target  = "TORQUE_LIMIT" />
+-->
+<connection sourcemodule  = "TorqueEnable" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_ENABLE" />
+<connection sourcemodule  = "TorqueEnable" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_ENABLE" />
+<connection sourcemodule  = "TorqueEnable" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_ENABLE" />
+<!--
+<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+-->	
 <!-- Order is important -->
 
-<!--
-	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "MOVING_SPEED" />
-	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "MOVING_SPEED" />
-	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "MOVING_SPEED" />
-	
+
+	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+	<connection sourcemodule  = "RobotPlayer" source  = "OUTPUT_LOAD" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
+	<!--
 	<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
 	<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
 	<connection sourcemodule  = "Torque" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
@@ -186,13 +197,13 @@
 				title="Position difference"
 				module="RobotPlayer" 
 				source="OUTPUT_DIFF" 
-				x="2" y="2" w="1" h="1"
-				min="-200"
-				max="200"
+				x="2" y="2" w="3" h="2"
+				min="-50"
+				max="50"
 	color="green"
 	select="2"
 			/> 
-
+<!--
 <object class="Plot " 
 				title="Load"
 				module="RobotPlayer" 
@@ -201,8 +212,9 @@
 				min="-1"
 				max="1"
 	color="green"
-	select="2"
+	select="1,2,3"
 			/> 
+-->
 <!--
 <object 	class="SlidTer"
 		      title="Angle servo 3"
@@ -215,6 +227,7 @@
 	   	/>RobotPlayer1
 -->
 <!-- Speed -->
+<!--
 <object class="Plot " 
 	title="GoalSpeed"
 				module="Speed" 
@@ -223,7 +236,9 @@
 				color="blue"
 				min="0"
 				max="1"
-			/> 
+			/>
+
+-->
 <object class="Plot " 
 	title="FeedbackSpeed"
 				module="Dynamixel" 
@@ -236,16 +251,7 @@
 			/> 
 
 	  
-<object
-		      class="Slider"
-		      title="Speed"
-		      module = "Speed"
-		      parameter = "offset"
-		      xindex = "0"
-		      x="3" y="2" h="1"
-			min="0"
-		      max="1"
-/>
+
 
 <!-- Torque -->
 <object class="Plot " 
@@ -258,24 +264,16 @@
 				max="1"
 			/> 
 <object class="Plot " 
-	title="FeedbackTorque"
-				module="Dynamixel" 
-				source="FEEDBACK_PRESENT_LOAD" 
-				x="4" y="1" w="1" h="1"
+	title="Input Torque"
+				module="RobotPlayer" 
+				source="OUTPUT_LOAD" 
+				x="5" y="1" w="3" h="1"
 				color="orange"
+				select="2"
 				min="-1"
 				max="1"
 			/> 
-<object
-		      class="Slider"
-		      title="Torque"
-		      module = "Torque"
-		      parameter = "offset"
-		      Input = "0"
-		      x="4" y="2" h="1"
-			min="0"
-		      max="1"
-/>
+
 
 <object
 		      class="Switch"
@@ -286,6 +284,38 @@
 		      x="5" y="0" h="1"
 
 />
+<!--
+<object
+		    class="Slider"
+		    title="Speed slider"
+		    module = "Dynamixel"
+		    parameter="TORQUE_LIMIT"
+		    min = "0"
+		    max = "1"
+		    x="5" y="2" h="1"
+  
+  />
+-->
+<object
+		      class="Slider"
+		      title="Speed slider" 
+		      module = "Speed"
+		      parameter = "offset"
+		      x="5" y="2" h="1"
+			min="0"
+		      max="1"
+	   	/>
+
+<object
+		      class="Slider"
+		      title="Torque slider" 
+		      module = "Torque"
+		      parameter = "offset"
+		      x="6" y="2" h="1"
+			min="0"
+		      max="1"
+	   	/>
+  
 <!--<object
 		      class="Switch"
 		      title="State Switch 2"r

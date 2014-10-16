@@ -14,6 +14,7 @@
 	<module
 		class="KeyframeRecorder"
 		name="KeyframeRecorder"
+		equality_tolerance="1"
 	/>
 
 	<module
@@ -25,14 +26,14 @@
 
 	<module
 		class="Scale"
-		factor="2"
+		factor="15"
 	/>
 
 	<module
      class = "Dynamixel"
-     name = "Dynamixel_1"
+     name = "Dynamixel"
      device  = "/dev/cu.usbserial-A600cUuc"
-     servo_id = "3"
+     servo_id = "1 2 3"
      index_mode = "indirect"
      printf_info ="none"
      use_feedback ="true"
@@ -63,6 +64,15 @@
 
 	<module class = "Abs" name = "Abs" />
 
+	<module
+		class="Map"
+		name="Map"
+		low_source = "0"
+		high_source = "360"
+		low_target = "0.0"
+		high_target = "1.0"
+	/>
+
 <!-- connections -->
 
 	<!-- TO keyframerecorder -->
@@ -71,7 +81,7 @@
 		<connection sourcemodule  = "State" source  = "OUTPUT" targetmodule	 = "KeyframeRecorder" target  = "STATE" />
 
 	<!-- TO recorder -->
-		<connection sourcemodule  = "Abs" source  = "OUTPUT" targetmodule	 = "Recorder" target  = "INPUT" />
+		<connection sourcemodule  = "Map" source  = "OUTPUT" targetmodule	 = "Recorder" target  = "INPUT" />
 		<connection sourcemodule  = "KeyframeRecorder" source  = "SYNC" targetmodule	 = "Recorder" target  = "SYNC" />
 		<connection sourcemodule  = "State" source  = "OUTPUT" targetmodule	 = "Recorder" target  = "STATE" />
 
@@ -80,7 +90,7 @@
 
 	<!-- TO Dynamixel -->		
 		<connection sourcemodule  = "Scale" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "TORQUE_LIMIT" />
-		<connection sourcemodule  = "KeyframeRecorder" source  = "POSITION" targetmodule	 = "Dynamixel" target  = "GOAL_POSITION" />
+		<connection sourcemodule  = "KeyframeRecorder" source  = "OUTPUT" targetmodule	 = "Dynamixel" target  = "GOAL_POSITION" />
 
 	<!-- TO Differentiator -->
 		<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	 = "Differentiator" target  = "INPUT" />
@@ -91,6 +101,9 @@
 	<!-- TO Abs -->		
 		<connection sourcemodule  = "MovingAverage" source  = "OUTPUT" targetmodule	 = "Abs" target  = "INPUT" />
 
+	<!-- TO Abs -->		
+		<connection sourcemodule  = "Abs" source  = "OUTPUT" targetmodule	 = "Map" target  = "INPUT" />		
+
 
 <!-- view -->
 <view name="View">
@@ -98,23 +111,35 @@
           class="Plot"
           title="Keyframe output"
           module = "KeyframeRecorder"
-          source = "POSITION"
+          source = "OUTPUT"
           x="0" y="0"
           w="2" h="2"
-          min="-1"
-          max="1"
+          min="0"
+          max="360"
        />
        <object
           class="Plot"
           title="Recorder output"
-          module = "Recorder"
+          module = "Scale"
           source = "OUTPUT"
           x="0" y="2"
           w="2" h="2"
-          min="-1"
+          min="0"
           max="1"
        />
-       <object class="Switch"  module="State" parameter="data" x="3" y="0"  />
+       <object
+          class="Plot"
+          title="Dynamixel position"
+          module = "Dynamixel"
+          source = "FEEDBACK_PRESENT_POSITION"
+          select="2,3"
+          x="2" y="2"
+          w="1" h="1"
+          min="0"
+          max="360"
+       />
+       <object class="Switch"  module="State" parameter="data" x="2" y="0"  />
+       <object class="Slider"  module="Scale" parameter="factor" x="3" y="0" min="0" max="50" h="2" />
     </view>
 
 </group>

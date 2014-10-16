@@ -11,19 +11,15 @@ RobotPlayer::Init()
 {
 
     Bind(maxTicks, "maxTicks");
-    maxTicks = 10000;
-    
-    Bind(state, "state");
-    state = 0;
+    maxTicks = 50;
+stopTick = 50;
     
      ticks = 0;
      
 
-     stopTick = 0;
-    
+     
 
-    prevState = state;
-    
+    returnBack = 1;
     
     
     internal_array_serv1 = create_array(maxTicks);
@@ -33,6 +29,26 @@ RobotPlayer::Init()
        internal_load_serv1 = create_array(maxTicks);
      internal_load_serv2 = create_array(maxTicks);
       internal_load_serv3 = create_array(maxTicks);
+      
+       
+      //create target array
+     for (int n=0; n<maxTicks; n++) {
+    internal_array_serv1[n] = 180;
+    internal_array_serv2[n] = 180;
+    internal_array_serv3[n] = 50+245/(1+exp(-0.3*n+10.f));//100+n*n/100;
+    
+  }
+ 
+  
+  //torque curve set to 0.2
+ 
+       for (int n=0; n<maxTicks; n++) {
+    internal_load_serv1[n] = 0.2;
+    internal_load_serv2[n] = 0.2;
+    internal_load_serv3[n] = 0.2;
+
+    
+  }
     
     
     input_array = GetInputArray("INPUT");
@@ -41,10 +57,7 @@ RobotPlayer::Init()
     input_load_array = GetInputArray("INPUT_LOAD");
      input_load_array_size = GetInputSize("INPUT_LOAD");
     
-    input_state = GetInputArray("INPUT_STATE");
-    input_state_size = GetInputSize("INPUT_STATE");
-    
-        output_array = GetOutputArray("OUTPUT");
+    output_array = GetOutputArray("OUTPUT");
     output_array_size = GetOutputSize("OUTPUT");
     
     
@@ -57,6 +70,8 @@ RobotPlayer::Init()
     output_diff_array_size = GetOutputSize("OUTPUT_DIFF");
 
 
+    
+   
   
 }
 
@@ -79,65 +94,115 @@ void
 RobotPlayer::Tick()
 { 
 	
-    state = input_state[0];
-    if (prevState != state)  {
-	    stopTick = ticks;
-	    ticks = 0;
-    }
+  //returns back to default arm position if 1
+
+   
   
-	if (state == 0 && ticks < maxTicks){
-	  internal_array_serv1[ticks] = input_array[0];
-	  internal_array_serv2[ticks] = input_array[1];
-	  internal_array_serv3[ticks] = input_array[2];
-	  //printf("INPUT1: %f\n",input_array[0]);
-	  //printf("INPUT2: %f\n",input_array[1]);
-	  //printf("INPUT3: %f\n",input_array[2]);
+  
+	if (returnBack == 1 && ticks < maxTicks){
+	 printf("RETURNING BACK tick: %i\n", ticks);
+	    
+	    output_array[0] = 180;
+	    output_array[1] = 180;
+	    output_array[2] = 50;
+	    
+	    output_load_array[0] = 1.0;
+	    output_load_array[1] = 1.0;
+	    output_load_array[2] = 1.0;
 	  
-
-	  internal_load_serv1[ticks] = input_load_array[0];
-	  internal_load_serv2[ticks] = input_load_array[1];
-	  internal_load_serv3[ticks] = input_load_array[2];
 	  
+	  ticks++; 
+	}else if (returnBack == 1 ) {
+	  printf ("FINISHED RETURNING BACK\n");
 	  
-	  ticks++;
-	  
-} else if (state == 1 &&  ticks < maxTicks) {
-
-	  if (ticks >= stopTick) {
-	 
+	
 	    ticks = 0;
-	    
-	  }
+	    returnBack = 0;
+	 
 	  
-	  printf("output1: %f\n",internal_array_serv1[stopTick]);
+} else if (returnBack == 0 &&  ticks < maxTicks) {
+   //sending torque
+ 
+	 output_load_array[0] = internal_load_serv1[ticks];
+	 output_load_array[1] = internal_load_serv2[ticks];
+	 output_load_array[2] = internal_load_serv3[ticks];
+ 
+	    output_array[0] = 180;
+	    output_array[1] = 180;
+	    output_array[2] = 300;
 	    
-	    output_array[0] = 60;
-	    output_array[1] = 300;
-	    output_array[2] = 250;
+	      
+	  float pos_current_1 = input_array[0];
+	  float pos_target_1 = internal_array_serv1[ticks];
 	    
-	    output_load_array[0] = abs(internal_load_serv1[ticks]);
-	    output_load_array[1] = abs(internal_load_serv2[ticks]);
-	    output_load_array[2] = abs(internal_load_serv3[ticks]);
-	     
-	    float diff1 = internal_array_serv1[ticks] - input_array[0];
-	    float diff2 = internal_array_serv2[ticks] - input_array[1];
-	    float diff3 = internal_array_serv3[ticks] - input_array[2];
+	   float pos_current_2 = input_array[1];
+	  float pos_target_2 = internal_array_serv2[ticks];
 	    
-	   
-	    output_diff_array[0] = diff1;
-	    output_diff_array[1] = diff2;
-	    output_diff_array[2] = diff3;
-	    
-	   
-	   
+	  float pos_current_3 = input_array[2];
+	  float pos_target_3 = internal_array_serv3[ticks];
+	  
+	  
+	  
+	  
+	  printf("Current pos: %f \n", pos_current_3);
+	  printf("Target pos: %i : %f\n", ticks, pos_target_3);
+	  
+	 float diff1 = pos_target_1 - pos_current_1;
+	 float diff2 = pos_target_2 - pos_current_2;
+	 float diff3 = pos_target_3 - pos_current_3;
 	 
 	
-	   ticks++;
+	 
+	 //sending difference
+	 output_diff_array[0] = diff1;
+	 output_diff_array[1] = diff2;
+	 output_diff_array[2] = diff3;
+	 
+	  printf("Difference: %f \n", diff3);
+	  printf("Sending torque: %f \n",internal_load_serv3[ticks]);
+	  
+	  //adjust torque curve for depending on difference
+	    int editTick = ticks-1;
+	    float adjustment = 0.02;
+	    float limit = 10;
+
+	     if (abs(diff3) > limit && (ticks > 0 && ticks < stopTick)) {
+	        printf ("Adjusting tick: %i\n", editTick);
+	      if (diff3 > 0.0) {
+	      
+		internal_load_serv3[editTick] += adjustment;
+		internal_load_serv3[editTick-1] += 0.5*adjustment;
+		
+	      } else {
+		internal_load_serv3[editTick] -= adjustment;
+		internal_load_serv3[editTick-1] -= 0.5*adjustment;
+		
+		
+	      }
+	     }
+	     
+	    
+	    
+	    
+	    ticks++;
+	 
+
+
+	  
+	 
+
 	
+	  
+	    
+	    
+} else if (returnBack==0 && ticks>=maxTicks) {
+	  
+	 printf("REACHED END");
+	  returnBack = 1;
+	  ticks = 0;
 }
 
-prevState = state;
-  
+
 }
 
 // Install the module. This code is executed during start-up.

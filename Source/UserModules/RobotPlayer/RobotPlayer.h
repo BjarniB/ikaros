@@ -63,6 +63,8 @@ public:
     int    internal_load_size_serv3;
 
     // parameter values
+    
+    int returnBack;
 
   int 	ticks;
   int maxTicks;

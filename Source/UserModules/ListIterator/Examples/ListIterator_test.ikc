@@ -4,7 +4,7 @@
 		<module
 			class = "Constant"
 			name = "Index"
-			data = "0"
+			data = "1"
 		/>
 
 		<module
@@ -23,8 +23,8 @@
 			class="ListIterator"
 			name="ListIterator"
 			repeat = "true"
-			list = "1 2 3"
-			list_length = "3"
+			list = "1"
+			list_length = "1"
 			debug = "true"
 		/>
 		

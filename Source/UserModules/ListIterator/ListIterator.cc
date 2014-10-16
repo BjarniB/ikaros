@@ -98,7 +98,11 @@ ListIterator::Tick()
         // {
         //     printf("list %i = %f\n", i, list[i]); 
         // }
-	   printf("list = %1.f at index = %i, select = %.1f, output=%.1f\n", list[index], index, select[0], output_array[(int)select[0]]);
+	   printf("list = %1.f at index = %i, select = %.1f, output=[", list[index], index, select[0]);
+       for (int i = 0; i < output_array_size; ++i)
+           printf("%.1f ", output_array[i] );
+       printf("]\n");
+       
     }
 }
 
