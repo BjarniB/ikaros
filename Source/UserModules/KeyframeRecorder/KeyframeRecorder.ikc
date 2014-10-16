@@ -11,15 +11,19 @@
 			class="KeyframeRecorder"
 			name="KeyframeRecorder"
 			repeat = "true"
+			debug="false"
+			equality_tolerance="0.1"
 		/>
 	</example>
 
 	<parameter name="repeat" type="bool" default="false" description="Repeat playback" />
+	<parameter name="debug" type="bool" default="false" description="Enable debug info" />
 	<parameter name="equality_tolerance" type="float" default="0.01" description="How close the input value has to be to the keyframe value for them to be deemed equal, and the keyframe counter to advance" />
 
 	<input name="INPUT" description="Position data input" />
 	<input name="DERIVATIVE" description="Derivative of data input. " />
-	<input name="STATE" description="Record or playback." />
+	<input name="COMMAND" description="1 record, 2 playback, 3 pause" />
+	<input name="SYNC_INPUT" description="Must be set to 1 before playback can proceed, to ensure receiver is in initial position and ready to receive keyframes" />
 
 	<output name="OUTPUT" description="Position output" size_set="INPUT" />
 	<output name="SYNC" description="Sync/tick output" size_set="INPUT" />

@@ -1,78 +1,177 @@
 <?xml version="1.0"?>
 
-<group title="KeyframeRecorder Example">
-	
-		<module
-			class = "Constant"
-			name = "State"
-			outputsize  = "1"
-			data  = "0"
+<group title="Example">
+	<!-- Modules -->
+	<module
+		class = "Constant"
+		name = "ResetCommand"
+		outputsize  = "1"
+		data  = "0"
+	/>
+	<module
+		class = "Constant"
+		name = "Speed"
+		outputsize  = "1"
+		data  = "0.0"
+	/>
+	<module
+		class = "Constant"
+		name = "KeyframeRecCommand"
+		outputsize  = "1"
+		data  = "0"
+	/>
+	<module
+		class = "Max"
+		name = "Max"
+	/>
+	<module
+		class = "Hump"
+		name = "Hump"
+		scale  = "0.25"
+		timescale  = "60"
+		shift = "0.2"
+		state = "1"
+		offset = "0.25"
+		debug="false"
+	/>
+	<module
+		class="Scale"
+		name="Scale"
+		factor="1"
+	/>
+	<module
+	  class = "Dynamixel"
+	  name = "Dynamixel"
+	  device  = "/dev/cu.usbserial-A600cUuc"
+	  servo_id = "1 2 3"
+	  index_mode = "indirect"
+	  printf_info ="none"
+	  use_feedback ="true"
+	  baud_rate = "1000000"
+	  angle_unit = "degrees"
+	/>
+	<module
+		class="Reset"
+		name="Reset"
+		debug = "true"
+		delay = "1"
+		equaltolerance = "0.9"
+	/>
+	<module
+		class = "Differentiator"
+		name = "Diff"
+	/>
+	<module
+		class="MovingAverage"
+		name="MovingAverage"
+		buffer_length = "4"
+	/>
+	<module
+		class="KeyframeRecorder"
+		name="KeyframeRecorder"
+		repeat = "false"
+		debug="true"
+		equality_tolerance="1"
+	/>
+
+	<!--Connections-->	
+		<!--to max-->
+		<connection sourcemodule = "Reset" source = "OUTPUT" targetmodule = "Max" target = "INPUT1" />
+		<connection sourcemodule = "KeyframeRecorder" source = "OUTPUT" targetmodule = "Max" target = "INPUT2" />
+
+		<!--to hump-->
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "Hump" target = "CURRENT_POS" />
+		<connection sourcemodule = "Max" source = "OUTPUT" targetmodule = "Hump" target = "TARGET_POS" />
+
+		<!-- TO scale-->		
+		<connection sourcemodule = "Hump" source = "OUTPUT" targetmodule = "Scale" target = "INPUT" />
+
+		<!-- TO dynamixel-->
+		<connection sourcemodule = "Max" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
+		<connection sourcemodule = "Scale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "Speed" source = "OUTPUT" targetmodule = "Dynamixel" target = "MOVING_SPEED" />
+		<connection sourcemodule = "Speed" source = "OUTPUT" targetmodule = "Dynamixel" target = "MOVING_SPEED" />
+		<connection sourcemodule = "Speed" source = "OUTPUT" targetmodule = "Dynamixel" target = "MOVING_SPEED" />
+
+		<!--TO reset-->
+		<connection sourcemodule = "ResetCommand" source = "OUTPUT" targetmodule = "Reset" target = "COMMAND" />
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "Reset" target = "INPUT" />
+
+		<!--To diff-->
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "Diff" target = "INPUT" />
+
+		<!--to moving average-->
+		<connection sourcemodule = "Diff" source = "OUTPUT" targetmodule = "MovingAverage" target = "INPUT" />
+
+		<!--To keyframe rec-->
+		<connection sourcemodule = "Reset" source = "SYNC" targetmodule = "KeyframeRecorder" target = "SYNC_INPUT" />
+		<connection sourcemodule = "ResetCommand" source = "OUTPUT" targetmodule = "KeyframeRecorder" target = "COMMAND" />
+		<connection sourcemodule = "MovingAverage" source = "OUTPUT" targetmodule = "KeyframeRecorder" target = "DERIVATIVE" />
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "KeyframeRecorder" target = "INPUT" />
+	<!-- View -->
+		<view>
+		<object class="Plot " 
+			module="Dynamixel" 
+			source="FEEDBACK_PRESENT_POSITION" 
+			x="0" y="0" w="1" h="1"
+			min="0"
+			max="360"
 		/>
-
-		<module
-			class = "KeyframeRecorder"
-			name = "KeyframeRecorderInstance"
-			repeat = "true"
-			
+		<object class="Plot " 
+			module="KeyframeRecorder" 
+			source="OUTPUT" 
+			x="1" y="0" w="1" h="1"
+			min="0"
+			max="360"
 		/>
-
-		<module
-        class       =   "FunctionGenerator"
-        name        =   "Pos"
-        type        =   "sin"
-        frequency   =   "0.0314"
-        offset      =   "1"
-        amplitude   =   "1"
-        shift       =   "0.0"
-   	/>
-		<module 
-			class = "Differentiator" 
-			name = "Differentiator" 
+		<object 
+			class="Table"  
+			module="Reset" 
+			source="SYNC" 
+			x="2" y="0"  
 		/>
-		<module
-        class = "Dynamixel"
-        name = "Dynamixel"
-        device  = "/dev/cu.usbserial-A600cUuc"
-        servo_id = "3"
-        index_mode = "indirect"
-        printf_info ="none"
-        use_feedback ="true"
-    		baud_rate = "1000000"
-    		angle_unit = "degrees"
-
-    	/>
-        <connection sourcemodule = "State" source = "OUTPUT" targetmodule = "KeyframeRecorderInstance" target = "STATE" />
-        <connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "KeyframeRecorderInstance" target = "INPUT" />
-        <connection sourcemodule = "Pos" source = "OUTPUT" targetmodule = "Differentiator" target = "INPUT" />
-        <connection sourcemodule = "Differentiator" source = "OUTPUT" targetmodule = "KeyframeRecorderInstance" target = "DERIVATIVE" />
-
-		<view name="View">
-			<object class="Plot " 
-				module="Differentiator" 
+		<object class="Button"  title = "Record" module="ResetCommand" parameter="data" x="0" y="1"  min="0" max="1"/>
+		<object class="Button"  title ="Play"module="ResetCommand" parameter="data" x="1" y="1" min="0" max="2"  />
+		<object
+		   class="Slider"
+		   title="Scale"
+		   module = "Scale"
+		   parameter = "factor"
+		   xindex = "0"
+		   x="2" y="1" h="2"
+		  min="0.0" 
+		  max="3"
+		/>
+		<object
+		   class="Slider"
+		   title="Speed"
+		   module = "Speed"
+		   parameter = "data"
+		   xindex = "0"
+		   x="3" y="1" h="2"
+		  min="0.0" 
+		  max="1"
+		/>
+		<object 
+				class="Table"  
+				module="Max" 
 				source="OUTPUT" 
-				x="0" y="0" w="2" h="2"
-				min="0"
-				max="1"
-				color="red"
+				x="0" y="2"  
 			/>
+		<object 
+				class="Table"  
+				module="Dynamixel" 
+				source="FEEDBACK_MOVING_SPEED" 
+				x="0" y="3"  
+			/>	
 			<object class="Plot " 
-				module="Pos" 
+				module="Scale" 
 				source="OUTPUT" 
-				x="0" y="2" w="2" h="2"
+				x="1" y="2" w="1" h="1"
 				min="0"
 				max="2"
-				color="red"
 			/>
-			<object class="Plot " 
-				module="KeyframeRecorderInstance" 
-				source="POSITION" 
-				x="2" y="2" w="2" h="2"
-				min="0"
-				max="2"
-				color="green"
-			/>
-			<object class="Switch"  module="State" parameter="data" x="3" y="0"  />
+
 		</view>
 
 </group>
- 

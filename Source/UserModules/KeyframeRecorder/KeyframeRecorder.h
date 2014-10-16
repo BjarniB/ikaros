@@ -40,7 +40,9 @@ public:
     void 		Init();
     void 		Tick();
 
-    bool equal(float a, float b, float tolerance){ return fabs(a-b) <= tolerance;};
+    //bool equal(float a, float b, float tolerance){ return fabs(a-b) <= tolerance;};
+    void record();
+    void play();
     // pointers to inputs and outputs
     // and integers to represent their sizes
 
@@ -48,8 +50,9 @@ public:
     int         input_array_size;
 
     float *     derivative;
-    float *     state;
-    bool        repeat;
+    float *     command;
+    float *     sync_input;
+
     
     // outputs
     float *     output;
@@ -61,12 +64,17 @@ public:
 
     // parameter values
     float equality_tolerance;
+    bool        repeat;
+    bool        debug;
     
     // internals
     float       prevstate;
-    float       prevsign;
+    float *     prevsign;
     int         tick;
-    std::vector<Keyframe>::iterator * keyframe_iterator;    
+    std::vector<Keyframe>::iterator * keyframe_iterator;
+    enum State {eStart=0, eRecording, ePlaying, eRecord_Paused, ePlay_Paused, eReady_To_Play};
+    enum Command {eNone=0, eRecord, ePlay, ePause};  
+    State current_state;
 };
 
 #endif

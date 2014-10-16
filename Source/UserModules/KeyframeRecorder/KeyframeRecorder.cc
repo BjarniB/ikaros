@@ -39,11 +39,13 @@ KeyframeRecorder::Init()
  
     Bind(repeat, "repeat");
     Bind(equality_tolerance, "equality_tolerance");
+    Bind(debug, "debug");
 
     input_array = GetInputArray("INPUT");
     input_array_size = GetInputSize("INPUT");
     derivative = GetInputArray("DERIVATIVE");
-    state = GetInputArray("STATE");
+    command = GetInputArray("COMMAND");
+    sync_input = GetInputArray("SYNC_INPUT");
     // Do the same for the outputs
 
     output = GetOutputArray("OUTPUT");
@@ -57,6 +59,8 @@ KeyframeRecorder::Init()
         recording[i].reserve(10);
         //keyframe_iterator[i] = recording[i].begin();
     }
+    prevsign = new float[input_array_size];
+    reset_array(prevsign, input_array_size);
 }
 
 
@@ -66,12 +70,72 @@ KeyframeRecorder::~KeyframeRecorder()
     // Destroy data structures that you allocated in Init.
     delete[] recording;
     delete[] keyframe_iterator;
+    delete[] prevsign;
     // Do NOT destroy data structures that you got from the
     // kernel with GetInputArray, GetInputMatrix etc.
 }
 
 
 
+void
+KeyframeRecorder::Tick()
+{
+    Command cmd = (Command)command[0];
+    if(debug){
+        printf("kfr command=%i state before=%i\n", cmd, current_state);
+    }
+
+    switch(current_state)
+    {
+
+      case eStart:
+        if(cmd==eRecord)
+        {
+          current_state=eRecording;
+          tick=0;  
+        }    
+        break;
+      case eRecording:
+        if(cmd==ePause)
+          current_state=eRecord_Paused;
+        else if(cmd==ePlay)
+        {
+            if(sync_input[0]==1.f)
+                current_state = ePlaying;
+            else 
+                current_state = eReady_To_Play;
+            tick=0;
+            for (int i = 0; i < input_array_size; ++i)
+                keyframe_iterator[i] = recording[i].begin();
+        }
+        else 
+            record();
+        break;
+      case ePlaying:
+        if(cmd==ePause)
+          current_state=ePlay_Paused;
+        else
+          play();
+        break;
+      case eRecord_Paused:
+        if(cmd==ePause || cmd==eRecord)
+          current_state=eRecording;
+        break;
+      case ePlay_Paused:
+        if(cmd==ePause || cmd==ePlay)
+          current_state=ePlaying;
+        break;
+      case eReady_To_Play:
+        if(sync_input[0]==1.f)
+          current_state=ePlaying;
+      default:
+        break;
+    }
+    if(debug){
+        printf("kfr state after=%i\n", current_state);
+    }
+}
+/*
 void
 KeyframeRecorder::Tick()
 {
@@ -93,11 +157,15 @@ KeyframeRecorder::Tick()
         {
             // if there is difference in sign, record
             float currentsign = derivative[i] < 0?-1:1;
-            if(currentsign != prevsign)
+
+            if(currentsign != prevsign[i])
             {
-                (recording[i]).push_back(Keyframe(tick, input_array[i]));
-                prevsign = currentsign;
-                //printf("stored: %i, %f\n",tick, input_array[i] );
+                if(prevsign[i]!=0)
+                {
+                    (recording[i]).push_back(Keyframe(tick, input_array[i]));
+                    printf("stored: %i, %i, %f currentsign=%f, prevsign=%f\n",i, tick, input_array[i], currentsign, prevsign[i] );
+                }
+                prevsign[i] = currentsign;
             }
         }
         tick++;
@@ -110,7 +178,7 @@ KeyframeRecorder::Tick()
             // keyframe and output it
             sync[i] = (float)keyframe_iterator[i]->first;
             output[i] = keyframe_iterator[i]->second;
-            printf("output %i, %f\n", keyframe_iterator[i]->first, keyframe_iterator[i]->second);    
+            printf("kfr output %i, %i, %f\n", i, keyframe_iterator[i]->first, keyframe_iterator[i]->second);    
             if(equal(input_array[i], keyframe_iterator[i]->second, equality_tolerance) 
                 && keyframe_iterator[i] != recording[i].end())
             {
@@ -123,8 +191,51 @@ KeyframeRecorder::Tick()
     }
 
 }
+*/
 
+void
+KeyframeRecorder::record()
+{
+    for (int i = 0; i < input_array_size; ++i)
+    {
+        // if there is difference in sign, record
+        float currentsign = derivative[i] < 0?-1:1;
 
+        if(currentsign != prevsign[i])
+        {
+            if(prevsign[i]!=0)
+            {
+                (recording[i]).push_back(Keyframe(tick, input_array[i]));
+                if(debug)
+                    printf("stored: %i, %i, %f currentsign=%f, prevsign=%f\n",i, tick, input_array[i], currentsign, prevsign[i] );
+            }
+            prevsign[i] = currentsign;
+        }
+    }
+    tick++;
+}
+
+void 
+KeyframeRecorder::play()
+{
+    for (int i = 0; i < input_array_size; ++i)
+    {
+        // if have reached current keyframe, increment to next 
+        // keyframe and output it
+        sync[i] = (float)keyframe_iterator[i]->first;
+        output[i] = keyframe_iterator[i]->second;
+        if(debug)
+            printf("kfr output i=%i, tick=%i, pos=%f, input=%f\n", i, keyframe_iterator[i]->first, keyframe_iterator[i]->second, input_array[i]);    
+        if(equal(input_array[i], keyframe_iterator[i]->second, equality_tolerance) 
+            && keyframe_iterator[i] != recording[i].end())
+        {
+            keyframe_iterator[i]++;
+            
+        }
+        if(repeat && (keyframe_iterator[i])==recording[i].end())
+            keyframe_iterator[i] = recording[i].begin();
+    }
+}
 
 // Install the module. This code is executed during start-up.
 
