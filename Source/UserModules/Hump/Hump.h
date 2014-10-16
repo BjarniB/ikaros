@@ -52,6 +52,7 @@ public:
 
     float *     startpos;
     bool        first;
+
     //float **    internal_matrix;
 
     // parameter values
@@ -60,6 +61,7 @@ public:
     float       scale;
     float       shift;
     float       offset;
+    bool        debug;
 
 
     float       t;

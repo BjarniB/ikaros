@@ -10,7 +10,7 @@
 		<module
 			class="Hump"
 			name="Hump"
-			timescale = "100"
+			timescale = "30"
 			scale = "1.0"
 			shift = "0"
 			state = "0"
@@ -23,13 +23,14 @@
 	<parameter name="shift" type="float" default="0.0" description="Time shift in steps" />
 	<parameter name="state" type="float" default="0.0" description="start stop state" />
 	<parameter name="offset" type="float" default="0.0" description="offset" />
+	<parameter name="debug" type="bool" default="false" description="print debug info" />
 
-<input name="CURRENT_POS" description="Current position reading" size="3" />
-<input name="TARGET_POS" description="Target position reading" size="3" />
+<input name="CURRENT_POS" description="Current position reading" size_set="TARGET_POS"/>
+<input name="TARGET_POS" description="Target position reading" />
 <!--input name="INPUT_STATE" description="Start or stop state" size="1" /-->
 <!--<input name="INPUT2" description="The second input" />-->
 
-<output name="OUTPUT" description="Hump function output" size="1" />
+<output name="OUTPUT" description="Hump function output" size_set="TARGET_POS" />
 
 	<module class="Hump" />
 

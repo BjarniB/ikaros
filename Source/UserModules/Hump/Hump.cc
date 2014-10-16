@@ -41,6 +41,7 @@ Hump::Init()
     Bind(shift, "shift");
     Bind(state, "state");
     Bind(offset, "offset");
+    Bind(debug, "debug");
     size = GetInputSize("CURRENT_POS");
     current_pos = GetInputArray("CURRENT_POS"); 
     target_pos = GetInputArray("TARGET_POS");
@@ -91,15 +92,16 @@ Hump::Tick()
             // this only work from small to large 
             // note: fix pos!
             float pos = Map_Range(current_pos[i], startpos[i], target_pos[i], 0.0, 1);
-            printf("i=%i, current_pos= %f, targetpos= %f, startpos= %f, pos= %f\n", 
-                i, 
-                current_pos[i],
-                target_pos[i],
-                startpos[i],
-                pos);
+            if(debug)
+                printf("i=%i, current_pos= %f, startpos= %f, targetpos= %f, pos= %f\n", 
+                    i, 
+                    current_pos[i],
+                    startpos[i],
+                    target_pos[i],
+                    pos);
 
             output_array[i] = 4*scale*exp(timescale*(pos-shift))/pow(1+exp(timescale*(pos-shift)),2) + offset;//pow(2.71828,-t);    
-            printf("output= %f\n", output_array[i]);
+            // printf("output= %f\n", output_array[i]);
         }
         
         //printf("%f,%f\n", output_array[0],t);
