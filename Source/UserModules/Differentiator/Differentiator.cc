@@ -49,22 +49,21 @@ Differentiator::Init()
 
     // Get a pointer to the input INPUT1 and its size which we set
     // to 10 above
-    // It does not matter whether a matrix of array is connected
+    // It does not matter whether a array of array is connected
     // to the inputs. We will treat it an array in this module
     // anyway.
 
     
-    // Get pointer to a matrix and treat it as a matrix. If an array is
+    // Get pointer to a array and treat it as a array. If an array is
     // connected to this input, size_y will be 1.
 
-    input_matrix = GetInputMatrix("INPUT");
-    input_matrix_size_x = GetInputSizeX("INPUT");
-    input_matrix_size_y = GetInputSizeY("INPUT");
+    input_array = GetInputArray("INPUT");
+    input_array_size = GetInputSize("INPUT");
 
     // Do the same for the outputs
 
     
-    output_matrix = GetOutputMatrix("OUTPUT");
+    output_array = GetOutputArray("OUTPUT");
     
     // Allocate some data structures to use internaly
     // in the module
@@ -73,13 +72,13 @@ Differentiator::Init()
     // To access the array use internal_array[i].
 
     
-    // Create a matrix with the same size as INPUT2
-    // IMPORTANT: For the matrix the sizes are given as X, Y
+    // Create a array with the same size as INPUT2
+    // IMPORTANT: For the array the sizes are given as X, Y
     // which is the OPPOSITE of ROW, COLUMN.
 
-    prev_val = create_matrix(input_matrix_size_x, input_matrix_size_y);
-    //printf("sizex = %i, sizey = %i\n", input_matrix_size_x, input_matrix_size_y);
-    // To acces the matrix use internal_matrix[y][x].
+    prev_val = create_array(input_array_size);
+    //printf("sizex = %i, sizey = %i\n", input_array_size_x, input_array_size_y);
+    // To acces the array use internal_array[y][x].
     //
     // IMPORTANT: y is the first index and x the second,
     //
@@ -88,7 +87,8 @@ Differentiator::Init()
     // should be used to make sure that memeory is
     // allocated in a way that is suitable for the math
     // library and fast copying operations.
-    first = true;
+    //first = true;
+    tick = 0;
 }
 
 
@@ -97,10 +97,10 @@ Differentiator::~Differentiator()
 {
     // Destroy data structures that you allocated in Init.
 
-    destroy_matrix(prev_val);
+    destroy_array(prev_val);
 
     // Do NOT destroy data structures that you got from the
-    // kernel with GetInputArray, GetInputMatrix etc.
+    // kernel with GetInputArray, GetInputarray etc.
 }
 
 
@@ -108,29 +108,27 @@ Differentiator::~Differentiator()
 void
 Differentiator::Tick()
 {
-    // This is where you implement your algorithm
-    // to calculate the outputs from the inputs
+    // skip first 
+    // TODO make skip first and second to parameters
+    
 
-    // This example makes a copy of the data on INPUT2 which is now
-    // in input_matrix to internal_matrix
-    // Arrays can be copied with copy_array
-    // To clear an array or matrix use reset_array and reset_matrix
-    if(first){
-        first = false;
-    } else {
-        subtract(output_matrix, input_matrix, prev_val, input_matrix_size_x, input_matrix_size_y);
-        multiply(output_matrix, gain, input_matrix_size_x, input_matrix_size_y);
+    if(tick > 1)
+    {
+        subtract(output_array, input_array, prev_val, input_array_size);
+        multiply(output_array, gain, input_array_size);
         // TODO implement rectification
         
-        // print_matrix("ouput", 
-        //     output_matrix, 
-        //     input_matrix_size_x, 
-        //     input_matrix_size_y, 
-        //     2 | MATLAB);
-        
+        //for (int i = 0; i < input_array_size; ++i)
+        //    printf("Differentiator out %i, %f\n", i, output_array[i]);
     }
-    copy_matrix(prev_val, input_matrix, input_matrix_size_x, input_matrix_size_y);
-
+    
+    if(tick > 0)
+    {
+        //for (int i = 0; i < input_array_size; ++i)
+        //    printf("Differentiator in %i, %f\n", i, input_array[i]);
+        copy_array(prev_val, input_array, input_array_size);
+    }
+    tick++;
     
 }
 

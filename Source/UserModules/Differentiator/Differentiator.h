@@ -39,24 +39,24 @@ public:
     // pointers to inputs and outputs
     // and integers to represent their sizes
 
-    float **    input_matrix;
-    int         input_matrix_size_x;
-    int         input_matrix_size_y;
+    float *     input_array;
+    int         input_array_size;
 
     
-    float **    output_matrix;
+    float *     output_array;
     
     
     // internal data storage
 
-    float **    prev_val;
+    float *     prev_val;
     
     // parameter values
     bool        rectify;
     float       gain;
     int         reset_period;
 
-    bool        first;
+    //bool        first;
+    int         tick;
 };
 
 #endif
