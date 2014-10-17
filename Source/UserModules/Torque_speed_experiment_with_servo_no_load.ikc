@@ -56,7 +56,7 @@
 			name="Speed"
 			repeat = "true"
 			list = "1"
-			list_length = "4"
+			list_length = "1"
 			debug = "false"
 		/>
 		<module
@@ -64,7 +64,7 @@
 			name="ServoIx"
 			repeat = "true"
 			list = "0"
-			list_length = "3"
+			list_length = "1"
 			debug = "false"
 		/>
 
