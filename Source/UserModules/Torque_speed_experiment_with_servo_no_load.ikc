@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+
+<group title="ListIterator Example">
+		<module
+			class = "Constant"
+			name = "Index"
+			data = "0"
+		/>
+		<module
+		  class = "Dynamixel"
+		  name = "Dynamixel"
+		  device  = "/dev/cu.usbserial-A600cUuc"
+		  servo_id = "1 2 3"
+		  index_mode = "indirect"
+		  printf_info ="none"
+		  use_feedback ="true"
+		  baud_rate = "1000000"
+		  angle_unit = "degrees"
+		/>
+		<module 
+			class = "Differentiator" 
+			name = "Differentiator" 
+		/>
+
+		<module
+		  class       =   "FunctionGenerator"
+		  name        =   "SquareGen"
+		  type        =   "ticksquare"
+		  _frequency  =  "0.001"
+		  basetime		= 	"50"	
+		  offset      =   "0.0"
+		  amplitude   =   "1"
+		  shift       =   "0.0"
+		  tickduty	  = 	"1"
+		/>
+
+		<!-- Iterators for the test servo-->
+		<module
+			class="ListIterator"
+			name="Target"
+			repeat = "true"
+			list = "80 300"
+			list_length = "2"
+			debug = "false"
+		/>
+		<module
+			class="ListIterator"
+			name="Torque"
+			repeat = "true"
+			list = "0.2 0.225 0.25 0.275  0.3 0.325  0.35 0.375  0.4 0.425 0.45 0.475  0.5 0.55 0.6 0.65 0.7 0.75"
+			list_length = "18"
+			debug = "false"
+		/>
+		<module
+			class="ListIterator"
+			name="Speed"
+			repeat = "true"
+			list = "1"
+			list_length = "4"
+			debug = "false"
+		/>
+		<module
+			class="ListIterator"
+			name="ServoIx"
+			repeat = "true"
+			list = "0"
+			list_length = "3"
+			debug = "false"
+		/>
+
+		<!-- Iterators for the load servo-->
+
+		<module class = "OutputFile" 
+			name = "OUT" 
+			filename = "torque_speed_experiment_data.csv" > 
+			<column name = "SERVOIX" />  
+			<column name = "INPUTSPEED" decimals="2" />  
+			<column name = "TESTTORQUE" decimals="2" />  
+			<column name = "MEASUREDSPEED" decimals="2" />  
+		</module>
+
+		<!-- connections-->
+
+		<!-- TO Target-->
+        <connection sourcemodule = "SquareGen" source = "OUTPUT" targetmodule = "Target" target = "SYNC IN" />	
+        <connection sourcemodule = "ServoIx" source = "OUTPUT" targetmodule = "Target" target = "SELECT" />	
+
+      <!-- TO Torque-->
+        <connection sourcemodule = "ServoIx" source = "OUTPUT" targetmodule = "Torque" target = "SELECT" />	
+        <connection sourcemodule = "SquareGen" source = "OUTPUT" targetmodule = "Torque" target = "SYNC IN" />
+
+
+      <!-- TO Speed-->
+        <connection sourcemodule = "ServoIx" source = "OUTPUT" targetmodule = "Speed" target = "SELECT" />
+        <connection sourcemodule = "Torque" source = "SYNC OUT" targetmodule = "Speed" target = "SYNC IN" />
+
+      <!-- TO ServoIx-->
+      	<connection sourcemodule = "Index" source = "OUTPUT" targetmodule = "ServoIx" target = "SELECT" />
+      	<connection sourcemodule = "Speed" source = "SYNC OUT" targetmodule = "ServoIx" target = "SYNC IN" />
+
+     
+      <!-- To Dynamixel -->
+		<connection sourcemodule = "Speed" source = "OUTPUT" targetmodule = "Dynamixel" target = "MOVING_SPEED" />
+		<connection sourcemodule = "Torque" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "Target" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
+
+      <!-- To Differentiator -->
+      <connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "Differentiator" target = "INPUT" />
+
+      <!-- TO OUT-->
+			<connection sourcemodule = "ServoIx" source = "OUTPUT" targetmodule = "OUT" target = "SERVOIX" />
+        <connection sourcemodule = "Speed" source = "OUTPUT" targetmodule = "OUT" target = "INPUTSPEED" />
+        <connection sourcemodule = "Torque" source = "OUTPUT" targetmodule = "OUT" target = "TESTTORQUE" />
+			<connection sourcemodule = "Differentiator" source = "OUTPUT" targetmodule = "OUT" target = "MEASUREDSPEED" />       
+       
+	<!-- VIEW -->		
+		<view name="View">
+			<object class="Plot " 
+				module="SquareGen" 
+				source="OUTPUT" 
+				x="0" y="0" w="1" h="1"
+				min="0"
+				max="2"
+			/>
+			<object class="Plot " 
+				module="Target" 
+				source="OUTPUT" 
+				x="0" y="1" w="1" h="1"
+				min="0"
+				max="350"
+				select="0"
+			/>
+			<object class="Plot " 
+				module="Target" 
+				source="OUTPUT" 
+				x="1" y="1" w="1" h="1"
+				min="0"
+				max="350"
+				select="1"
+			/>
+			<object class="Plot " 
+				module="Target" 
+				source="OUTPUT" 
+				x="2" y="1" w="1" h="1"
+				min="0"
+				max="350"
+				select="2"
+			/>
+			<object class="Plot " 
+				module="Speed" 
+				source="OUTPUT" 
+				x="0" y="2" w="1" h="1"
+				min="0"
+				max="2"
+				select = "0"
+			/>
+			<object class="Plot " 
+				module="Speed" 
+				source="OUTPUT" 
+				x="1" y="2" w="1" h="1"
+				min="0"
+				max="2"
+				select = "1"
+			/>
+			<object class="Plot " 
+				module="Speed" 
+				source="OUTPUT" 
+				x="2" y="2" w="1" h="1"
+				min="0"
+				max="2"
+				select = "2"
+			/>
+			<object class="Plot " 
+				module="Torque" 
+				source="OUTPUT" 
+				x="0" y="3" w="1" h="1"
+				min="0"
+				max="1"
+				select = "0"
+			/>
+			<object class="Plot " 
+				module="Torque" 
+				source="OUTPUT" 
+				x="1" y="3" w="1" h="1"
+				min="0"
+				max="1"
+				select = "1"
+			/>
+			<object class="Plot " 
+				module="Torque" 
+				source="OUTPUT" 
+				x="2" y="3" w="1" h="1"
+				min="0"
+				max="1"
+				select = "2"
+			/>
+			<object class="Plot " 
+				module="Differentiator" 
+				source="OUTPUT" 
+				x="1" y="4" w="1" h="1"
+				min="-20"
+				max="20"
+				select = "0"
+				color="yellow"
+			/>
+			<object class="Plot " 
+				module="Differentiator" 
+				source="OUTPUT" 
+				x="1" y="4" w="1" h="1"
+				min="-20"
+				max="20"
+				select = "1"
+				color="green"
+			/>  
+			<object class="Plot " 
+				module="Differentiator" 
+				source="OUTPUT" 
+				x="1" y="4" w="1" h="1"
+				min="-20"
+				max="20"
+				select = "2"
+				color="red"
+			/>
+			<object class="Plot " 
+				module="MaxSpeed" 
+				source="OUTPUT" 
+				x="0" y="5" w="1" h="1"
+				min="0"
+				max="2"
+				select="0"
+			/>
+			
+			 
+		</view>
+
+</group>
