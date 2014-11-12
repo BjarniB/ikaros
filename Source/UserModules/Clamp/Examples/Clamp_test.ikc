@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<group title="Clamp Example">
+	
+		<module
+			class = "Constant"
+			name = "MyConstant"
+			outputsize  = "2"
+			data  = "1 2"
+		/>
+		<module
+		  class       =   "FunctionGenerator"
+		  name        =   "SinGen"
+		  type        =   "sin"
+		  frequency  =  "0.1"
+		  offset      =   "0.0"
+		  amplitude   =   "1"
+		  shift       =   "0.0"
+		/>
+
+		<module
+			class = "Clamp"
+			name = "ClampInstance"
+			min_out  = "30"
+			max_out = "300"
+			tolerance  = "0.1"
+			offset_in = "0.0"
+			debug = "false"
+		/>
+		
+        <connection sourcemodule = "SinGen" source = "OUTPUT" targetmodule = "ClampInstance" target = "INPUT" />
+
+		<view name="View">
+			<object class="Plot " 
+				module="SinGen" 
+				source="OUTPUT" 
+				x="0" y="0" w="1" h="1"
+				min="-2"
+				max="2"
+			/>
+			<object class="Plot " 
+				module="ClampInstance" 
+				source="OUTPUT" 
+				x="0" y="1" w="1" h="1"
+				min="0"
+				max="300"
+			/>
+		</view>
+
+</group>
+ 
