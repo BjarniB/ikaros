@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<group title="Example">
+	<!-- Modules -->
+	<module
+	class = "Constant"
+	name = "State"
+	outputsize  = "1"
+	data  = "0.5"
+/>
+	<!--Connections-->	
+
+	<!-- View -->
+		<view>
+			<object
+			   class="StepSlider"
+			   title="StepSlider"
+			   module = "State"
+			   parameter = "data"
+			   xindex = "0"
+			   x="1" y="0" h="2"
+			  min="0.0" 
+			  max="2"
+			  steps="1"
+			/>
+			<object class="Plot " 
+				module="State" 
+				source="OUTPUT" 
+				x="0" y="0" w="1" h="1"
+				min="0"
+				max="2"
+			/>
+			<object
+			   class="StepSlider"
+			   title="ContinuousStepSlider"
+			   module = "State"
+			   parameter = "data"
+			   xindex = "0"
+			   x="2" y="0" h="2"
+			  min="0.0" 
+			  max="2"
+			/>
+		</view>
+
+</group>
