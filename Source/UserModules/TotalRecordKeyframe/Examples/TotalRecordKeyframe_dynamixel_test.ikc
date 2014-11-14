@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+
+<group title="Example">
+	<!-- Modules -->
+
+	<module
+		class = "Constant"
+		name = "Command"
+		outputsize  = "1"
+		data  = "0"
+	/>
+
+	<module
+	  class = "Dynamixel"
+	  name = "Dynamixel"
+	  device  = "/dev/ttyUSB0"
+	  servo_id = "1 2 3"
+	  index_mode = "indirect"
+	  printf_info ="none"
+	  use_feedback ="true"
+	  baud_rate = "1000000"
+	  angle_unit = "degrees"
+	/>
+
+	<module
+		class="TotalRecordKeyframe"
+		name="TotalRecordKeyframe"
+		repeat = "true"
+		debug="true"
+		equality_tolerance="1"
+	/>
+
+	<!--Connections-->	
+
+		<!-- TO dynamixel-->
+		<connection sourcemodule = "TotalRecordKeyframe" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
+
+		<!--To keyframe rec-->
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "TotalRecordKeyframe" target = "INPUT" />
+
+		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "COMMAND" />
+
+	<!-- View -->
+		<view>
+		<object class="Plot " 
+			module="Dynamixel"
+			source="FEEDBACK_PRESENT_POSITION" 
+			x="0" y="0" w="1" h="1"
+			min="0"
+			max="360"
+		/>
+		<object class="Plot " 
+			module="TotalRecordKeyframe" 
+			source="OUTPUT" 
+			x="1" y="0" w="1" h="1"
+			min="0"
+			max="360"
+		/>
+
+		<object class="Button"  title = "Record" module="Command" parameter="data" x="0" y="2"  min="0" max="1"/>
+		<object class="Button"  title ="Process" module="Command" parameter="data" x="1" y="2" min="0" max="2"  />
+		<object class="Button"  title = "Play" module="Command" parameter="data" x="2" y="2"  min="0" max="3"/>
+		<object class="Button"  title = "Reset" module="Command" parameter="data" x="3" y="2"  min="0" max="4"/>
+
+		</view>
+
+</group>
