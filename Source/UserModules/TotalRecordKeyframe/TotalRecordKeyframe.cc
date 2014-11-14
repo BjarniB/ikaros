@@ -42,7 +42,7 @@ TotalRecordKeyframe::Init()
     Bind(debug, "debug");
 
     input_array = GetInputArray("INPUT");
-    //input_moving_speed = GetInputArray("MOVING_SPEED");
+    input_moving_speed = GetInputArray("MOVING_SPEED");
     input_array_size = GetInputSize("INPUT");
     command = GetInputArray("COMMAND");
     
@@ -88,6 +88,7 @@ TotalRecordKeyframe::~TotalRecordKeyframe()
     delete[] keyframes;
     delete[] keyframe_iterator;
     delete[] prevsign;
+    delete[] tickCounter;
     delete[] frames;
     delete[] frame_iterator;
     // Do NOT destroy data structures that you got from the
@@ -112,9 +113,9 @@ TotalRecordKeyframe::Tick()
       case eStart:
         if(reset){
             // reset all servos to 180 degrees
-            /*for(int i = 0; i < input_array_size; i++){
+            for(int i = 0; i < input_array_size; i++){
                 output[i] = 180; 
-            }*/
+            }
             printf("Reset to defaults\n");
             reset = false;
         }
@@ -173,14 +174,13 @@ TotalRecordKeyframe::Tick()
 void
 TotalRecordKeyframe::record()
 {
-    // TODO frames to struct with moving speed aswell
     for (int i = 0; i < input_array_size; ++i)
     {
         (frames[i]).push_back(Frame(tick, input_array[i], 0/*input_moving_speed[i]*/));
         if(debug)
             printf("stored: %i, %i, %f \n",i, tick, input_array[i]);
         // Simply outputs the input
-        output[i] = input_array[i];
+        //output[i] = input_array[i];
     }
     tick++;
 }
@@ -228,27 +228,22 @@ TotalRecordKeyframe::process()
 bool
 TotalRecordKeyframe::checkFrame(int index, int i){
 
-//    printf("Check frame index: %i i: %i \n", index, i);
-
     float currentsign = prevsign[i];
 
     if(index < frames[i].size()-1){
         // derivative
         float diff = frames[i].at(index+1).val - frames[i].at(index).val; 
         currentsign = diff < 0?-1:1;
-//        printf("index: % i ,derivatives: %f , diff: %f , prevsign: %f \n", index, currentsign, diff, prevsign[i]);
     }
 
         // first frame is a keyframe
     if(index == 1){
-    //    printf("first frame \n");
         prevsign[i] = currentsign;
         return true;
     }
 
     // last frame is a keyframe
     if(index == (frames[i].size()-1)){
-      //  printf("last frame \n");
         return true;
     }
 
@@ -263,7 +258,6 @@ TotalRecordKeyframe::checkFrame(int index, int i){
             }
         }
     }
-    //printf("End check frame. \n");
     return false;
 }
 
@@ -294,55 +288,8 @@ TotalRecordKeyframe::movingAverage(){
 
             frames[i].at(index).val = (prev + curr + next) / count;
         }
-
-/*
-        //TODO change to index stepping, take moving average of index-1 index index+1
-        frame_iterator[i] = frames[i].begin();
-        frame_iterator[i]++;
-        prev = &*frame_iterator[i];
-        frame_iterator[i]++;
-        while(frame_iterator[i] != frames[i].end()){
-            if(debug)
-                printf("Average: %i %f \n", prev->tick, prev->val);
-            frame_iterator[i]->val= (prev->val + frame_iterator[i]->val) / 2;
-            prev = &*frame_iterator[i];
-            frame_iterator[i]++;
-        }
-        printf("End of moving average %i: last frame: %i, %f \n", i, prev->tick, prev->val);
-*/
     }
 }
-/*
-    vid record/process
-
-    prevsign != currsign
-    speed == 0
-        tickcounter++
-    else
-        keyframes.pushback(Keyframe(1,tickcounter,currentpos));
-
-    keyframe till struct
-        type 0 = pos 1=pause
-        tick
-        pos
-
-    vid playback
-    for alla keyframes
-        switch(type)
-            case ePause:
-                ticks--;
-                check ticks 0, change keyframe
-            case ePos:
-                output = pos;
-                check currentpos, change keyframe
-
-speed curvor * 0.1
-    speed < 0
-        target = maxpos;
-    else speed > 0 
-        target = minpos
-    else speed = 0
-*/
 
 
 void 
