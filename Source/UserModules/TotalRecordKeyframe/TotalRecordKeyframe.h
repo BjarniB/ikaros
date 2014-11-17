@@ -71,22 +71,16 @@ public:
     void play();
     bool checkFrame(int index, int i);
     void movingAverage();
+    void printFrames();
     // pointers to inputs and outputs
     // and integers to represent their sizes
-
     float *     input_array;
-    float *     input_moving_speed;
+    float *     input_speed;
     int         input_array_size;
 
-
-    float *     command;
-    float *     sync_input;
-
-    
     // outputs
     float *     output;
-    float *     sync;
-
+    float *     torque;
 
     // internal data storage
     std::vector<Keyframe> *     keyframes;
@@ -99,19 +93,21 @@ public:
     bool        reset;
     
     // internals
-    Frame *     prev;
-    float       prevstate;
     float *     prevsign;
     int *       tickCounter;
-    bool *      keyfr;
     int         tick;
-    int         mt;
 
+    // Frame and Keyframe vectors
     std::vector<Keyframe>::iterator * keyframe_iterator;
     std::vector<Frame>::iterator * frame_iterator;
+
+    // State handling
     enum State {eStart=0, eRecording, eProcessing, ePlaying, ePaused, eRecord_Paused, ePlay_Paused, eReady_To_Play};
-    enum Command {eNone=0, eRecord, eProcess, ePlay, eReset};  
     State current_state;
+    
+    // Command handling
+    enum Command {eNone=0, eRecord, eProcess, ePlay, eReset};  
+    float *     command;
 };
 
 #endif

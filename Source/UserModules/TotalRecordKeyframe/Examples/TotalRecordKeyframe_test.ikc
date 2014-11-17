@@ -56,6 +56,15 @@
 			<object class="Button"  title = "Play" module="Command" parameter="data" x="2" y="2"  min="0" max="3"/>
 			<object class="Button"  title = "Reset" module="Command" parameter="data" x="3" y="2"  min="0" max="4"/>
 
+			  <object
+			    class="StepSlider" 
+			    module="TotalRecordKeyframe"
+			    parameter="p"
+			    x="4"
+			    y="0"
+			    steps="4" 
+			  />
+
 		</view>
 
 </group>

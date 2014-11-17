@@ -26,7 +26,7 @@
 		class="TotalRecordKeyframe"
 		name="TotalRecordKeyframe"
 		repeat = "true"
-		debug="true"
+		debug="false"
 		equality_tolerance="1"
 	/>
 
@@ -34,11 +34,12 @@
 
 		<!-- TO dynamixel-->
 		<connection sourcemodule = "TotalRecordKeyframe" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
+		<connection sourcemodule = "TotalRecordKeyframe" source = "TORQUE" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
 
 		<!--To keyframe rec-->
-		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "TotalRecordKeyframe" target = "INPUT" />
-
 		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "COMMAND" />
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "TotalRecordKeyframe" target = "INPUT" />
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_SPEED" targetmodule = "TotalRecordKeyframe" target = "SPEED" />
 
 	<!-- View -->
 		<view>

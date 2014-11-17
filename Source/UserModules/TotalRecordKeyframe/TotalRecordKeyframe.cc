@@ -42,7 +42,7 @@ TotalRecordKeyframe::Init()
     Bind(debug, "debug");
 
     input_array = GetInputArray("INPUT");
-    input_moving_speed = GetInputArray("MOVING_SPEED");
+    input_speed = GetInputArray("SPEED");
     input_array_size = GetInputSize("INPUT");
     command = GetInputArray("COMMAND");
     
@@ -51,6 +51,7 @@ TotalRecordKeyframe::Init()
 
     // Do the same for the outputs
     output = GetOutputArray("OUTPUT");
+    torque = GetOutputArray("TORQUE");
 
     printf("Init outputs set\n");
 
@@ -112,9 +113,9 @@ TotalRecordKeyframe::Tick()
 
       case eStart:
         if(reset){
-            // reset all servos to 180 degrees
-            for(int i = 0; i < input_array_size; i++){
-                output[i] = 180; 
+            for (int i = 0; i < input_array_size; ++i){
+                output[i] = 120;
+                torque[i] = 0.002f;
             }
             printf("Reset to defaults\n");
             reset = false;
@@ -127,6 +128,7 @@ TotalRecordKeyframe::Tick()
             keyframes = new std::vector<Keyframe>[input_array_size];
             frames = new std::vector<Frame>[input_array_size];
             tick=0;  
+            printf("Recording \n");
         }    
         break;
       case eRecording:
@@ -153,17 +155,15 @@ TotalRecordKeyframe::Tick()
         {
             current_state=eStart;
             reset = true;
-        }else if (cmd==ePlay) {
-                current_state = ePlaying;
+        }
+        if (cmd==ePlay) {
+            current_state = ePlaying;
             tick=0;
             for (int i = 0; i < input_array_size; ++i)
                 keyframe_iterator[i] = keyframes[i].begin();
         }
       default:
         break;
-    }
-    if(debug){
-        printf("kfr state after=%i\n", current_state);
     }
 }
 
@@ -174,11 +174,12 @@ TotalRecordKeyframe::Tick()
 void
 TotalRecordKeyframe::record()
 {
+    // TODO maybe add bool variable to determine if recording or not
+    // start recording when moving speed != 0 to avoid alot of frames with speed 0 at start
     for (int i = 0; i < input_array_size; ++i)
     {
-        (frames[i]).push_back(Frame(tick, input_array[i], 0/*input_moving_speed[i]*/));
-        if(debug)
-            printf("stored: %i, %i, %f \n",i, tick, input_array[i]);
+        (frames[i]).push_back(Frame(tick, input_array[i], input_speed[i]));
+        printf("%i : %i : %f : %f \n",i, tick, input_array[i], input_speed[i]);
         // Simply outputs the input
         //output[i] = input_array[i];
     }
@@ -196,6 +197,8 @@ TotalRecordKeyframe::process()
         int index = 1;
         for (index = 1; index < frames[i].size(); ++index)
         {
+            bool key = checkFrame(index, i);
+
             if(frames[i].at(index).moving_speed == 0 && !pauseFrame){
                 pauseFrame = true;
                 tickCounter[i] = 1;
@@ -204,27 +207,29 @@ TotalRecordKeyframe::process()
             if (pauseFrame){
                 if(frames[i].at(index).moving_speed != 0){
                     (keyframes[i]).push_back(Keyframe(1, tickCounter[i], (frames[i]).at(index-1).val));
-                    printf("stored pause: %i, %i, %f \n",tickCounter[i], (frames[i]).at(index).tick, (frames[i]).at(index).val);
+                    printf("%i : %i : %i : %f \n",i, 1, tickCounter[i], (frames[i]).at(index).val);
                     pauseFrame = false;
                 }
             }
 
             if (!pauseFrame){
-                bool key = checkFrame(index, i);
                 if(key){
                     (keyframes[i]).push_back(Keyframe(0, (frames[i]).at(index).tick, (frames[i]).at(index).val));
-                    printf("stored pos: %i, %i, %f \n",index, (frames[i]).at(index).tick, (frames[i]).at(index).val);
+                    printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, (frames[i]).at(index).val);
                 }
             }
 
             tickCounter[i]++;
         }
+        torque[i] = 0.6f;
         printf("End of process %i: last frame: %i, %f index: %i \n", i, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val,index);
         //reset counter for further use
-        tickCounter[i] = 0;
+        tickCounter[i] = -1;
     }
 }
 
+// TODO might need to split the checks for first and last frame or move it into process
+// might be a frame without speed, if recording only startes when movement starts, disregard this
 bool
 TotalRecordKeyframe::checkFrame(int index, int i){
 
@@ -236,7 +241,7 @@ TotalRecordKeyframe::checkFrame(int index, int i){
         currentsign = diff < 0?-1:1;
     }
 
-        // first frame is a keyframe
+    // first frame is a keyframe
     if(index == 1){
         prevsign[i] = currentsign;
         return true;
@@ -258,6 +263,7 @@ TotalRecordKeyframe::checkFrame(int index, int i){
             }
         }
     }
+//    printf("Check Frame: %i, %i, currentsign=%f, prevsign=%f\n",i, tick, currentsign, prevsign[i] );                
     return false;
 }
 
@@ -265,6 +271,7 @@ void
 TotalRecordKeyframe::movingAverage(){
     for (int i = 0; i < input_array_size; ++i)
     {
+        printf("Moving Average for servo: %i \n", i);
 
         float prev = 0;
         float curr = 0;
@@ -295,34 +302,37 @@ TotalRecordKeyframe::movingAverage(){
 void 
 TotalRecordKeyframe::play()
 {
-    // TODO playback with pause keyframes, use tickCounter to determine if next keyframe or not
-    for (int i = 0; i < input_array_size; ++i)
-    {
-        if(keyframe_iterator[i]->type == 1 && tickCounter[i] == 0){
-            tickCounter[i] = keyframe_iterator[i]->tick;
-        }
 
-        // if have reached current keyframe, increment to next 
-        // keyframe and output it
-        //sync[i] = (float)keyframe_iterator[i]->first;
-        output[i] = keyframe_iterator[i]->val;
-        if(tickCounter[i] == 0){
+    for (int i = 0; i < input_array_size; ++i){
+        if(keyframe_iterator[i]->type == 1){
+            if(tickCounter[i] == -1){
+                tickCounter[i] = keyframe_iterator[i]->tick;
+            }else if(tickCounter[i] == 0){
+                tickCounter[i] = -1;
+                keyframe_iterator[i]++;
+            }else{
+                tickCounter[i]--;
+            }
+        }else{
+            output[i] = keyframe_iterator[i]->val;
             if(debug)
                 printf("kfr output i=%i, tick=%i, pos=%f, input=%f\n", i, keyframe_iterator[i]->tick, keyframe_iterator[i]->val, input_array[i]);    
-            if(equal(input_array[i], keyframe_iterator[i]->val, equality_tolerance) 
+            if(equal(input_array[i], keyframe_iterator[i]->val, 1) 
                 && keyframe_iterator[i] != keyframes[i].end())
             {
                 keyframe_iterator[i]++;
                 
             }
-            if(repeat && (keyframe_iterator[i])==keyframes[i].end())
-                keyframe_iterator[i] = keyframes[i].begin();
-        }else{
-            tickCounter--;
         }
+
+        if(repeat && (keyframe_iterator[i])==keyframes[i].end()){
+            keyframe_iterator[i] = keyframes[i].begin();
+            tickCounter[i] = -1;
+        }
+
+
     }
 }
-
 
 // Install the module. This code is executed during start-up.
 
