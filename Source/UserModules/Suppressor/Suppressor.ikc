@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<group name="Suppressor" description="minimal example module">
+
+	<description type="text">
+		Module that can be used suppress spikes in a signal. The module compares the difference between previous input and current, and checks whether this is larger than the given limit. If so, the previous value is given instead of the present. This module is located in the UserModules directory.
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="Suppressor"
+			name="Suppressor"
+			limit = "3.14"
+			debug = "true"
+		/>
+	</example>
+
+	<parameter name="parameter1" type="float" default="7.0" description="The first parameter" />
+	<parameter name="debug" type="bool" default="true" description="Turns on or off debugmode" />
+
+	<input name="INPUT" description="The signal input" />
+	
+	<output name="OUTPUT" description="The output" size_set="INPUT" />
+
+	<module class="Suppressor" />
+
+	<author>
+		<name>Trond Arild Tjöstheim</name>
+		<email>kog13ttj@student.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage></homepage>
+	</author>
+
+   <files>
+   		<file>Suppressor.h</file>
+   		<file>Suppressor.cc</file>
+   		<file>Suppressor.ikc</file>
+   </files>
+
+</group>
+
