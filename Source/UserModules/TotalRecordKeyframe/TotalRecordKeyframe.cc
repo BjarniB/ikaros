@@ -194,7 +194,11 @@ TotalRecordKeyframe::process()
 
         printf("Enter process: %i \n", i);
         bool pauseFrame = false;
-        int index = 1;
+        int index = 2;
+
+        (keyframes[i]).push_back(Keyframe(0, (frames[i]).at(1).tick, (frames[i]).at(1).val));
+        printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(1).tick, (frames[i]).at(1).val);
+
         for (index = 1; index < frames[i].size(); ++index)
         {
             bool key = checkFrame(index, i);
@@ -218,10 +222,14 @@ TotalRecordKeyframe::process()
                     printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, (frames[i]).at(index).val);
                 }
             }
-
             tickCounter[i]++;
         }
+
         torque[i] = 0.6f;
+
+        //Add last keyframe
+        (keyframes[i]).push_back(Keyframe(0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val));
+        printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val);
         printf("End of process %i: last frame: %i, %f index: %i \n", i, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val,index);
         //reset counter for further use
         tickCounter[i] = -1;
@@ -248,9 +256,9 @@ TotalRecordKeyframe::checkFrame(int index, int i){
     }
 
     // last frame is a keyframe
-    if(index == (frames[i].size()-1)){
-        return true;
-    }
+  //  if(index == (frames[i].size()-1)){
+   //     return true;
+   // }
 
     if(index < frames[i].size() && index != 1){
 
@@ -267,11 +275,59 @@ TotalRecordKeyframe::checkFrame(int index, int i){
     return false;
 }
 
+// TODO redo moving average to use 10 on each side, using a new vector to save the averaged values
 void
 TotalRecordKeyframe::movingAverage(){
+
+    for(int i = 0; i < input_array_size; ++i){
+        printf("Moving Average for servo: %i \n", i);
+
+        std::vector<Frame> * raw = frames;
+
+        frames = new std::vector<Frame>[input_array_size];
+        
+        float sum = 0;
+        int count = 0;
+
+        //first value and set every value before it as same
+        int index = 11;
+        for(int j = 1; j < index+10; j++){
+            sum = sum + raw[i].at(j).val;
+            count++;
+        }
+
+        sum = sum / count;
+
+        for(int j = 1; j <= index; j++){
+            frames[i].push_back(Frame(raw[i].at(j).tick, sum, 0));
+        }
+
+        index++;
+
+        //loop through all indexes and sum and count
+        while(index < raw[i].size()-10){
+            sum = 0;
+            count = 0;
+            for(int j = index-10; j <= index+10; j++){
+                sum = sum + raw[i].at(j).val;
+                count++;
+            }
+            frames[i].push_back(Frame(raw[i].at(index).tick, sum, raw[i].at(index).moving_speed));
+            index++;
+        }
+
+        //last value and set every value after it as same
+        for(int j = index; i < raw[i].size(); j++){
+            frames[i].push_back(Frame(raw[i].at(j).tick, sum, raw[i].at(j).moving_speed));
+        }
+
+
+        delete[] raw;
+    }
+
+/*
     for (int i = 0; i < input_array_size; ++i)
     {
-        printf("Moving Average for servo: %i \n", i);
 
         float prev = 0;
         float curr = 0;
@@ -296,6 +352,7 @@ TotalRecordKeyframe::movingAverage(){
             frames[i].at(index).val = (prev + curr + next) / count;
         }
     }
+    */
 }
 
 
