@@ -41,7 +41,6 @@ public:
 
     float *     input_array;
     int         input_array_size;
-    float *     derivative_array;
 
     float *     output_array;
 
