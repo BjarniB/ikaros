@@ -37,44 +37,25 @@ const float cPlayback = 1.f;
 void
 Recorder::Init()
 {
-    // To get the parameters from the IKC file, use the Bind
-    // function for each parameter. The parameters are initialized
-    // from the IKC and can optionally be changed from the
-    // user interface while Ikaros is running. If the parameter is not
-    // set, the default value will be used instead.
     
     Bind(maxlength, "maxlength");
     Bind(repeat, "repeat");
+    Bind(debug, "debug");
     
-    // This is were we get pointers to the inputs and outputs
-
-    // Get a pointer to the input INPUT1 and its size which we set
-    // to 10 above
-    // It does not matter whether a matrix of array is connected
-    // to the inputs. We will treat it an array in this module
-    // anyway.
-
-    
-    // Get pointer to a matrix and treat it as a matrix. If an array is
-    // connected to this input, size_y will be 1.
-
     input_array = GetInputArray("INPUT");
     input_array_size = GetInputSize("INPUT");
-    
-    // size of these should be 1
-    // TODO error if size != 1
-    state = GetInputArray("STATE");
-    sync = GetInputArray("SYNC");
+    command = GetInputArray("COMMAND");
+    sync_in = GetInputArray("SYNC_IN");
 
 
     // Do the same for the outputs
     output_array = GetOutputArray("OUTPUT");
+    sync_out = GetOutputArray("SYNC_OUT");
 
-    recording = create_matrix(input_array_size, maxlength);
+    // cols=maxlength, rows=inputarraysize
+    recording = create_matrix(maxlength, input_array_size);
     tick = 0;
     endtick = 0;
-    prevstate = 0;
-    prevsync = 0;
 }
 
 
@@ -94,49 +75,103 @@ Recorder::~Recorder()
 void
 Recorder::Tick()
 {
-
-    // handle change of state
-    if(state[0] != prevstate)
-    {
-        if(prevstate == cRecording)
-            endtick = tick;
-        
-        tick = 0; 
-        prevstate = state[0];       
+    Command cmd = (Command)command[0];
+    if(debug){
+        printf("rec command=%i state before=%i\n", cmd, current_state);
     }
-
-    if(tick < maxlength)
+    
+    switch(current_state)
     {
-        if(state[0] == cRecording)
-        {
-            // recording
-            for (int i = 0; i < input_array_size; ++i){
-                recording[tick][i] = input_array[i];
-                //printf("recorder store %i, %f\n", i, input_array[i]);
-            }
-        } 
-        else 
-        {
-            if(repeat && tick > endtick)
-                tick = 0;
-            // check if sync has changed
-            if(sync[0]!=prevsync)
+        case eStart:
+            if(cmd==eRecord)
             {
-                if(sync[0]<maxlength)
-                {
-                    tick = (int)sync[0];
-                    prevsync = sync[0];
-                }
+                current_state = eRecording;
+                tick = 0;
             }
-            // playback
-            for (int i = 0; i < input_array_size; ++i)
-                output_array[i] = recording[tick][i];
-        }
+            break;
+        case eRecording:
+            if(cmd==ePause)
+                current_state = eRecord_Paused;
+            else if(cmd==ePlay)
+                Pre_play();
+            else
+                Record();
+            break;
+        case ePlaying:
+            if(cmd==ePause)
+                current_state = ePlay_Paused;
+            else
+                Play();
+            // TODO add parameter to concatenate or overwrite
+            // and enable going back to recording when playing
+            break;
+        case eRecord_Paused:
+            if(cmd==eRecord)
+                current_state = eRecording;
+            else if(cmd==ePlay)
+                Pre_play();
+            break;
+        case ePlay_Paused:
+            if(cmd==ePlay)
+                current_state=ePlaying;
+            break;
+        case eReady_To_Play:
+            if(sync_in[0]==1.f)
+                current_state=ePlaying;
+            break;
+        default:
+            break;
+    }
+    if(debug){
+        printf("rec state after=%i\n", current_state);
+    }
+}
+
+void
+Recorder::Record()
+{
+    for (int i = 0; i < input_array_size; ++i)
+    {
+        recording[i][tick] = input_array[i];
+        if(debug)
+            printf("stored: %i, %i, %f\n", i, tick, input_array[i]);
+    }
+    sync_out[0] = 0.f;
+    tick++;
+}
+
+void
+Recorder::Play()
+{
+    for (int i = 0; i < input_array_size; ++i)
+    {
+        output_array[i] = recording[i][tick];
+        if(debug)
+            printf("rec output %i, %i, %f\n",i, tick, output_array[i] );
+    }
+    
+    if(tick>=endtick)
+    {
+        sync_out[0] = 1.f;
+        if(repeat)
+            tick = 0;
+    }
+    else{
+        sync_out[0] = 0.f;
         tick++;
     }
 }
 
-
+void 
+Recorder::Pre_play()
+{
+    if(sync_in[0] == 1.f)
+        current_state = ePlaying;
+    else
+        current_state = eReady_To_Play;
+    endtick = tick;
+    tick = 0;    
+}
 
 // Install the module. This code is executed during start-up.
 

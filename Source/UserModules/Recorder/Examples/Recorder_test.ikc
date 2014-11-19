@@ -4,7 +4,7 @@
 	
 		<module
 			class = "Constant"
-			name = "State"
+			name = "Command"
 			outputsize  = "1"
 			data  = "0"
 		/>
@@ -19,7 +19,8 @@
 			class = "Recorder"
 			name = "Recorder"
 			maxlength  = "500"
-			repeat  = "true"
+			repeat  = "false"
+			debug="true"
 		/>
 		<module 
 			class = "FunctionGenerator" 
@@ -33,8 +34,8 @@
 		
 
         <connection sourcemodule = "FunctionGenerator" source = "OUTPUT" targetmodule = "Recorder" target = "INPUT" />
-        <connection sourcemodule = "State" source = "OUTPUT" targetmodule = "Recorder" target = "STATE" />
-        <connection sourcemodule = "Sync" source = "OUTPUT" targetmodule = "Recorder" target = "SYNC" />
+        <connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "Recorder" target = "COMMAND" />
+        <connection sourcemodule = "Sync" source = "OUTPUT" targetmodule = "Recorder" target = "SYNC_IN" />
 
 		<view name="View">
 			<object class="Plot " 
@@ -47,13 +48,32 @@
 			<object class="Plot " 
 				module="Recorder" 
 				source="OUTPUT" 
-				x="0" y="2" w="2" h="2"
+				x="2" y="0" w="2" h="2"
 				min="0"
 				max="1"
 				color="red"
 			/>
-			<object class="Switch"  module="State" parameter="data" x="2" y="0"  />
-			<object class="Slider"  module="Sync" parameter="data" x="3" y="0" min="0" max="10" />
+			<object class="Plot " 
+				module="Recorder" 
+				source="SYNC_OUT" 
+				x="4" y="0" w="2" h="2"
+				min="0"
+				max="1"
+				color="red"
+			/>
+			<object class="Button"  module="Command" parameter="data" x="0" y="2"  title="Record" max="1"/>
+			<object class="Button"  module="Command" parameter="data" x="1" y="2"  title="Play" max="2"/>
+			<object class="Button"  module="Command" parameter="data" x="2" y="2"  title="Pause" max="3"/>
+			<!--object class="StepSlider"  module="Sync" parameter="data" x="3" y="2" min="0" max="1" steps="1" /-->
+			<object class="Switch"  module="Sync" parameter="data" x="3" y="2" />
+			<object
+			   class="Grid"
+			   module="Recorder"
+			   source="SYNC_OUT"
+			   x="0"
+			   y="3"
+			   color="red, green"
+			/>
 		</view>
 
 </group>

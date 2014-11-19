@@ -36,16 +36,17 @@ public:
     void 		Init();
     void 		Tick();
 
-    // pointers to inputs and outputs
-    // and integers to represent their sizes
-
+    void Record();
+    void Play();
+    void Pre_play();
     
     float *     input_array;
     int         input_array_size;
-    float *     state;
-    float *     sync;
+    float *     command;
+    float *     sync_in;
     
     float *     output_array;
+    float *     sync_out;
     
     // internal data storage
 
@@ -56,11 +57,14 @@ public:
 
     float       maxlength;
     bool        repeat;
+    bool        debug;
 
     int         tick;
     int         endtick;
-    float       prevsync;
-    float       prevstate;
+
+    enum State {eStart=0, eRecording, ePlaying, eRecord_Paused, ePlay_Paused, eReady_To_Play};
+    enum Command {eNone=0, eRecord, ePlay, ePause};  
+    State       current_state;
     
 };
 

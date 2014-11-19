@@ -30,7 +30,7 @@
 			class="Recorder"
 			name="Recorder"
 			maxlength = "500"
-			repeat = "true"
+			repeat = "false"
 		/>
 
 		<module
@@ -40,7 +40,7 @@
 		/>
 		<module
 			class = "Constant"
-			name = "State"
+			name = "Command"
 			outputsize  = "1"
 			data  = "0"
 		/>
@@ -53,14 +53,15 @@
 		<module class = "Abs" name = "Abs" />
 		<module class = "Constant" name = "NoTorque" outputsize = "10" data = "0 0 0 0 0 0 0 0 0" />	
 		<module class = "Max" name = "Max" />
+
 		<!-- connections -->
 		
 		<connection sourcemodule  = "Dynamixel" source  = "FEEDBACK_PRESENT_POSITION" targetmodule	 = "Differentiator" target  = "INPUT" />
 		<connection sourcemodule  = "Differentiator" source  = "OUTPUT" targetmodule	 = "Abs" target  = "INPUT" />
 		<connection sourcemodule  = "Abs" source  = "OUTPUT" targetmodule	 = "Recorder" target  = "INPUT" />
 		
-		<connection sourcemodule = "State" source = "OUTPUT" targetmodule = "Recorder" target = "STATE" />
-     <connection sourcemodule = "Sync" source = "OUTPUT" targetmodule = "Recorder" target = "SYNC" />
+		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "Recorder" target = "STATE" />
+     <connection sourcemodule = "Sync" source = "OUTPUT" targetmodule = "Recorder" target = "SYNC_IN" />
 
      <!-- Make toqque null until playback-->
      <connection sourcemodule = "Recorder" source = "OUTPUT" targetmodule = "Max" target = "INPUT1" />
@@ -80,13 +81,16 @@
 			<object class="Plot " 
 				module="Recorder" 
 				source="OUTPUT" 
-				x="0" y="2" w="2" h="2"
+				x="2" y="0" w="2" h="2"
 				min="0"
 				max="2"
 				color="red"
 			/>
-			<object class="Switch"  module="State" parameter="data" x="2" y="0"  />
-			<object class="Slider"  module="Sync" parameter="data" x="3" y="0" min="0" max="10" />  
+			<object class="Button"  module="Command" parameter="data" x="0" y="2"  title="Record" max="1"/>
+			<object class="Button"  module="Command" parameter="data" x="1" y="2"  title="Play" max="2"/>
+			<object class="Button"  module="Command" parameter="data" x="2" y="2"  title="Pause" max="3"/>
+			<!--object class="StepSlider"  module="Sync" parameter="data" x="3" y="2" min="0" max="1" steps="1" /-->
+			<object class="Switch"  module="Sync" parameter="data" x="3" y="2" />
 			
 	   	<!--<object
 		      class="Switch"
