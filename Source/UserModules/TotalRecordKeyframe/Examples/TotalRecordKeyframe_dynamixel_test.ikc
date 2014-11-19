@@ -27,7 +27,17 @@
 		name="TotalRecordKeyframe"
 		repeat = "true"
 		debug="false"
-		equality_tolerance="1"
+	/>
+
+	<module
+		class = "MovingAverage"
+		name = "MovingAverage"
+		buffer_length = "20"
+	/>
+
+	<module
+		class="Differentiator"
+		name="Differentiator"
 	/>
 
 	<!--Connections-->	
@@ -39,7 +49,12 @@
 		<!--To keyframe rec-->
 		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "COMMAND" />
 		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "TotalRecordKeyframe" target = "INPUT" />
-		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_SPEED" targetmodule = "TotalRecordKeyframe" target = "SPEED" />
+		<connection sourcemodule = "Differentiator" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "SPEED" />
+
+		<!--To Differentiator-->
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "MovingAverage" target = "INPUT" />
+
+		<connection sourcemodule = "MovingAverage" source = "OUTPUT" targetmodule = "Differentiator" target = "INPUT" />
 
 	<!-- View -->
 		<view>
@@ -57,6 +72,15 @@
 			min="0"
 			max="360"
 		/>
+
+		<object class="Plot " 
+			module="Dynamixel"
+			source="FEEDBACK_PRESENT_SPEED" 
+			x="2" y="0" w="2" h="2"
+			min="-1"
+			max="1"
+		/>
+
 
 		<object class="Button"  title = "Record" module="Command" parameter="data" x="0" y="2"  min="0" max="1"/>
 		<object class="Button"  title ="Process" module="Command" parameter="data" x="1" y="2" min="0" max="2"  />

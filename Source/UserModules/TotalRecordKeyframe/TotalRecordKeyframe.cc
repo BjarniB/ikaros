@@ -38,7 +38,6 @@ TotalRecordKeyframe::Init()
 {
  
     Bind(repeat, "repeat");
-    Bind(equality_tolerance, "equality_tolerance");
     Bind(debug, "debug");
 
     input_array = GetInputArray("INPUT");
@@ -78,6 +77,8 @@ TotalRecordKeyframe::Init()
 
     reset = true;
 
+    equality_tolerance = 0.2;
+
     printf("Init done \n");
 }
 
@@ -104,9 +105,6 @@ TotalRecordKeyframe::Tick()
 {
    
     Command cmd = (Command)command[0];
-    if(debug){
-        printf("kfr command=%i state before=%i\n", cmd, current_state);
-    }
 
     switch(current_state)
     {
@@ -159,8 +157,9 @@ TotalRecordKeyframe::Tick()
         if (cmd==ePlay) {
             current_state = ePlaying;
             tick=0;
-            for (int i = 0; i < input_array_size; ++i)
+            for (int i = 0; i < input_array_size; ++i){
                 keyframe_iterator[i] = keyframes[i].begin();
+            }
         }
       default:
         break;
@@ -186,105 +185,94 @@ TotalRecordKeyframe::record()
     tick++;
 }
 
+
 void
 TotalRecordKeyframe::process()
 {
-    // TODO test pause frames
     for(int i = 0; i < input_array_size; ++i){
-
         printf("Enter process: %i \n", i);
         bool pauseFrame = false;
-        int index = 2;
+        int type;
+        int index = 0;
 
-        (keyframes[i]).push_back(Keyframe(0, (frames[i]).at(1).tick, (frames[i]).at(1).val));
-        printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(1).tick, (frames[i]).at(1).val);
+        // First keyframe
+        Keyframe prev = Keyframe(0, (frames[i]).at(index).tick, frames[i].at(index).val);
+        (keyframes[i]).push_back(prev);
+        printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, (frames[i]).at(index).val);
+        
+        for(index = 1; index < frames[i].size(); index++){
+            
+            int key = checkFrame(index,i);
 
-        for (index = 1; index < frames[i].size(); ++index)
-        {
-            bool key = checkFrame(index, i);
-
-            if(frames[i].at(index).moving_speed == 0 && !pauseFrame){
-                pauseFrame = true;
-                tickCounter[i] = 1;
-            }
-
-            if (pauseFrame){
-                if(frames[i].at(index).moving_speed != 0){
-                    (keyframes[i]).push_back(Keyframe(1, tickCounter[i], (frames[i]).at(index-1).val));
-                    printf("%i : %i : %i : %f \n",i, 1, tickCounter[i], (frames[i]).at(index).val);
-                    pauseFrame = false;
+            if(key == 1){
+                if(!pauseFrame){
+                    pauseFrame = true;
+                    tickCounter[i] = 1;
+                }else{
+                    tickCounter[i]++;
                 }
-            }
-
-            if (!pauseFrame){
-                if(key){
-                    (keyframes[i]).push_back(Keyframe(0, (frames[i]).at(index).tick, (frames[i]).at(index).val));
+            }else if (key == 0){
+                if(pauseFrame){
+                    keyframes[i].push_back(Keyframe(1, tickCounter[i], prev.val));
+                    printf("%i : %i : %i : %f \n",i, 1, tickCounter[i], prev.val);
+                
+                    keyframes[i].push_back(Keyframe(0, frames[i].at(index).tick, prev.val));
+                    printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, prev.val);
+                    pauseFrame = false;
+                }else{
+                    keyframes[i].push_back(Keyframe(0, frames[i].at(index).tick, frames[i].at(index).val));
                     printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, (frames[i]).at(index).val);
                 }
             }
-            tickCounter[i]++;
         }
-
-        torque[i] = 0.6f;
-
-        //Add last keyframe
+        
+        // Last keyframe
         (keyframes[i]).push_back(Keyframe(0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val));
         printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val);
         printf("End of process %i: last frame: %i, %f index: %i \n", i, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val,index);
+        
         //reset counter for further use
-        tickCounter[i] = -1;
+        tickCounter[i] = 1;
+        //set torque for playback
+        torque[i] = 0.6f;
     }
 }
 
-// TODO might need to split the checks for first and last frame or move it into process
-// might be a frame without speed, if recording only startes when movement starts, disregard this
-bool
+
+int
 TotalRecordKeyframe::checkFrame(int index, int i){
 
     float currentsign = prevsign[i];
+    int ret = -1;
 
-    if(index < frames[i].size()-1){
-        // derivative
-        float diff = frames[i].at(index+1).val - frames[i].at(index).val; 
-        currentsign = diff < 0?-1:1;
-    }
+    if(index < frames[i].size()){
+        if(!equal(frames[i].at(index).moving_speed, 0, equality_tolerance)){
+            currentsign = frames[i].at(index).moving_speed < 0?-1:1;
+            equality_tolerance = 0;
+        }else{
+            ret = 1;
+            equality_tolerance = 0.2;
+        }
 
-    // first frame is a keyframe
-    if(index == 1){
-        prevsign[i] = currentsign;
-        return true;
-    }
-
-    // last frame is a keyframe
-  //  if(index == (frames[i].size()-1)){
-   //     return true;
-   // }
-
-    if(index < frames[i].size() && index != 1){
-
-        if(currentsign != prevsign[i]) {
-            if(prevsign[i]!=0) {
-                prevsign[i] = currentsign;
-                return true;
-                if(debug)
-                    printf("stored: %i, %i, %f currentsign=%f, prevsign=%f\n",i, tick, input_array[i], currentsign, prevsign[i] );                
-            }
+        if (currentsign != prevsign[i]){
+            ret = 0;
         }
     }
-//    printf("Check Frame: %i, %i, currentsign=%f, prevsign=%f\n",i, tick, currentsign, prevsign[i] );                
-    return false;
+
+    //printf("Check Frame: %i, %i, currentsign=%f, prevsign=%f\n",i, tick, currentsign, prevsign[i] );                
+    prevsign[i] = currentsign;
+    return ret;
 }
 
-// TODO redo moving average to use 10 on each side, using a new vector to save the averaged values
+
 void
 TotalRecordKeyframe::movingAverage(){
 
+    std::vector<Frame> * raw = frames;
+    frames = new std::vector<Frame>[input_array_size];
+
     for(int i = 0; i < input_array_size; ++i){
         printf("Moving Average for servo: %i \n", i);
-
-        std::vector<Frame> * raw = frames;
-
-        frames = new std::vector<Frame>[input_array_size];
         
         float sum = 0;
         int count = 0;
@@ -299,9 +287,9 @@ TotalRecordKeyframe::movingAverage(){
         sum = sum / count;
 
         for(int j = 1; j <= index; j++){
-            frames[i].push_back(Frame(raw[i].at(j).tick, sum, 0));
+            frames[i].push_back(Frame(raw[i].at(j).tick, sum, raw[i].at(j).moving_speed));
+            printf("ma stored servo: %i, tick: %i, sum: %f, speed: %f \n", i, raw[i].at(j).tick, sum,raw[i].at(j).moving_speed);
         }
-
         index++;
 
         //loop through all indexes and sum and count
@@ -312,18 +300,21 @@ TotalRecordKeyframe::movingAverage(){
                 sum = sum + raw[i].at(j).val;
                 count++;
             }
+
+            sum = sum / count;
+            
             frames[i].push_back(Frame(raw[i].at(index).tick, sum, raw[i].at(index).moving_speed));
+            printf("ma stored servo: %i, index: %i tick: %i, sum: %f speed: %f \n", i, index, raw[i].at(index).tick, sum,raw[i].at(index).moving_speed);
             index++;
         }
 
         //last value and set every value after it as same
-        for(int j = index; i < raw[i].size(); j++){
+        for(int j = index; j < raw[i].size()-1; j++){
             frames[i].push_back(Frame(raw[i].at(j).tick, sum, raw[i].at(j).moving_speed));
+            printf("ma stored servo: %i, tick: %i, sum: %f speed: %f \n", i, raw[i].at(j).tick, sum, raw[i].at(j).moving_speed);
         }
-
-
-        delete[] raw;
     }
+    delete[] raw;
 
 /*
     for (int i = 0; i < input_array_size; ++i)
@@ -359,6 +350,13 @@ TotalRecordKeyframe::movingAverage(){
 void 
 TotalRecordKeyframe::play()
 {
+    bool reset = true;
+    for(int i = 0; i < input_array_size; ++i){
+        if(keyframe_iterator[i] != keyframes[i].end()){
+            reset = false;
+            break;
+        }
+    }
 
     for (int i = 0; i < input_array_size; ++i){
         if(keyframe_iterator[i]->type == 1){
@@ -372,8 +370,6 @@ TotalRecordKeyframe::play()
             }
         }else{
             output[i] = keyframe_iterator[i]->val;
-            if(debug)
-                printf("kfr output i=%i, tick=%i, pos=%f, input=%f\n", i, keyframe_iterator[i]->tick, keyframe_iterator[i]->val, input_array[i]);    
             if(equal(input_array[i], keyframe_iterator[i]->val, 1) 
                 && keyframe_iterator[i] != keyframes[i].end())
             {
@@ -381,12 +377,12 @@ TotalRecordKeyframe::play()
                 
             }
         }
-
-        if(repeat && (keyframe_iterator[i])==keyframes[i].end()){
-            keyframe_iterator[i] = keyframes[i].begin();
-            tickCounter[i] = -1;
+        if(reset){
+            if(repeat && (keyframe_iterator[i])==keyframes[i].end()){
+                keyframe_iterator[i] = keyframes[i].begin();
+                tickCounter[i] = -1;
+            }
         }
-
 
     }
 }

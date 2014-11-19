@@ -69,7 +69,7 @@ public:
     void record();
     void process();
     void play();
-    bool checkFrame(int index, int i);
+    int checkFrame(int index, int i); // -1 not a keyframe, 0 pos frame, 1 pause frame
     void movingAverage();
     void printFrames();
     // pointers to inputs and outputs
