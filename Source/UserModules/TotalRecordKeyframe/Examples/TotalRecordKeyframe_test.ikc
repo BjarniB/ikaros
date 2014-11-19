@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<group title="TotalRecordKeyframe Example">
+	
+		<module
+			class = "TotalRecordKeyframe"
+			name = "TotalRecordKeyframe"
+			repeat = "true"
+			command = "1"
+			debug = "false"
+		/>
+
+		<module
+        class       =   "FunctionGenerator"
+        name        =   "Pos"
+        type        =   "sin"
+        frequency   =   "0.00614"
+        offset      =   "1"
+        amplitude   =   "1"
+        shift       =   "0.0"
+	   	/>
+
+	   	<module
+			class = "Constant"
+			name = "Command"
+			outputsize  = "1"
+			data  = "0"
+		/>
+
+        <connection sourcemodule = "Pos" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "INPUT" />
+		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "COMMAND" />
+
+
+		<view name="View">
+
+			<object class="Plot " 
+				module="Pos" 
+				source="OUTPUT" 
+				x="0" y="0" w="2" h="2"
+				min="0"
+				max="2"
+				color="red"
+			/>
+
+			<object class="Plot " 
+				module="TotalRecordKeyframe" 
+				source="OUTPUT" 
+				x="2" y="0" w="2" h="2"
+				min="0"
+				max="2"
+				color="green"
+			/>
+
+			<object class="Button"  title = "Record" module="Command" parameter="data" x="0" y="2"  min="0" max="1"/>
+			<object class="Button"  title ="Process" module="Command" parameter="data" x="1" y="2" min="0" max="2"  />
+			<object class="Button"  title = "Play" module="Command" parameter="data" x="2" y="2"  min="0" max="3"/>
+			<object class="Button"  title = "Reset" module="Command" parameter="data" x="3" y="2"  min="0" max="4"/>
+
+			  <object
+			    class="StepSlider" 
+			    module="TotalRecordKeyframe"
+			    parameter="p"
+			    x="4"
+			    y="0"
+			    steps="4" 
+			  />
+
+		</view>
+
+</group>
+ 
