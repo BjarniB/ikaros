@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<group title="Example">
+	<!-- Modules -->
+	<module
+  	class = "Dynamixel"
+	  name = "Dynamixel"
+	  device  = "/dev/cu.usbserial-A600cUuc"
+	  servo_id = "1 2 3"
+	  index_mode = "indirect"
+	  printf_info ="none"
+	  use_feedback ="true"
+	  baud_rate = "1000000"
+	  angle_unit = "degrees"
+	/>
+
+	<module
+		class = "Recorder"
+		name = "Recorder"
+		maxlength  = "500"
+		repeat  = "false"
+		debug="true"
+	/>
+	<module
+		class = "Constant"
+		name = "Command"
+		outputsize  = "1"
+		data  = "0"
+	/>
+	<module
+		class = "Constant"
+		name = "Torque"
+		outputsize  = "1"
+		data  = "0"
+	/>
+	<module
+		class = "Constant"
+		name = "Sync"
+		outputsize  = "1"
+		data  = "1"
+	/>
+	<module
+		class = "Scale"
+		name = "TorqueScale"
+		factor = "0.7"
+	/>
+	<!--Connections-->	
+		<!--To dynamixel-->
+		<connection sourcemodule = "Recorder" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
+		<connection sourcemodule = "Recorder" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
+		<connection sourcemodule = "Recorder" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+
+		<!--To recorder-->	
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "Recorder" target = "INPUT" />
+		<connection sourcemodule = "Sync" source = "OUTPUT" targetmodule = "Recorder" target = "SYNC_IN" />
+		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "Recorder" target = "COMMAND" />
+
+		<connection sourcemodule = "Torque" source = "OUTPUT" targetmodule = "TorqueScale" target = "INPUT" />
+
+
+	<!-- View -->
+		<view>
+			<object class="Plot " 
+				module="Dynamixel" 
+				source="FEEDBACK_PRESENT_POSITION" 
+				x="0" y="0" w="1" h="1"
+				min="0"
+				max="360"
+				select="0,1,2"
+				color="red,green,blue"
+			/>
+			<object class="Plot " 
+				module="Recorder" 
+				source="OUTPUT" 
+				x="1" y="0" w="1" h="1"
+				min="0"
+				max="360"
+				select="0,1,2"
+				color="red,green,blue"
+			/>
+			
+
+			<object class="Button"  module="Command" parameter="data" x="0" y="2"  title="Record" max="1"/>
+			<object class="Button"  module="Command" parameter="data" x="1" y="2"  title="Play" max="2"/>
+			<object class="Button"  module="Command" parameter="data" x="2" y="2"  title="Pause" max="3"/>
+			<!--object class="StepSlider"  module="Sync" parameter="data" x="3" y="2" min="0" max="1" steps="1" /-->
+			<object class="Switch"  module="Torque" parameter="data" x="0" y="3" />
+			
+		</view>
+
+</group>
