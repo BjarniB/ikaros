@@ -62,8 +62,8 @@ public:
     int         tick;
     int         endtick;
 
-    enum State {eStart=0, eRecording, ePlaying, eRecord_Paused, ePlay_Paused, eReady_To_Play};
-    enum Command {eNone=0, eRecord, ePlay, ePause};  
+    enum State {eStart=0, eRecording, eProcessing, ePlaying, eRecord_Paused, ePlay_Paused, eReady_To_Play};
+    enum Command {eNone=0, eRecord, eProcess, ePlay, ePause};  
     State       current_state;
     
 };

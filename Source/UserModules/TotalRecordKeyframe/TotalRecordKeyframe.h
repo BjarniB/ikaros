@@ -72,11 +72,15 @@ public:
     int checkFrame(int index, int i); // -1 not a keyframe, 0 pos frame, 1 pause frame
     void movingAverage();
     void printFrames();
+    void pre_play();
+    void Reset();
     // pointers to inputs and outputs
     // and integers to represent their sizes
     float *     input_array;
     float *     input_speed;
     int         input_array_size;
+    float *     sync_in;
+    float *     sync_out;
 
     // outputs
     float *     output;
@@ -106,7 +110,7 @@ public:
     State current_state;
     
     // Command handling
-    enum Command {eNone=0, eRecord, eProcess, ePlay, eReset};  
+    enum Command {eNone=0, eRecord, eProcess, ePlay, ePause};  
     float *     command;
 };
 

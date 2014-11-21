@@ -22,9 +22,11 @@
 	<input name="INPUT" description="Position data input" />
 	<input name="COMMAND" description="1 record, 2 playback, 3 pause" />
 	<input name="SPEED" description="Feedback speed" />
+	<input name="SYNC_IN" description="Sync in signal" />
 
 	<output name="OUTPUT" description="Position output" size_set="INPUT" />
 	<output name="TORQUE" description="Torque limit output" size_set="INPUT" />
+	<output name="SYNC_OUT" description="Sync out signal" size_set="INPUT" />
 
 	<module class="TotalRecordKeyframe" />
 

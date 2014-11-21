@@ -44,6 +44,7 @@ TotalRecordKeyframe::Init()
     input_speed = GetInputArray("SPEED");
     input_array_size = GetInputSize("INPUT");
     command = GetInputArray("COMMAND");
+    sync_in = GetInputArray("SYNC_IN");
     
     printf("Init inputs set\n");
 
@@ -51,6 +52,7 @@ TotalRecordKeyframe::Init()
     // Do the same for the outputs
     output = GetOutputArray("OUTPUT");
     torque = GetOutputArray("TORQUE");
+    sync_out = GetOutputArray("SYNC_OUT");
 
     printf("Init outputs set\n");
 
@@ -75,7 +77,7 @@ TotalRecordKeyframe::Init()
 
     current_state = eStart;
 
-    reset = true;
+    reset = false;
 
     equality_tolerance = 0.2;
 
@@ -106,13 +108,80 @@ TotalRecordKeyframe::Tick()
    
     Command cmd = (Command)command[0];
 
+    if(current_state == eStart){
+        for(int i = 0; i < input_array_size; ++i){
+            output[i] = input_array[i];
+            //printf("Set servo %i pos %f \n", i, input_array[i]);
+        }
+    }
+
+    switch(current_state){
+        case eStart:
+            if(cmd==eRecord)
+            {       
+                current_state=eRecording;
+                delete[] frames;
+                delete[] keyframes;
+                keyframes = new std::vector<Keyframe>[input_array_size];
+                frames = new std::vector<Frame>[input_array_size];
+                tick=0;  
+                printf("Recording \n");
+            }    
+            break;
+        case eRecording:
+            if(cmd == ePause){
+                current_state = eRecord_Paused;
+            }else if(cmd == eProcess){
+                current_state=eProcessing;
+            }else{
+                record();
+            }
+            break;
+        case eProcessing:
+            movingAverage();
+            process();
+            current_state = eRecord_Paused;
+            command[0] = ePause;
+            break;
+        case ePlaying:
+            if(cmd == ePause){
+                current_state=ePlay_Paused;
+            }else{
+                sync_out[0] = 0.0;
+                play();
+            }
+            break;
+        case eRecord_Paused:
+            if(cmd == eProcess){
+                current_state = eProcessing;
+            }else if (cmd == ePlay){
+                current_state = eReady_To_Play;
+            }else if (cmd == eRecord){
+                current_state = eRecording;
+            }
+            break;
+        case ePlay_Paused:
+            if (cmd = ePlay){
+                current_state = eReady_To_Play;
+                sync_out[0] = 0.0f;
+            }
+            break;
+        case eReady_To_Play:
+            if(!reset)
+                Reset();
+            pre_play();
+        default:
+            break;
+    }
+
+/*
     switch(current_state)
     {
 
       case eStart:
         if(reset){
             for (int i = 0; i < input_array_size; ++i){
-                output[i] = 120;
+                output[i] = input[i];
                 torque[i] = 0.002f;
             }
             printf("Reset to defaults\n");
@@ -142,7 +211,7 @@ TotalRecordKeyframe::Tick()
         current_state=ePaused;
         break;
       case ePlaying:
-        if(cmd==eReset){
+        if(cmd==ePause){
             current_state=ePaused;
         }else{
             play();
@@ -163,7 +232,7 @@ TotalRecordKeyframe::Tick()
         }
       default:
         break;
-    }
+    }*/
 }
 
 
@@ -185,6 +254,34 @@ TotalRecordKeyframe::record()
     tick++;
 }
 
+/**
+*   Set all start positions and send out sync signal
+*/
+void
+TotalRecordKeyframe::pre_play(){
+    bool start = true;
+    for(int i = 0; i < input_array_size; ++i){
+        if(!equal(input_array[i], keyframe_iterator[i]->val, 1.0)){
+            start = false;
+            break;
+        }
+    }
+    if(start){
+        current_state=ePlaying;
+        sync_out[0] = 1.0f;
+        reset = false;
+    }
+}
+
+void
+TotalRecordKeyframe::Reset(){
+    printf("Keyframes reset\n");
+    for (int i = 0; i < input_array_size; ++i){
+        keyframe_iterator[i] = keyframes[i].begin();
+        output[i] = keyframe_iterator[i]->val;
+    }
+    reset = true;
+}
 
 void
 TotalRecordKeyframe::process()
@@ -233,9 +330,10 @@ TotalRecordKeyframe::process()
         
         //reset counter for further use
         tickCounter[i] = 1;
+
         //set torque for playback
-        torque[i] = 0.6f;
     }
+        set_array(torque,0.6f,input_array_size);
 }
 
 
@@ -350,10 +448,10 @@ TotalRecordKeyframe::movingAverage(){
 void 
 TotalRecordKeyframe::play()
 {
-    bool reset = true;
+    bool end = true;
     for(int i = 0; i < input_array_size; ++i){
         if(keyframe_iterator[i] != keyframes[i].end()){
-            reset = false;
+            end = false;
             break;
         }
     }
@@ -377,9 +475,9 @@ TotalRecordKeyframe::play()
                 
             }
         }
-        if(reset){
+        if(end){
             if(repeat && (keyframe_iterator[i])==keyframes[i].end()){
-                keyframe_iterator[i] = keyframes[i].begin();
+                current_state = eReady_To_Play;
                 tickCounter[i] = -1;
             }
         }

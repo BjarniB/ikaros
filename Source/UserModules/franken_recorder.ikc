@@ -11,6 +11,15 @@
 	/>
 
 	<module
+		class = "Scale"
+			name = "Scale"
+			factor = "0.09"
+		/>
+
+
+
+
+	<module
 	  class = "Dynamixel"
 	  name = "Dynamixel"
 	  device  = "/dev/ttyUSB0"
@@ -29,6 +38,13 @@
 	/>
 
 	<module
+		class="Recorder"
+		name="Recorder"
+		repeat="true"
+		debug="true"
+	/>
+
+	<module
 		class = "MovingAverage"
 		name = "MovingAverage"
 		buffer_length = "20"
@@ -44,16 +60,28 @@
 		<!-- TO dynamixel-->
 		<connection sourcemodule = "TotalRecordKeyframe" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
 		<connection sourcemodule = "TotalRecordKeyframe" source = "TORQUE" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<conenction sourcemodule = "Scale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+
 
 		<!--To keyframe rec-->
 		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "COMMAND" />
 		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "TotalRecordKeyframe" target = "INPUT" />
 		<connection sourcemodule = "Differentiator" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "SPEED" />
+		<connection sourcemodule = "Recorder" source = "SYNC_OUT" targetmodule = "TotalRecordKeyframe" target = "SYNC_IN" />
 
-		<!--To Differentiator-->
+		<!-- To Recorder -->
+		<connection sourcemodule = "Differentiator" source = "OUTPUT" targetmodule = "Recorder" target = "INPUT" />
+		<connection sourcemodule = "TotalRecordKeyframe" source = "SYNC_OUT" targetmodule = "Recorder" target = "SYNC_IN" />
+		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "Recorder" target = "COMMAND" />
+
+		<!-- To MovingAverage-->
 		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "MovingAverage" target = "INPUT" />
 
+		<!--To Differentiator-->
 		<connection sourcemodule = "MovingAverage" source = "OUTPUT" targetmodule = "Differentiator" target = "INPUT" />
+
+		<!-- To scale  -->	
+		<connection sourcemodule = "Recorder" source = "OUTPUT" targetmodule = "Scale" target = "INPUT" />
 
 	<!-- View -->
 		<view>
@@ -63,29 +91,65 @@
 			x="0" y="0" w="1" h="1"
 			min="0"
 			max="360"
+			select = "0, 1, 2, 3"
+			color="red,green,blue,yellow"
 		/>
-		<object class="Plot " 
-			module="TotalRecordKeyframe" 
-			source="OUTPUT" 
-			x="1" y="0" w="1" h="1"
-			min="0"
-			max="360"
-		/>
-
+		
 		<object class="Plot " 
 			module="Dynamixel"
 			source="FEEDBACK_PRESENT_SPEED" 
-			x="2" y="0" w="2" h="2"
+			x="1" y="0" w="1" h="1"
+			min="-0.5"
+			max="0.5"
+						select = "0, 1, 2, 3"
+			color="red,green,blue,yellow"
+		/>
+
+		<object class="Plot " 
+			module="TotalRecordKeyframe" 
+			source="OUTPUT" 
+			x="0" y="1" w="1" h="1"
+			min="0"
+			max="360"
+			select = "0, 1, 2, 3"
+			color="red,green,blue,yellow"
+		/>
+
+		<object class="Plot"
+			module="TotalRecordKeyframe"
+			source="TORQUE"
+			x="1" y="1" w="1" h="1"
+			min="0"
+			max="1"
+						select = "0, 1, 2, 3"
+			color="red,green,blue,yellow"
+		/>
+
+		<object class="Plot"
+			module="Scale"
+			source="OUTPUT"
+			x="2" y="0" w="1" h="1"
+			min="-0.5"
+			max="0.5"
+						select = "0, 1, 2, 3"
+			color="red,green,blue,yellow"
+		/>
+
+		<object class="Plot"
+			module="Recorder"
+			source="OUTPUT"
+			x="3" y="0" w="1" h="1"
 			min="-1"
 			max="1"
+						select = "0, 1, 2, 3"
+			color="red,green,blue,yellow"
 		/>
 
 
-		<object class="Button"  title = "Record" module="Command" parameter="data" x="0" y="2"  min="0" max="1"/>
+		<object class="Button"  title = "Record" module="Command" parameter="data" x="0" y="2"  min="0" max="1" />
 		<object class="Button"  title ="Process" module="Command" parameter="data" x="1" y="2" min="0" max="2"  />
 		<object class="Button"  title = "Play" module="Command" parameter="data" x="2" y="2"  min="0" max="3"/>
-		<object class="Button"  title = "Reset" module="Command" parameter="data" x="3" y="2"  min="0" max="4"/>
-
+		<object class="Button"  title = "Pause" module="Command" parameter="data" x="3" y="2"  min="0" max="4"/>
 		</view>
 
 </group>

@@ -97,6 +97,9 @@ Recorder::Tick()
             else
                 Record();
             break;
+        case eProcessing:
+            current_state=eRecord_Paused;
+            break;
         case ePlaying:
             if(cmd==ePause)
                 current_state = ePlay_Paused;
@@ -108,8 +111,9 @@ Recorder::Tick()
         case eRecord_Paused:
             if(cmd==eRecord)
                 current_state = eRecording;
-            else if(cmd==ePlay)
+            else if(cmd==ePlay){
                 Pre_play();
+            }
             break;
         case ePlay_Paused:
             if(cmd==ePlay)
@@ -153,8 +157,10 @@ Recorder::Play()
     if(tick>=endtick)
     {
         sync_out[0] = 1.f;
-        if(repeat)
+        if(repeat){
             tick = 0;
+            current_state = eReady_To_Play;
+        }
     }
     else{
         sync_out[0] = 0.f;
