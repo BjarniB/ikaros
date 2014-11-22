@@ -46,6 +46,7 @@ TotalRecordKeyframe::Init()
     input_array_size = GetInputSize("INPUT");
     command = GetInputArray("COMMAND");
     sync_in = GetInputArray("SYNC_IN");
+    trigger = GetInputArray("TRIGGER");
     
     printf("Init inputs set\n");
 
@@ -74,6 +75,9 @@ TotalRecordKeyframe::Init()
     prevsign = new float[input_array_size];
     reset_array(prevsign, input_array_size);
 
+    prevtrigger = new float[input_array_size];
+    set_array(prevtrigger, -1.f, input_array_size);
+
     tickCounter = new int[input_array_size];
 
     current_state = eStart;
@@ -96,6 +100,7 @@ TotalRecordKeyframe::~TotalRecordKeyframe()
     delete[] tickCounter;
     delete[] frames;
     delete[] frame_iterator;
+    delete[] prevtrigger;
     // Do NOT destroy data structures that you got from the
     // kernel with GetInputArray, GetInputMatrix etc.
     printf("Frames Stored: %i \n", tick);
@@ -262,7 +267,7 @@ void
 TotalRecordKeyframe::pre_play(){
     bool start = true;
     for(int i = 0; i < input_array_size; ++i){
-        if(!equal(input_array[i], keyframe_iterator[i]->val, 1.0)){
+        if(!equal(input_array[i], keyframe_iterator[i]->val, angle_tolerance)){
             start = false;
             break;
         }
@@ -282,6 +287,7 @@ TotalRecordKeyframe::Reset(){
         output[i] = keyframe_iterator[i]->val;
     }
     reset = true;
+    set_array(prevtrigger, -1.f, input_array_size);
 }
 
 void
@@ -469,15 +475,16 @@ TotalRecordKeyframe::play()
             }
         }else{
             output[i] = keyframe_iterator[i]->val;
-            if(equal(input_array[i], keyframe_iterator[i]->val, angle_tolerance) 
+            if(prevtrigger[i] != trigger[i]
                 && keyframe_iterator[i] != keyframes[i].end())
             {
                 keyframe_iterator[i]++;
-                
+                prevtrigger[i] = trigger[i];
             }
         }
         if((end && keyframe_iterator[i] == keyframes[i].end()) || sync_in[0] == 1.f){
             if(repeat){
+                printf("Resetting\n");
                 current_state = eReady_To_Play;
                 tickCounter[i] = -1;
             }

@@ -18,6 +18,12 @@
 	/>
 
 	<module
+		class="Threshold"
+		name="Threshold"
+		threshold="0"
+	/>
+
+	<module
 		class="Max"
 		name="Max"
 	/>
@@ -42,7 +48,7 @@
 	<module
 		class = "Scale"
 		name = "Scale"
-		factor = "0.0089"
+		factor = "0.089"
 	/>
 
 	<module
@@ -95,6 +101,7 @@
 		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "TotalRecordKeyframe" target = "INPUT" />
 		<connection sourcemodule = "Differentiator" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "SPEED" />
 		<connection sourcemodule = "Recorder" source = "SYNC_OUT" targetmodule = "TotalRecordKeyframe" target = "SYNC_IN" />
+		<connection sourcemodule = "Threshold" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "TRIGGER" />
 
 		<!-- To Recorder -->
 		<connection sourcemodule = "Differentiator" source = "OUTPUT" targetmodule = "Recorder" target = "INPUT" />
@@ -123,6 +130,9 @@
 		<!-- To max -->
 		<connection sourcemodule = "Sum" source = "OUTPUT" targetmodule = "Max" target = "INPUT1" />
 		<connection sourcemodule = "Default_Speed" source = "OUTPUT" targetmodule = "Max" target = "INPUT2" />
+
+		<!-- to threshold -->
+		<connection sourcemodule = "Recorder" source = "OUTPUT" targetmodule = "Threshold" target = "INPUT" />
 
 	<!-- View -->
 		<view>

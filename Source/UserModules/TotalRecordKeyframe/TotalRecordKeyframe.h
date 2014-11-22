@@ -80,11 +80,12 @@ public:
     float *     input_speed;
     int         input_array_size;
     float *     sync_in;
-    float *     sync_out;
+    float *     trigger;
 
     // outputs
     float *     output;
     float *     torque;
+    float *     sync_out;
 
     // internal data storage
     std::vector<Keyframe> *     keyframes;
@@ -99,6 +100,7 @@ public:
     
     // internals
     float *     prevsign;
+    float *     prevtrigger;
     int *       tickCounter;
     int         tick;
 
