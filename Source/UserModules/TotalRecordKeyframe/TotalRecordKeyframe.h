@@ -110,7 +110,7 @@ public:
     State current_state;
     
     // Command handling
-    enum Command {eNone=0, eRecord, eProcess, ePlay, ePause};  
+    enum Command {eNone=0, eRecord, ePlay, ePause, eProcess};  
     float *     command;
 };
 

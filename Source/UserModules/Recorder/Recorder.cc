@@ -97,9 +97,6 @@ Recorder::Tick()
             else
                 Record();
             break;
-        case eProcessing:
-            current_state=eRecord_Paused;
-            break;
         case ePlaying:
             if(cmd==ePause)
                 current_state = ePlay_Paused;
