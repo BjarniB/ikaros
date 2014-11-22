@@ -12,12 +12,9 @@
 
 	<module
 		class = "Scale"
-			name = "Scale"
-			factor = "0.09"
-		/>
-
-
-
+		name = "Scale"
+		factor = "0.09"
+	/>
 
 	<module
 	  class = "Dynamixel"
@@ -41,7 +38,7 @@
 		class="Recorder"
 		name="Recorder"
 		repeat="true"
-		debug="true"
+		debug="false"
 	/>
 
 	<module
@@ -147,9 +144,9 @@
 
 
 		<object class="Button"  title = "Record" module="Command" parameter="data" x="0" y="2"  min="0" max="1" />
+		<object class="Button"  title = "Pause" module="Command" parameter="data" x="3" y="2"  min="0" max="4"/>
 		<object class="Button"  title ="Process" module="Command" parameter="data" x="1" y="2" min="0" max="2"  />
 		<object class="Button"  title = "Play" module="Command" parameter="data" x="2" y="2"  min="0" max="3"/>
-		<object class="Button"  title = "Pause" module="Command" parameter="data" x="3" y="2"  min="0" max="4"/>
 		</view>
 
 </group>

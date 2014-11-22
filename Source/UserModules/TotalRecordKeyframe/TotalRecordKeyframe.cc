@@ -161,7 +161,7 @@ TotalRecordKeyframe::Tick()
             }
             break;
         case ePlay_Paused:
-            if (cmd = ePlay){
+            if (cmd == ePlay){
                 current_state = eReady_To_Play;
                 sync_out[0] = 0.0f;
             }
