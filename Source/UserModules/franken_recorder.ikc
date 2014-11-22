@@ -11,16 +11,21 @@
 	/>
 
 	<module
+		class = "Abs"
+		name = "Abs"
+	/>
+
+	<module
 		class = "Scale"
 		name = "Scale"
-		factor = "0.09"
+		factor = "0.089"
 	/>
 
 	<module
 	  class = "Dynamixel"
 	  name = "Dynamixel"
-	  _device  = "/dev/ttyUSB0"
-	  device  = "/dev/cu.usbserial-A600cUuc"
+	  device  = "/dev/ttyUSB0"
+	  _device  = "/dev/cu.usbserial-A600cUuc"
 	  index_mode = "indirect"
 	  printf_info ="none"
 	  use_feedback ="true"
@@ -58,7 +63,7 @@
 		<!-- TO dynamixel-->
 		<connection sourcemodule = "TotalRecordKeyframe" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
 		<connection sourcemodule = "TotalRecordKeyframe" source = "TORQUE" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
-		<conenction sourcemodule = "Scale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<conenction sourcemodule = "Abs" source = "OUTPUT" targetmodule = "Dynamixel" target = "MOVING_SPEED" />
 
 
 		<!--To keyframe rec-->
@@ -80,6 +85,9 @@
 
 		<!-- To scale  -->	
 		<connection sourcemodule = "Recorder" source = "OUTPUT" targetmodule = "Scale" target = "INPUT" />
+
+		<!-- To Abs -->
+		<connection sourcemodule = "Scale" source ="OUTPUT" targetmodule = "Abs" target = "INPUT" />
 
 	<!-- View -->
 		<view>
@@ -124,7 +132,7 @@
 		/>
 
 		<object class="Plot"
-			module="Scale"
+			module="Abs"
 			source="OUTPUT"
 			x="2" y="0" w="1" h="1"
 			min="-0.5"
