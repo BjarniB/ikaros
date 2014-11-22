@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<group description="default speed group">
+
+	<description type="text">
+
+	</description>
+
+	<parameter name="factor" module="Scale" target="factor" default="1" />
+	<parameter name="threshold" module="Threshold" target="threshold" default="0.5" /> 
+
+	<input name="INPUT" targetmodule = "Threshold" target = "INPUT"/>
+
+	<output name="OUTPUT" sourcemodule = "Scale" source = "OUTPUT" set_size="INPUT"/>
+
+	<connection sourcemodule = "Threshold" source = "OUTPUT" targetmodule = "Scale" target = "INPUT" />
+
+	<module 
+		class="Threshold"
+		name="Threshold"
+	/>
+
+	<module
+		class="Scale"
+		name="Scale"
+	/>
+
+	<author>
+		<name>Christian Balkenius</name>
+		<email>christian.balkenius@lucs.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage>http://www.lucs.lu.se/Christian.Balkenius</homepage>
+	</author>
+
+   <files>
+   		<file>Default_Speed.ikc</file>
+   </files>
+
+</group>
+

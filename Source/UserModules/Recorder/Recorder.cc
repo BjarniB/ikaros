@@ -137,7 +137,8 @@ Recorder::Record()
         if(debug)
             printf("stored: %i, %i, %f\n", i, tick, input_array[i]);
     }
-    sync_out[0] = 0.f;
+    //sync_out[0] = 0.f;
+    set_array(sync_out, 0.f, input_array_size);
     tick++;
 }
 
@@ -153,14 +154,16 @@ Recorder::Play()
     
     if(tick>=endtick)
     {
-        sync_out[0] = 1.f;
+        //sync_out[0] = 1.f;
+        set_array(sync_out, 1.f, input_array_size);
         if(repeat){
             tick = 0;
             current_state = eReady_To_Play;
         }
     }
     else{
-        sync_out[0] = 0.f;
+        //sync_out[0] = 0.f;
+        set_array(sync_out, 0.f, input_array_size);
         tick++;
     }
 }

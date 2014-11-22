@@ -18,6 +18,7 @@
 
 	<parameter name="repeat" type="bool" default="false" description="Repeat playback" />
 	<parameter name="debug" type="bool" default="false" description="Enable debug info" />
+	<parameter name="angle_tolerance" type="float" default="1.0" description="Tolerance for reaching goal position" />
 
 	<input name="INPUT" description="Position data input" />
 	<input name="COMMAND" description="1 record, 2 playback, 3 pause" />

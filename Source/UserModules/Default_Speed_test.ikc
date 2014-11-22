@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<group title="Example">
+	<!-- Modules -->
+
+	<module
+		class="Default_Speed"
+		name="Default_Speed"
+		factor="0.5"
+		threshold="0.5"
+	/>
+
+		<module 
+			class = "FunctionGenerator" 
+			name = "FunctionGenerator" 
+			type = "sin" 
+			frequency = "0.01" 
+			offset = "0.5" 
+			amplitude = "1" 
+			shift = "0.1" 
+		/>
+
+	<!--Connections-->	
+
+		<connection sourcemodule = "FunctionGenerator" source = "OUTPUT" targetmodule = "Default_Speed" target = "INPUT" />
+
+	<!-- View -->
+		<view>
+		<object class="Plot " 
+			module="FunctionGenerator"
+			source="OUTPUT" 
+			x="0" y="0" w="2" h="2"
+			min="0"
+			max="2"
+		/>
+		
+		<object class="Plot " 
+			module="Default_Speed"
+			source="OUTPUT" 
+			x="2" y="0" w="2" h="2"
+			min="0"
+			max="0.5"
+		/>
+
+		</view>
+
+</group>

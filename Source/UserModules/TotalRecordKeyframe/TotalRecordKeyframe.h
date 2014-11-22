@@ -92,6 +92,7 @@ public:
 
     // parameter values
     float equality_tolerance;
+    float angle_tolerance;
     bool        repeat;
     bool        debug;
     bool        reset;

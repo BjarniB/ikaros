@@ -39,6 +39,7 @@ TotalRecordKeyframe::Init()
  
     Bind(repeat, "repeat");
     Bind(debug, "debug");
+    Bind(angle_tolerance, "angle_tolerance");
 
     input_array = GetInputArray("INPUT");
     input_speed = GetInputArray("SPEED");
@@ -333,7 +334,7 @@ TotalRecordKeyframe::process()
 
         //set torque for playback
     }
-        set_array(torque,0.6f,input_array_size);
+        set_array(torque,0.9f,input_array_size);
 }
 
 
@@ -468,15 +469,15 @@ TotalRecordKeyframe::play()
             }
         }else{
             output[i] = keyframe_iterator[i]->val;
-            if(equal(input_array[i], keyframe_iterator[i]->val, 1) 
+            if(equal(input_array[i], keyframe_iterator[i]->val, angle_tolerance) 
                 && keyframe_iterator[i] != keyframes[i].end())
             {
                 keyframe_iterator[i]++;
                 
             }
         }
-        if(end){
-            if(repeat && (keyframe_iterator[i])==keyframes[i].end()){
+        if((end && keyframe_iterator[i] == keyframes[i].end()) || sync_in[0] == 1.f){
+            if(repeat){
                 current_state = eReady_To_Play;
                 tickCounter[i] = -1;
             }
