@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+
+
+<group title = "Input file">
+
+    <module
+        class = "Dynamixel"
+        name = "Dynamixel"
+        device = "/dev/ttyUSB0"
+        _device  = "/dev/cu.usbserial-A600cUuc"
+        index_mode = "indirect"
+        printf_info ="minimal"
+        use_feedback ="true"
+        baud_rate = "1000000"
+        angle_unit = "degrees"
+        />
+
+    <module
+        class = "Constant"
+        name = "Torque"
+        outputsize = "1"
+        data = "1"
+        />
+
+        <module
+        class = "Constant"
+        name = "Speed"
+        outputsize = "1"
+        data = "1"
+        />
+
+          <module
+        class = "Constant"
+        name = "PlayOnRead"
+        outputsize = "1"
+        data = "0"
+        />
+
+
+           <module
+        class = "Constant"
+        name = "PlayOnRead1"
+        outputsize = "1"
+        data = "0"
+        />
+
+    <module 
+        class = "InputFile" 
+        name = "IN_KROPP"
+        filename = "kropp.txt" 
+        iterations = "1"
+        extend = "10000" 
+        print_iteration = "yes"
+
+    />
+
+       <module 
+        class = "InputFile" 
+        name = "IN_AXEL"
+        filename = "axel.txt" 
+        iterations = "1" 
+        extend = "10000" 
+        print_iteration = "yes"
+
+    />
+
+
+       <module 
+        class = "InputFile" 
+        name = "IN_ARMBAGE"
+        filename = "armbage.txt" 
+        iterations = "1" 
+        extend = "10000" 
+        print_iteration = "yes"
+
+    />
+
+
+    <module
+            class="TrackerPlayer"
+            name="TrackerPlayer"
+            playOnRead="0"
+
+        />
+
+        <connection sourcemodule  = "IN_ARMBAGE" source  = "ANGLE" targetmodule   = "TrackerPlayer" target  = "INPUT_FILE" />
+        <connection sourcemodule  = "IN_AXEL" source  = "ANGLE" targetmodule   = "TrackerPlayer" target  = "INPUT_FILE" />
+        <connection sourcemodule  = "IN_KROPP" source  = "ANGLE" targetmodule   = "TrackerPlayer" target  = "INPUT_FILE" />
+
+<!--
+        <connection sourcemodule  = "PlayOnRead1" source  = "OUTPUT" targetmodule   = "TrackerPlayer" target  = "INPUT_SWITCH1" />
+
+        -->
+        <connection sourcemodule = "TrackerPlayer" source="OUTPUT_POS" targetmodule = "Dynamixel" target="GOAL_POSITION" />
+        <connection sourcemodule = "TrackerPlayer" source="OUTPUT_POS" targetmodule = "Dynamixel" target="GOAL_POSITION" />
+        <connection sourcemodule = "TrackerPlayer" source="OUTPUT_POS" targetmodule = "Dynamixel" target="GOAL_POSITION" />
+
+        <connection sourcemodule = "Dynamixel" source="FEEDBACK_PRESENT_POSITION" targetmodule = "TrackerPlayer" target="INPUT_POS" />
+
+
+        <connection sourcemodule  = "TrackerPlayer" source  = "OUTPUT_TORQUE" targetmodule     = "Dynamixel" target  = "TORQUE_LIMIT" />
+        <connection sourcemodule  = "TrackerPlayer" source  = "OUTPUT_TORQUE" targetmodule     = "Dynamixel" target  = "TORQUE_LIMIT" />
+        <connection sourcemodule  = "TrackerPlayer" source  = "OUTPUT_TORQUE" targetmodule     = "Dynamixel" target  = "TORQUE_LIMIT" />
+
+        <connection sourcemodule  = "Speed" source  = "OUTPUT" targetmodule  = "Dynamixel" target  = "MOVING_SPEED" />
+        <connection sourcemodule  = "Speed" source  = "OUTPUT" targetmodule  = "Dynamixel" target  = "MOVING_SPEED" />
+        <connection sourcemodule  = "Speed" source  = "OUTPUT" targetmodule  = "Dynamixel" target  = "MOVING_SPEED" />
+
+       <view name="View">
+    
+        <object class="Plot " 
+            title="Feedback Pos 0"
+            module="Dynamixel"
+            source="FEEDBACK_PRESENT_POSITION"
+            x="0" y="0" w="2" h="1"
+            min="0"
+            max="360"
+            color="red"
+            select="0"
+        /> 
+
+         <object class="Plot " 
+            title="Feedback Pos 1"
+            module="Dynamixel"
+            source="FEEDBACK_PRESENT_POSITION"
+            x="0" y="1" w="2" h="1"
+            min="0"
+            max="360"
+            color="green"
+            select="1"
+        /> 
+
+         <object class="Plot " 
+            title="Feedback Pos 2"
+            module="Dynamixel"
+            source="FEEDBACK_PRESENT_POSITION"
+            x="0" y="2" w="2" h="1"
+            min="0"
+            max="360"
+            color="blue"
+            select="2"
+        /> 
+
+        <object
+              class="Switch"
+              title="play on read"
+              module = "TrackerPlayer"
+              parameter = "playOnRead"
+              xindex = "0"
+              x="2" y="0" h="1"
+
+        />
+
+         <object
+              class="Slider"
+              title="Speed"
+              module = "Speed"
+              parameter = "data"
+              xindex = "0"
+              x="2" y="1" h="1"
+            min="0"
+              max="1"
+        />
+
+
+
+        </view>
+
+</group>
+
+    

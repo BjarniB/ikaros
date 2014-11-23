@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<group name="TrackerPlayer" description="Record and replay robot movement">
+
+	<description type="text">
+		Angle module for servo 1
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="TrackerPlayer"
+			name="TrackerPlayer"
+			state = "0"
+			/>
+		</example>
+
+		
+
+		<input name="INPUT_POS" description="The first input"  size="3" />
+		<input name="INPUT_FILE" description="The first input"  size="3" />
+		<input name="INPUT_SWITCH1" description="The first input"  size="1" />
+
+
+		
+		<output name="OUTPUT_POS" description="The first output" size="3" />
+		<output name="OUTPUT_TORQUE" description="The first output" size="3" />
+		
+		<module class="TrackerPlayer" />
+
+		<author>
+			<name>Asas Innab</name>
+			<email>asas.innab@gmail.com</email>
+			<affiliation>LTH, Lund University</affiliation>
+			<homepage></homepage>
+		</author>
+
+		<files>
+			<file>TrackerPlayer.h</file>
+			<file>TrackerPlayer.cc</file>
+			<file>TrackerPlayer.ikc</file>
+		</files>
+
+	</group>
+
