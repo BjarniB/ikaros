@@ -14,14 +14,16 @@
 			max_out = "300"
 			tolerance = "0.1"
 			offset_in = "0"
+			tristate="true"
 			debug = "true"
 		/>
 	</example>
 
 	<parameter name="min_out" type="float" default="7.0" description="Minimum clamp value" />
 	<parameter name="max_out" type="float" default="7.0" description="Maximum clamp value" />
-	<parameter name="offset_in" type="float" default="7.0" description="If the input is larger than this, it will go to max; if it is less it will go to min; if it is the same within the set tolerance, it will stay at this value" />
+	<parameter name="offset_in" type="float" default="7.0" description="If the input is larger than this, it will go to max; if it is less it will go to min; if it is the same within the set tolerance, it will stay at this value if tristate is false, output it if tristate is true" />
 	<parameter name="tolerance" type="float" default="0.1" description="Tolerance for staying at the offset value" />
+	<parameter name="tristate" type="bool" default="false" description="If input is equal to offset_in within tolerance, outputs the offset" />
 	<parameter name="debug" type="bool" default="true" description="Turns on or off debugmode" />
 
 	<input name="INPUT" description="Input to be clamped" />

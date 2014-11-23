@@ -54,6 +54,7 @@ public:
     float       max_out;
     float       offset_in;
     float       tolerance;
+    bool        tristate;
 	bool       	debugmode;
 };
 

@@ -39,6 +39,7 @@ Clamp::Init()
     Bind(max_out, "max_out");
     Bind(tolerance, "tolerance");
     Bind(offset_in, "offset_in");
+    Bind(tristate, "tristate");
 	Bind(debugmode, "debug");    
 
     input_array = GetInputArray("INPUT");
@@ -63,10 +64,14 @@ Clamp::~Clamp()
 void
 Clamp::Tick()
 {
+    // TODO rewrite to use array methods, dont need loop
 	for (int i = 0; i < input_array_size; ++i)
     {
         if(equal(input_array[i], offset_in, tolerance))
-            continue;//output_array[i] = offset_in;
+            if(tristate)
+                output_array[i] = offset_in;
+            else 
+                continue;
         else if(input_array[i] < offset_in)
             output_array[i] = min_out;
         else
