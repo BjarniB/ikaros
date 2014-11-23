@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+
+<group title="TriggeredSampler Example">
+	
+		<module
+			class = "Constant"
+			name = "SyncSignal"
+			outputsize  = "1"
+			data  = "1"
+		/>
+		<module
+			class = "Constant"
+			name = "Command"
+			outputsize  = "1"
+			data  = "0"
+		/>
+
+		<module
+		  class       =   "FunctionGenerator"
+		  name        =   "SquareGen"
+		  type        =   "square"
+		  frequency  =  "0.05"
+		  offset      =   "0.0"
+		  amplitude   =   "1"
+		  shift       =   "0.0"
+		/>
+		<module
+		  class       =   "FunctionGenerator"
+		  name        =   "SinGen"
+		  type        =   "sin"
+		  frequency  =  "0.01"
+		  offset      =   "0.0"
+		  amplitude   =   "1"
+		  shift       =   "0.0"
+		/>
+
+		<module
+			class = "TriggeredSampler"
+			name = "TriggeredSamplerInstance"
+			debug = "true"
+			repeat = "true"
+		/>
+		
+			<!-- TO triggersampler-->
+			<connection sourcemodule = "SinGen" source = "OUTPUT" targetmodule = "TriggeredSamplerInstance" target = "INPUT" />
+        <connection sourcemodule = "SyncSignal" source = "OUTPUT" targetmodule = "TriggeredSamplerInstance" target = "SYNC_IN" />
+        <connection sourcemodule = "SquareGen" source = "OUTPUT" targetmodule = "TriggeredSamplerInstance" target = "TRIGGER" />
+        <connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "TriggeredSamplerInstance" target = "COMMAND" />
+
+		<view name="View">
+			<object class="Plot " 
+				module="SquareGen" 
+				source="OUTPUT" 
+				x="0" y="0" w="1" h="1"
+				min="0"
+				max="2"
+			/>
+			<object class="Plot " 
+				module="SinGen" 
+				source="OUTPUT" 
+				x="1" y="0" w="1" h="1"
+				min="-2"
+				max="2"
+			/>
+			<object class="Plot " 
+				module="TriggeredSamplerInstance" 
+				source="OUTPUT" 
+				x="0" y="1" w="1" h="1"
+				min="-2"
+				max="2"
+			/>
+			<object class="Plot " 
+				module="TriggeredSamplerInstance" 
+				source="TICKS" 
+				x="1" y="1" w="1" h="1"
+				min="0"
+				max="500"
+			/>
+			<object
+			   class="Grid"
+			   module="TriggeredSamplerInstance"
+			   source="SYNC_OUT"
+			   x="0"
+			   y="2"
+			   color="red, green"
+			/>
+
+			<object class="Button"  module="Command" parameter="data" x="0" y="3"  title="Record" max="1"/>			
+			<object class="Button"  module="Command" parameter="data" x="1" y="3"  title="Pause" max="3"/>
+			<object class="Button"  module="Command" parameter="data" x="2" y="3"  title="Play" max="2"/>
+
+			
+		</view>
+
+</group>
+ 

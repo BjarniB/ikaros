@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<group title="TriggeredSampler Example">
+	
+		<module
+			class = "Constant"
+			name = "SYNC"
+			outputsize  = "1"
+			data  = "1"
+		/>
+		<module
+			class = "Constant"
+			name = "SliderVal"
+			outputsize  = "1"
+			data  = "0"
+		/>
+		<module
+			class="Clamp"
+			name="Clamp"
+			min_out = "-1"
+			max_out = "1"
+			tolerance = "0.1"
+			offset_in = "0"
+			tristate="true"
+			debug = "false"
+		/>
+		<module
+			class="Recorder"
+			name="Recorder"
+			maxlength = "1000"
+			repeat = "false"
+			debug="false"
+		/>
+		<module
+			class = "Differentiator"
+			name = "Differentiator"
+		/>
+		<module
+		  class       =   "FunctionGenerator"
+		  name        =   "SquareGen"
+		  type        =   "square"
+		  frequency  =  "0.001"
+		  offset      =   "0.0"
+		  amplitude   =   "1"
+		  shift       =   "0.0"
+		/>
+
+		<module
+			class = "TriggeredSampler"
+			name = "TriggeredSamplerInstance"
+			debug = "true"
+			repeat = "false"
+		/>
+		
+        <connection sourcemodule = "MyConstant" source = "OUTPUT" targetmodule = "TriggeredSamplerInstance" target = "INPUT1" />
+        <connection sourcemodule = "SquareGen" source = "OUTPUT" targetmodule = "TriggeredSamplerInstance" target = "INPUT2" />
+
+		<view name="View">
+			<object class="Plot " 
+				module="SquareGen" 
+				source="OUTPUT" 
+				x="0" y="0" w="1" h="1"
+				min="0"
+				max="2"
+			/>
+			<object class="Plot " 
+				module="TriggeredSamplerInstance" 
+				source="OUTPUT" 
+				x="0" y="1" w="1" h="1"
+				min="0"
+				max="2"
+			/>
+		</view>
+
+</group>
+ 

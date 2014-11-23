@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<group name="TriggeredSampler" description="Samples input every time trigger changes value and outputs likewise">
+
+	<description type="text">
+		Samples input every time trigger changes value, and outputs stored sample in same way.
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="TriggeredSampler"
+			name="TriggeredSampler"
+			debug = "true"
+			repeat = "false"
+		/>
+	</example>
+
+	<parameter name="debug" type="bool" default="true" description="Turns on or off debugmode" />
+	<parameter name="repeat" type="bool" default="false" description="Toggles repat mode" />
+
+	<input name="INPUT" description="The input to be sampled" />
+	<input name="TRIGGER" description="Trigger input" size_set="INPUT"/>
+	<input name="SYNC_IN" description="Sync signal to enable playing" size="1"/>
+	<input name="COMMAND" description="Command signal" size="1"/>
+
+
+	<output name="OUTPUT" description="The output for sampled values" size_set="INPUT" />
+	<output name="SYNC_OUT" description="Goes to 1 when sequence is finished" size_set="INPUT" />
+	<output name="TICKS" description="Ticks since last sample" size_set="INPUT" />
+
+	<module class="TriggeredSampler" />
+
+	<author>
+		<name>Trond Arild Tjöstheim</name>
+		<email>kog13ttj@student.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage></homepage>
+	</author>
+
+   <files>
+   		<file>TriggeredSampler.h</file>
+   		<file>TriggeredSampler.cc</file>
+   		<file>TriggeredSampler.ikc</file>
+   </files>
+
+</group>
+
