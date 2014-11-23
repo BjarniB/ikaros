@@ -404,6 +404,7 @@ namespace ikaros
 
     bool equal(float a, float b, float tolerance);
     bool equal(float * a, float * b, int size, float tolerance);
+    bool equal(float * a, float b, int size, float tolerance);
 }
 
 
