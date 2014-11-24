@@ -1,7 +1,8 @@
 //
-//	Transform.h		This file is a part of the IKAROS project
+//	LocalApproximator.h   This file is a part of the IKAROS project
 //
 //    Copyright (C) 2014 Christian Balkenius
+//    based on KNN_Pick Copyright (C) 2007 Alexander Kolodziej 
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -20,43 +21,42 @@
 //    See http://www.ikaros-project.org/ for more information.
 //
 
-#ifndef Transform_
-#define Transform_
+#ifndef LocalApproximator_
+#define LocalApproximator_
+
 
 #include "IKAROS.h"
 
-class Transform: public Module
+
+class LocalApproximator: public Module
 {
 public:
-    static Module * Create(Parameter * p) { return new Transform(p); }
 
-    Transform(Parameter * p) : Module(p) {}
-    virtual ~Transform() {};
+    LocalApproximator(Parameter * p) : Module(p) {}
+    virtual ~LocalApproximator() {}
 
-    void        SetSizes();
-    
+    static Module * Create(Parameter * p) { return new LocalApproximator(p); }
+
     void 		Init();
     void 		Tick();
 
-    float **    matrix_1;
-    float *     object_id_1;
-    float *     frame_id_1;
-
-    float **    matrix_2;
-    float *     object_id_2;
-    float *     frame_id_2;
-
-    float **    matrix;
-    float *     object_id;
-    float *     frame_id;
-
-    int         size_x;
-    int         size_y;
-    int         size_y_1;
-    int         size_y_2;
+    float **    input_table;
+    float **    output_table;
     
-    bool        invert_1;
-    bool        invert_2;
+    float *     input;
+    float *     output;
+    
+    int         input_table_size_x;
+    int         input_table_size_y;
+
+    int         output_table_size_x;
+    int         output_table_size_y;
+    
+    int         input_size;
+    int         output_size;
+    
+    int         type;
+    float **    m;
 };
 
 #endif

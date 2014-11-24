@@ -118,7 +118,7 @@ bool DynamixelServo::SetReturnDelayTime(int value)
 bool DynamixelServo::SetCWAngleLimit(int value)
 {
     // Value check
-    if (value<=0 || value>=GetModelPositionMax())
+    if (value<0 || value>GetModelPositionMax())
     {
         printf("DynamixelServo (setCWAngleLimit): %i Value is invalid...\n", value);
         return false;
@@ -139,7 +139,7 @@ bool DynamixelServo::SetCWAngleLimit(int value)
 bool DynamixelServo::SetCCWAngleLimit(int value)
 {
     // Value check
-    if (value<=0 || value>=GetModelPositionMax())
+    if (value<0 || value>GetModelPositionMax())
     {
         printf("DynamixelServo (setCCWAngleLimit): %i Value is invalid...\n", value);
         return false;
@@ -450,12 +450,24 @@ bool DynamixelServo::SetGoalPosition(int value)
 
 bool DynamixelServo::SetMovingSpeed(int value)
 {
-    if (value<0 || value>GetModelSpeedMax())
+    // In wheel mode
+    if (!atoi(controlTable.Get("Joint Mode")))
     {
-        printf("DynamixelServo (setMovingSpeed): %i Value is invalid...\n", value);
-        return false;
+        if (value<0 || value>GetModelSpeedMax()*2)
+        {
+            printf("DynamixelServo (setMovingSpeed): %i Value is invalid...\n", value);
+            return false;
+        }
     }
-    
+    else
+    {
+        if (value<0 || value>GetModelSpeedMax())
+        {
+            printf("DynamixelServo (setMovingSpeed): %i Value is invalid...\n", value);
+            return false;
+        }
+    }
+        
     char tempBuf[64];
     sprintf(tempBuf, "%d", value);
     
@@ -508,7 +520,7 @@ bool DynamixelServo::SetLock(int value)
 }
 bool DynamixelServo::SetPunch(int value)
 {
-    if (value<20 || value>1023)
+    if (value<0 || value>1023)
     {
         printf("DynamixelServo (setPunch): %i Value is invalid...\n", value);
         return false;
@@ -593,17 +605,8 @@ bool DynamixelServo::SetCWAngleLimitFormated(float value, int angle_unit)
     // Convert real angle to dynamixel position
     int DynPos = ConvertToPosition(valueD, angle_unit);
     
-    printf("\n\nSetCWAngleLimitFormated  value %f valueD %f DynPos %i\n\n", value, valueD, DynPos);
-    
     return SetCWAngleLimit(DynPos);
     
-    
-    //    if (value<0 || value>GetModelAngleMaxFormated(angle_unit))
-    //    {
-    //        printf("DynamixelServo (SetCWAngleLimitFormated): %.0f Value is invalid...\n", value);
-    //        return false;
-    //    }
-    //    return SetCWAngleLimit(ConvertToPosition(value, angle_unit));
 };
 bool DynamixelServo::SetCCWAngleLimitFormated(float value, int angle_unit)
 {
@@ -619,15 +622,7 @@ bool DynamixelServo::SetCCWAngleLimitFormated(float value, int angle_unit)
     // Convert real angle to dynamixel position
     int DynPos = ConvertToPosition(valueD, angle_unit);
     
-    printf("\n\nSetCCWAngleLimitFormated  value %f valueD %f DynPos %i\n\n", value, valueD, DynPos);
-    
     return SetCCWAngleLimit(DynPos);
-    //    if (value<0 || value>GetModelAngleMaxFormated(angle_unit))
-    //    {
-    //        printf("DynamixelServo (SetCCWAngleLimitFormated): %.0f Value is invalid...\n", value);
-    //        return false;
-    //    }
-    //    return SetCCWAngleLimit(ConvertToPosition(value, angle_unit));
 };
 bool DynamixelServo::SetDriveModeFormated(float value)
 {
@@ -797,10 +792,10 @@ bool DynamixelServo::SetMovingSpeedFormated(float value)
             printf("DynamixelServo (SetMovingSpeedFormated): %f Value is invalid...\n", value);
             return false;
         }
-        if (value > 0) // CW
-            return SetMovingSpeed(GetModelSpeedMax() + int(value * float(GetModelSpeedMax())));
-        else // CCW
+        if (value >= 0) // CW
             return SetMovingSpeed(int(value * float(GetModelSpeedMax())));
+        else // CCW
+            return SetMovingSpeed(GetModelSpeedMax() + int(-value * float(GetModelSpeedMax())));
     }
     else // Joint mode
     {

@@ -1,5 +1,5 @@
 //
-//    DepthBlobList.h		This file is a part of the IKAROS project
+//    DepthTransform.h		This file is a part of the IKAROS project
 //
 //    Copyright (C) 2014  Christian Balkenius
 //
@@ -18,46 +18,35 @@
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef DepthBlobList_
-#define DepthBlobList_
+#ifndef DepthTransform_
+#define DepthTransform_
 
 #include "IKAROS.h"
 
 
-class DepthBlobList: public Module
+class DepthTransform: public Module
 {
 public:
 
-    DepthBlobList(Parameter * p) : Module(p) {};
-    virtual ~DepthBlobList() {};
+    DepthTransform(Parameter * p) : Module(p) {};
+    virtual ~DepthTransform() {};
 
-    static Module * Create(Parameter * p) {return new DepthBlobList(p);};
+    static Module * Create(Parameter * p) {return new DepthTransform(p);};
 
     void Init();
     void Tick();
 
-    float pan;
-    float tilt;
-
-    const float bg_threshold = 0.5;
-    const float alpha = 0.001;
+    float x_res;
+    float y_res;
+    
+    float fov_h;
+    float fov_v;
 
     int         size_x;
     int         size_y;
 
-    int         grid_size_x;
-    int         grid_size_y;
-
     float **	input;
-    float **	position;
-
     float **	output;
-    float **	grid;
-    float **	background;
-    float **	dilated_background;
-    float **	detection;
-    float **	smoothed;
-    float **    maxima;
 };
 
 

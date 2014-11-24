@@ -1,7 +1,7 @@
 //
-//	Merge.h		This file is a part of the IKAROS project
+//    DepthPointList.h		This file is a part of the IKAROS project
 //
-//    Copyright (C) 2014 Christian Balkenius
+//    Copyright (C) 2014  Christian Balkenius
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -17,37 +17,33 @@
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//    See http://www.ikaros-project.org/ for more information.
-//
 
-#ifndef Merge_
-#define Merge_
+#ifndef DepthPointList_
+#define DepthPointList_
 
 #include "IKAROS.h"
 
-class Merge: public Module
+
+class DepthPointList: public Module
 {
 public:
-    static Module * Create(Parameter * p) { return new Merge(p); }
 
-    Merge(Parameter * p) : Module(p) {}
-    virtual ~Merge() {};
+    DepthPointList(Parameter * p) : Module(p) {};
+    virtual ~DepthPointList() {};
 
-    void 		Init();
-    void 		Tick();
+    static Module * Create(Parameter * p) {return new DepthPointList(p);};
 
-    float **    input1;
-    float **    input2;
-    
-    float **    output;
-    
+    void Init();
+    void Tick();
+
     int         size_x;
-    int         size_y1;
-    int         size_y2;
-    
-    int         id_column;
-    int         max_rows;
+    int         size_y;
+
+    float **	input;
+    float **	output;
+    float **	grid;
 };
+
 
 #endif
 
