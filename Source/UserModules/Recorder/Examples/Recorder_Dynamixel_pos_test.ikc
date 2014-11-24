@@ -5,10 +5,10 @@
 	<module
   	class = "Dynamixel"
 	  name = "Dynamixel"
-	  _device  = "/dev/ttyUSB0"
-	  device  = "/dev/cu.usbserial-A600cUuc"
+	  device  = "/dev/ttyUSB0"
+	  _device  = "/dev/cu.usbserial-A600cUuc"
 	  index_mode = "indirect"
-	  printf_info ="none"
+	  printf_info ="minimal"
 	  use_feedback ="true"
 	  baud_rate = "1000000"
 	  angle_unit = "degrees"
@@ -47,8 +47,18 @@
 	<!--Connections-->	
 		<!--To dynamixel-->
 		<connection sourcemodule = "Recorder" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
-		<connection sourcemodule = "Recorder" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
-		<connection sourcemodule = "Recorder" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
+		
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
 		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
 		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
 		<connection sourcemodule = "TorqueScale" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
@@ -66,20 +76,20 @@
 			<object class="Plot " 
 				module="Dynamixel" 
 				source="FEEDBACK_PRESENT_POSITION" 
-				x="0" y="0" w="1" h="1"
+				x="0" y="0" w="2" h="2"
 				min="0"
 				max="360"
-				select="0,1,2"
-				color="red,green,blue"
+				select="0,1,2,3,4,5,6,7,8,9,10,11,12,13"
+				color="red,green,blue,yellow,orange, #FFFFFF,#88FFFFF, #FF88FF, #FFFF88, #00FFFF, #FFFF00, #FF00FF, #555555, #999999, #222222"
 			/>
 			<object class="Plot " 
 				module="Recorder" 
 				source="OUTPUT" 
-				x="1" y="0" w="1" h="1"
+				x="2" y="0" w="2" h="2"
 				min="0"
 				max="360"
-				select="0,1,2"
-				color="red,green,blue"
+				select="0,1,2,3,4,5,6,7,8,9,10,11,12,13"
+				color="red,green,blue,yellow,orange,#FFFFFF,#88FFFFF, #FF88FF, #FFFF88, #00FFFF, #FFFF00, #FF00FF, #555555, #999999, #222222"
 			/>
 			
 
