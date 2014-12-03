@@ -1,0 +1,93 @@
+<HTML>
+	<HEAD>
+		<TITLE>IKAROS DYNAMIXEL UI INTERACTOR</TITLE>
+		<script type="text/javascript"
+		src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+		<script src="http://code.highcharts.com/highcharts.js"></script>
+		<script src="http://code.highcharts.com/modules/exporting.js"></script>
+		<script src="js/draggable-points-master/draggable-points.js"></script>
+		<script src="js/graph.js"></script>
+		<script src="js/theme/dark.js"></script>
+
+
+
+	</HEAD>
+	<BODY>
+		<div id="container" style="min-width: 728px; height: 400px; margin: 0 auto"></div>
+
+		<script>
+
+
+
+			function sendCurves(){
+				var chart = $('#container').highcharts();
+				var curves = chart.series;
+
+				var array = [[[]]];
+
+
+				for (var i = 0; i < curves.length; i++) {
+					array[i] = new Array();
+
+					for (var n = 0; n < curves[i].data.length; n++) {
+
+						var curve = curves[i];
+						var point = curve.data[n];
+
+						array[i][n] = new Array();
+
+						array[i][n][0] = curve.name;
+						array[i][n][1] = point.x;
+						array[i][n][2] = point.y;
+						
+					}
+				}
+
+				$.post("index.php",
+				{
+					'servo' : array
+				},
+				function(data,status){
+					window.alert("Data: " + data + "\nStatus: " + status);
+				});
+
+
+			}
+
+
+			// ADD CURVE FUNCTION
+			function addCurve() {
+				var chart = $('#container').highcharts();
+				var curveName = $('input[name="curveName"]').val();
+				chart.addSeries({
+					name: curveName,
+					data: [0,1],
+					draggableX: true,
+					draggableY: true,
+					dragMinY: 0,
+					dragMaxY: 360,
+					dragMinX: 0,
+					type: 'spline'
+				});
+
+				
+
+			}
+
+		</script>
+	</head>
+	<body>
+
+		<button onClick="sendCurves()">SEND CURVES TO SERVER</button><br><br>
+		<input type="text" name="curveName" value="curve name"><button onclick="addCurve()">Add curve</button><br>
+		<br>
+
+		Interaction<br>
+		<input type="radio" name="interact" value="MOVE" checked>Move points
+		<br>
+		<input type="radio" name="interact" value="ADD">Add point to  
+		<input type="text" name="curveID" value="0">
+		#TODO - make dynamic
+
+	</BODY>
+</HTML>

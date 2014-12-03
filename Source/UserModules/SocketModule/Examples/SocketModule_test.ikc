@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<group title="SocketModule Example">
+	
+		<module
+			class = "Constant"
+			name = "MyConstant"
+			outputsize  = "2"
+			data  = "1 2"
+		/>
+
+		<module
+			class = "SocketModule"
+			name = "SocketModuleInstance"
+			port  = "9100"
+			debugmode  = "false"
+		/>
+		
+        <connection sourcemodule = "MyConstant" source = "OUTPUT" targetmodule = "SocketModuleInstance" target = "INPUT" />
+
+</group>
+ 
