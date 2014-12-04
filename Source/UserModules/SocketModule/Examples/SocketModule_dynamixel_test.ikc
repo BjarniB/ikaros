@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<group title="SocketModule Example">
+	
+		<module
+			class = "SocketModule"
+			name = "SocketModule"
+			port  = "9100"
+			debugmode  = "false"
+		/>
+		
+		<module
+			class = "Dynamixel"
+			name = "Dynamixel"
+			device  = "/dev/ttyUSB0"
+			servo_id = "1 2 3"
+			index_mode = "indirect"
+			printf_info ="none"
+			use_feedback ="true"
+			baud_rate = "1000000"
+			angle_unit = "degrees"
+		/>
+
+        <connection sourcemodule = "Dynamixel" source = "OUTPUT" targetmodule = "SocketModule" target = "INPUT" />
+        <connection sourcemodule = "SocketModule" source = "OUTPUT" targetmodule = "Dynamixel" target = "INPUT" />
+</group>
+ 

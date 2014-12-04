@@ -43,7 +43,12 @@ void
 SocketModule::Init()
 {
     Bind(port, "port");
-	Bind(debugmode, "debug");    
+	Bind(debugmode, "debug");
+    Bind(a,"a");
+    Bind(b,"b");
+    Bind(c,"c");
+    Bind(d,"d");
+    Bind(destport,"destport");    
 
     input_array = GetInputArray("INPUT");
     input_array_size = GetInputSize("INPUT");
@@ -51,8 +56,7 @@ SocketModule::Init()
     output_array = GetOutputArray("OUTPUT");
     output_array_size = GetOutputSize("OUTPUT");
 
-
-    internal_array = create_array(10);
+    sync_in = GetInputArray("SYNC_IN");
 
     printf( "creating socket on port %d\n", port );
 
@@ -62,6 +66,8 @@ SocketModule::Init()
         exit(0);
     }
 
+    dest = mAddress(a,b,c,d,port);
+
     tick = 0;
 
 }
@@ -70,15 +76,26 @@ SocketModule::Init()
 
 SocketModule::~SocketModule()
 {
-    // Destroy data structures that you allocated in Init.
-    destroy_array(internal_array);
+    ShutdownSockets();
 }
-
 
 
 void
 SocketModule::Tick()
 {
+    //TODO Implement states
+    ReceiveData();
+
+}
+
+void
+SocketModule::SendData(void * data){
+    //TODO structure data in some special manner for interface interpretation
+    socket.Send( dest, data, sizeof(data) );
+}
+
+void 
+SocketModule::ReceiveData(){
     mAddress sender;
     unsigned char buffer[1024];
     int bytes_read = socket.Receive( sender, buffer, sizeof( buffer ) );
@@ -91,15 +108,11 @@ SocketModule::Tick()
                 sender.GetA(), sender.GetB(), sender.GetC(), sender.GetD(), 
                 sender.GetPort(), bytes_read , buffer);
 
-//            Packet p = Packet(buffer);
-  //          p.ParsePacket();
         }
-	}
+    }
 
-    //TODO fråga chrstian om char som outputs
+    // TODO parsa paket på något sätt och skicka till output
 }
-
-
 
 
 
