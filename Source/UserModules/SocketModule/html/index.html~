@@ -69,6 +69,7 @@
 					for (var i = 0; i < curves.length; i++) {
 
 						
+						
 						chart.addSeries({
 							name: i,
 							draggableX: true,
@@ -76,7 +77,7 @@
 							dragMinY: 0,
 							dragMaxY: 360,
 							dragMinX: 0,
-							type: 'spline'
+							type: 'scatter'
 						});
 
 						for (var n = 0; n < curves[i].length; n++) {
@@ -88,22 +89,44 @@
 
 							chart.series[index].addPoint([x, y], true, false);
 						}
-						
+
+						chart.addSeries({
+							name: "test",
+							type: 'scatter'
+						});
 
 						
+					});
+				
+				for (var n = 0; n < curves[i].length-1; n++) {
+					var x1 = parseFloat(curves[i][n][0]);
+					var y1 = parseFloat(curves[i][n][1]);
 
+					var x2 = parseFloat(curves[i][n+1][0]);
+					var y2 = parseFloat(curves[i][n+1][1]);
 
-							
+					for(var k = 0; k < 40; k++) {
+						var xDiff = (x2-x1)/40.0;
+						var yDiff = (y2-y1)/40.0;
 						
+						var x = x1+k*xDiff;
+						var y = y1+k*yDiff;
+						chart.series[i].addPoint([x, y], true, false);
 					}
+					
+				}
+
+				
 
 
-
-							
-				});
-
-
+				
+				
 			}
+
+
+
+
+		}
 
 
 			// ADD CURVE FUNCTION

@@ -37,6 +37,9 @@ $(function () {
 
                       }
                     },
+                    title: {
+                     text: 'Interactive dynamixel curves'
+                   },
                    xAxis: {
                      type: 'tick',
                      min: 0,
