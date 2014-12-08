@@ -25,8 +25,10 @@
 
 #include "IKAROS.h"
 #include "Net.h"
+#include <vector>
 
 using namespace net;
+using namespace std;
 
 class SocketModule: public Module
 {
@@ -48,14 +50,17 @@ public:
     int         input_array_size;
 
     float *     output_array;
-    int         output_array_size;
+
+    float *     output;
+    std::vector<float*>      output_vector;
 
     float *     sync_in;
 
     //parameter values
-	bool       	debugmode;
+    bool        debugmode;
     mSocket     socket;
     int         port;
+    const char *      output_list;
 
     // Destination parameters
     int         a,b,c,d;

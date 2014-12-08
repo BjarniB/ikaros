@@ -14,6 +14,7 @@
 			name = "SocketModuleInstance"
 			port  = "9100"
 			debugmode  = "false"
+			output_list = "POS TORQUE SPEED"
 		/>
 		
         <connection sourcemodule = "MyConstant" source = "OUTPUT" targetmodule = "SocketModuleInstance" target = "INPUT" />

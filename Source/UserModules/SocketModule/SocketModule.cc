@@ -38,7 +38,6 @@ using namespace std;
 using namespace net;
 using namespace ikaros;
 
-
 void
 SocketModule::Init()
 {
@@ -50,13 +49,38 @@ SocketModule::Init()
     Bind(d,"d");
     Bind(destport,"destport");    
 
+    output_list = GetValue("output_list");
+
     input_array = GetInputArray("INPUT");
     input_array_size = GetInputSize("INPUT");
 
-    output_array = GetOutputArray("OUTPUT");
-    output_array_size = GetOutputSize("OUTPUT");
+    // TODO loopa igenom en char parameter och skapa outputs som definieras
 
-    sync_in = GetInputArray("SYNC_IN");
+    printf("%s : %i\n", output_list,sizeof(output_list));
+
+    //Parse output_list and add outputs
+    //TODO flytta skapandet av outputs till constructorn
+    char buf[10] = "";
+    int i = 0, c = 0;
+    while(true){
+        if(output_list[i] == ' ' || output_list[i] == '\0'){
+            buf[c] = '\0';
+            printf("%s\n", buf);
+            AddOutput(buf,GetInputSizeX("INPUT"),GetInputSizeY("INPUT"));
+            output_vector.push_back(GetOutputArray(buf));
+            c = 0;
+        }else{
+            buf[c] = output_list[i];
+            c++;
+        }
+        printf("%i\n", i);
+        
+        if(output_list[i] == '\0')
+            break;
+        i++;
+    }
+
+    //sync_in = GetInputArray("SYNC_IN");
 
     printf( "creating socket on port %d\n", port );
 
