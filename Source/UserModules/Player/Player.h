@@ -1,5 +1,5 @@
 //
-//	SocketModule.h		This file is a part of the IKAROS project
+//	Player.h		This file is a part of the IKAROS project
 //
 //    Copyright (C) 2012 <Author Name>
 //
@@ -20,28 +20,21 @@
 //    See http://www.ikaros-project.org/ for more information.
 //
 
-#ifndef SocketModule_
-#define SocketModule_
+#ifndef Player_
+#define Player_
 
 #include "IKAROS.h"
-#include "Net.h"
-#include <vector>
 
-using namespace net;
-using namespace std;
-
-class SocketModule: public Module
+class Player: public Module
 {
 public:
-    static Module * Create(Parameter * p) { return new SocketModule(p); }
+    static Module * Create(Parameter * p) { return new Player(p); }
 
-    SocketModule(Parameter * p) : Module(p) {}
-    virtual ~SocketModule();
+    Player(Parameter * p) : Module(p) {}
+    virtual ~Player();
 
     void 		Init();
     void 		Tick();
-    void        SendData(void * data);
-    void        ReceiveData();
 
     // pointers to inputs and outputs
     // and integers to represent their sizes
@@ -49,27 +42,21 @@ public:
     float *     input_array;
     int         input_array_size;
 
-    float *     output_array;
-
-    float *     output;
-    std::vector<float*>      output_vector;
-
     float *     sync_in;
 
-    //parameter values
-    bool        debugmode;
-    mSocket     socket;
-    int         port;
-    const char *      output_list;
+    float *     socket_input;
+    int         socket_input_size;
 
-    // Destination parameters
-    int         a,b,c,d;
-    int         destport;
-    mAddress    dest;
+    float *     output_array;
+    float *     output_torque;
+    float *     output_pos;
+    float *     output_speed;
 
-    int         tick;
+    // parameter values
 
-    // TODO add states
+	bool       	debugmode;
+
+    //TODO add states
 };
 
 #endif

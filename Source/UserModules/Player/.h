@@ -1,5 +1,5 @@
 //
-//	SocketModule.h		This file is a part of the IKAROS project
+//	MyModule.h		This file is a part of the IKAROS project
 //
 //    Copyright (C) 2012 <Author Name>
 //
@@ -20,28 +20,21 @@
 //    See http://www.ikaros-project.org/ for more information.
 //
 
-#ifndef SocketModule_
-#define SocketModule_
+#ifndef MyModule_
+#define MyModule_
 
 #include "IKAROS.h"
-#include "Net.h"
-#include <vector>
 
-using namespace net;
-using namespace std;
-
-class SocketModule: public Module
+class MyModule: public Module
 {
 public:
-    static Module * Create(Parameter * p) { return new SocketModule(p); }
+    static Module * Create(Parameter * p) { return new MyModule(p); }
 
-    SocketModule(Parameter * p) : Module(p) {}
-    virtual ~SocketModule();
+    MyModule(Parameter * p) : Module(p) {}
+    virtual ~MyModule();
 
     void 		Init();
     void 		Tick();
-    void        SendData(void * data);
-    void        ReceiveData();
 
     // pointers to inputs and outputs
     // and integers to represent their sizes
@@ -49,27 +42,26 @@ public:
     float *     input_array;
     int         input_array_size;
 
+    float **    input_matrix;
+    int         input_matrix_size_x;
+    int         input_matrix_size_y;
+
     float *     output_array;
+    int         output_array_size;
 
-    float *     output;
-    std::vector<float*>      output_vector;
+    float **    output_matrix;
+    int         output_matrix_size_x;
+    int         output_matrix_size_y;
 
-    float *     sync_in;
+    // internal data storage
 
-    //parameter values
-    bool        debugmode;
-    mSocket     socket;
-    int         port;
-    const char *      output_list;
+    float *     internal_array;
+    float **    internal_matrix;
 
-    // Destination parameters
-    int         a,b,c,d;
-    int         destport;
-    mAddress    dest;
+    // parameter values
 
-    int         tick;
-
-    // TODO add states
+    float       float_parameter;
+    int         int_parameter;
 };
 
 #endif

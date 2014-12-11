@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<group name="Player" description="minimal example module">
+
+	<description type="text">
+		
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="Player"
+			name="Player"
+			parameter1 = "3.14"
+			debug = "true"
+		/>
+	</example>
+
+	<parameter name="debug" type="bool" default="true" description="Turns on or off debugmode" />
+
+	<input name="INPUT" description="Dynamixel input" />
+	<input name="SOCKET_INPUT" description="Input from the socket module" />
+	<input name="SYNC_IN" description="Sync input" />
+
+	<output name="OUTPUT" description="The first output" size_set="INPUT" />
+	<output name="TORQUE" description="The torque output" size_set="INPUT" />
+	<output name="POSITION" description="The position output" size_set="INPUT" />
+	<output name="SPEED" description="The SPEED output" size_set="INPUT" />
+
+	<module class="Player" />
+
+	<author>
+		<name>Trond Arild Tjöstheim</name>
+		<email>kog13ttj@student.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage></homepage>
+	</author>
+
+   <files>
+   		<file>Player.h</file>
+   		<file>Player.cc</file>
+   		<file>Player.ikc</file>
+   </files>
+
+</group>
+
