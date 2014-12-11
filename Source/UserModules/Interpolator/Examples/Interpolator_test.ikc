@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<group title="Interpolator Example">
+	
+	<author>
+		<name>Asas Innab</name>
+		<email>adi10ain@student.lu.se</email>
+		<affiliation>Lund University, LTH</affiliation>
+		<homepage>www.asasinnab.com</homepage>
+	</author>
+	<module
+		class = "Interpolator"
+		name = "InterpolatorInstance"
+		/>
+		<module
+			class="SocketModule"
+			name="SocketModule"
+		/>
+		<connection sourcemodule  = "SocketModule" source  = "OUTPUT" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
+		<connection sourcemodule  = "SocketModule" source  = "OUTPUT" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
+		<view>
+			<object class="Plot " 
+				title="input curve 0"
+				module="Interpolator"
+				source="OUTPUT"
+				x="0" y="1" w="1" h="1"
+				min="0"
+				max="360"
+				color="green"
+				select="0"
+				/> 
+			</view>
+
+		</group>

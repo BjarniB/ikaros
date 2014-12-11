@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<group name="Interpolator" description="minimal example module">
+
+	<description type="text">
+		Module that can be used as a start for a new module.
+		Simply change all occurrences of "Interpolator" to the name of your new module in
+		Interpolator.cc, MyModule.h and MyModule.ikc (this file), rename the files, and fill
+		in the new code and documentation. This module is located in the
+		UserModules directory.
+	</description>
+
+	<example description="A simple example">
+		<module
+			class="Interpolator"
+			name="Interpolator"
+			parameter1 = "3.14"
+			debug = "true"
+		/>
+	</example>
+
+	<parameter name="port" type="int" default="8080" description="port to bind socket to" />
+	<parameter name="debug" type="bool" default="true" description="Turns on or off debugmode" />
+
+	<input name="INPUT_TICKS" description="Input matrix of ticks" />
+	<input name="INPUT_VALUES" description="Input matrix of values" />
+
+	<output name="OUTPUT" description="Array of output with all curves, order is important" size_set="INPUT" />
+
+	<module class="Interpolator" />
+
+	<author>
+		<name>Trond Arild Tjöstheim</name>
+		<email>kog13ttj@student.lu.se</email>
+		<affiliation>Lund University Cognitive Science</affiliation>
+		<homepage></homepage>
+	</author>
+
+   <files>
+   		<file>Interpolator.h</file>
+   		<file>Interpolator.cc</file>
+   		<file>Interpolator.ikc</file>
+   </files>
+
+</group>
