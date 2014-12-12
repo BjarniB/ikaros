@@ -61,15 +61,15 @@ SocketModule::Init()
 
     // 2 output matrix, en matrix med servo för varje rad och position i column, en för servo per rad och ticks i column
 
-     char in[] = "120:0 200:200 120:400#90:0 50:200 90:400";
+     // char in[] = "120:0 200:200 120:400#90:0 50:200 90:400";
 
-     char * ins = in;
+     // char * ins = in;
 
-     int s = CalcSizeX(in, sizeof(in));
+     // int s = CalcSizeX(in, sizeof(in));
 
-     printf("Sizeof: %i, size: %i", sizeof(in), s);
+     // printf("Sizeof: %i, size: %i", sizeof(in), s);
 
-     exit(0);
+     // exit(0);
 
 //     size_param_x[0] = sizeof(in);
 //     size_param_y[0] = 2;
