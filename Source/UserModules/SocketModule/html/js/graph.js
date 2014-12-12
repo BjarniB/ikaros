@@ -10,14 +10,15 @@ $(function () {
   var chart;
   $('#container').highcharts({
    chart: {
-    type: 'scatter',
                 animation: Highcharts.svg, // don't animate in old IE
-                marginRight: 1,
+
                 events: {
+                  redraw: function(e) {
+                    sendCurves();
+                  },
 
+                  click: function (e) {
 
-                	click: function (e) {
-                		
                     var interaction = $('input[name="interact"]:checked').val();
 
                     if (interaction == "ADD") {
@@ -37,15 +38,16 @@ $(function () {
 
                       }
                     },
-                   xAxis: {
+                    xAxis: {
                      type: 'tick',
+                     text: 'Tick',
                      min: 0,
                      tickPixelInterval: 150
                    },
                    yAxis: [{
                      title: {
                       text: 'Angle',
-                      min: 0,
+                      min: 100,
                       max: 360
                     },
                     plotLines: [{
@@ -56,21 +58,61 @@ $(function () {
                   }],
                   tooltip: {
                    formatter: function() {
-                    return '<b>'+ this.series.name +'</b><br/>'+
-                    Highcharts.numberFormat(this.x, 2) +'<br/>'+
+                    return Highcharts.numberFormat(this.x, 2) +'<br/>'+
                     Highcharts.numberFormat(this.y, 2);
                   }
                 },
                 legend: {
                  enabled: true
                },
+
                exporting: {
                  enabled: true
                },
-               navigator : {
-                enabled : true
+               title: {
+                text: 'Dynamixel interactor'
               }
-           });
+            });
 });
 
+
+
 });
+
+
+function sendCurves(){
+  var chart = $('#container').highcharts();
+  var curves = chart.series;
+
+  var array = [[[]]];
+
+
+
+
+  for (var i = 0; i < curves.length; i++) {
+    array[i] = new Array();
+
+    for (var n = 0; n < curves[i].data.length; n++) {
+
+      var curve = curves[i];
+      var point = curve.data[n];
+
+      array[i][n] = new Array();
+
+
+      array[i][n][0] = point.x;
+      array[i][n][1] = point.y;
+
+    }
+  }
+
+  $.post("index.php?send=curves",
+  {
+    'servo' : array
+  },
+  function(data,status){
+          //window.alert(data + "\nStatus: " + status);
+        });
+
+
+}

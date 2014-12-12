@@ -9,6 +9,7 @@
 		<script src="js/graph.js"></script>
 		<script src="js/theme/dark.js"></script>
 
+		<link rel="stylesheet" type="text/css" href="style/style.css">
 
 
 	</HEAD>
@@ -19,40 +20,7 @@
 
 
 
-			function sendCurves(){
-				var chart = $('#container').highcharts();
-				var curves = chart.series;
-
-				var array = [[[]]];
-
-
-				for (var i = 0; i < curves.length; i++) {
-					array[i] = new Array();
-
-					for (var n = 0; n < curves[i].data.length; n++) {
-
-						var curve = curves[i];
-						var point = curve.data[n];
-
-						array[i][n] = new Array();
-
-						
-						array[i][n][0] = point.x;
-						array[i][n][1] = point.y;
-						
-					}
-				}
-
-				$.post("index.php",
-				{
-					'servo' : array
-				},
-				function(data,status){
-					window.alert(data + "\nStatus: " + status);
-				});
-
-
-			}
+			
 
 			// POLL CURVE DATA FROM SERVER
 			function getData(){
@@ -68,15 +36,16 @@
 					var chart = $('#container').highcharts();
 					for (var i = 0; i < curves.length; i++) {
 
-						
+					
 						chart.addSeries({
-							name: i,
+							name: "servo "+i,
 							draggableX: true,
 							draggableY: true,
 							dragMinY: 0,
 							dragMaxY: 360,
 							dragMinX: 0,
-							type: 'spline'
+							type: 'line'
+							
 						});
 
 						for (var n = 0; n < curves[i].length; n++) {
@@ -88,12 +57,7 @@
 
 							chart.series[index].addPoint([x, y], true, false);
 						}
-						
 
-						
-
-
-							
 						
 					}
 
@@ -106,40 +70,25 @@
 			}
 
 
-			// ADD CURVE FUNCTION
-			function addCurve() {
-				var chart = $('#container').highcharts();
-				var curveName = $('input[name="curveName"]').val();
-				chart.addSeries({
-					name: curveName,
-					data: [0,1],
-					draggableX: true,
-					draggableY: true,
-					dragMinY: 0,
-					dragMaxY: 360,
-					dragMinX: 0,
-					type: 'spline'
-				});
 
-				
 
-			}
-
+  
 		</script>
 	</head>
 	<body>
 
-		<button onClick="sendCurves()">Send curves to server</button><br><br>
+		
 		<!--<input type="text" name="curveName" value="curve name"><button onclick="addCurve()">Add curve</button><br>
 		<br>-->
-		<button onClick="getData()">Get data from server</button><br><br>
+		<br>
+		<button class="button" onClick="getData()">Get recorded data</button><br><br>
 
 		Interaction<br>
 		<input type="radio" name="interact" value="MOVE" checked>Move points
 		<br>
 		<input type="radio" name="interact" value="ADD">Add point to  
 		<input type="text" name="curveID" value="0">
-		#TODO - make dynamic
+		
 
 	</BODY>
 </HTML>

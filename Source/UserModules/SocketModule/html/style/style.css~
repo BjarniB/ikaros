@@ -1,0 +1,8 @@
+1
+2
+3
+4
+#rbtn ul{list-style-type:none;}
+#rbtn ul li{cursor:pointer; display:inline-block; width:100px; border:1px solid #bbb; padding:5px; margin-right:5px; -moz-border-radius: 3px; -webkit-border-radius: 3px; -khtml-border-radius: 3px; border-radius: 3px; text-align:center;}
+.over{background: #eee;}
+.selected{background: #61a4e6; color:#fff;}
