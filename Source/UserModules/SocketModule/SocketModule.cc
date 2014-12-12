@@ -47,7 +47,7 @@ SocketModule::Init()
     Bind(b,"b");
     Bind(c,"c");
     Bind(d,"d");
-    Bind(destport,"destport"); 
+    Bind(destport,"destport");
 
     output_list = GetValue("output_list");
 
@@ -62,19 +62,19 @@ SocketModule::Init()
 
     // 2 output matrix, en matrix med servo för varje rad och position i column, en för servo per rad och ticks i column
 
-    char in[] = "120:0 200:200 120:400#90:0 50:200 90:400";
+//     char in[] = "120:0 200:200 120:400#90:0 50:200 90:400";
 
-    char * ins = in;
+//     char * ins = in;
 
-    size_param_x[0] = sizeof(in);
-    size_param_y[0] = 2;
+//     size_param_x[0] = sizeof(in);
+//     size_param_y[0] = 2;
 
-printf("changing matrix\n");
+// printf("changing matrix\n");
 
-    copy_matrix(output_matrix_pos, ParseValue1(ins,2,sizeof(in)), (int)size_param_x[0], (int)size_param_y[0]);
-    copy_matrix(output_matrix_tick, ParseValue2(ins,2,sizeof(in)), (int)size_param_x[0], (int)size_param_y[0]);
+//     copy_matrix(output_matrix_pos, ParseValue1(ins,2,sizeof(in)), (int)size_param_x[0], (int)size_param_y[0]);
+//     copy_matrix(output_matrix_tick, ParseValue2(ins,2,sizeof(in)), (int)size_param_x[0], (int)size_param_y[0]);
 
-printf("chaning done\n");
+// printf("chaning done\n");
     // print_matrix("vals", vals, sizeof(in), 2);
 
     // print_matrix("vals2", vals2, sizeof(in), 2);
@@ -112,15 +112,15 @@ printf("chaning done\n");
 
     //sync_in = GetInputArray("SYNC_IN");
 
-    //printf( "creating socket on port %d\n", port );
+    printf( "creating socket on port %d\n", port );
 
-    // if ( !socket.Open( port ) )
-    // {
-    //     printf( "failed to create socket!\n" );
-    //     exit(0);
-    // }
+    if ( !socket.Open( port ) )
+    {
+        printf( "failed to create socket!\n" );
+        exit(0);
+    }
 
-    //dest = mAddress(a,b,c,d,port);
+    dest = mAddress(a,b,c,d,port);
 
     tick = 0;
 
@@ -137,9 +137,8 @@ SocketModule::~SocketModule()
 void
 SocketModule::Tick()
 {
-    printf("TICK socket\n");
     //TODO Implement states
-    //ReceiveData();
+    ReceiveData();
 
 }
 
@@ -165,11 +164,20 @@ SocketModule::ReceiveData(){
             printf( "received packet from %d.%d.%d.%d:%d (%d bytes) (%s)\n", 
                 sender.GetA(), sender.GetB(), sender.GetC(), sender.GetD(), 
                 sender.GetPort(), bytes_read , buffer);
+                
+                size_param_x[0] = sizeof(buffer);
+                size_param_y[0] = 3;
 
+                char * buf = (char*)buffer;
+
+                printf("changing matrix\n");
+
+                copy_matrix(output_matrix_pos, ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
+                copy_matrix(output_matrix_tick, ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
+
+                printf("chaning done\n");
         }
     }
-
-    // TODO parsa paket på något sätt och skicka till output
 }
 
 
