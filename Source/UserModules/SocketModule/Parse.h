@@ -114,4 +114,15 @@ namespace parse{
 		return ret.c_str();
 	}
 
+	int CalcSizeX (char * buf, int size){
+		int ret = 0;
+
+		for(int i = 0; i < size; ++i){
+			if(buf[i] == ':'){
+				ret++;
+			}
+		}
+		return ret;
+	}
+
 }; 
