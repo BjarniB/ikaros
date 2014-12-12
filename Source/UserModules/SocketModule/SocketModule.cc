@@ -42,7 +42,7 @@ void
 SocketModule::Init()
 {
     Bind(port, "port");
-	Bind(debugmode, "debug");
+    Bind(debugmode, "debug");
     Bind(a,"a");
     Bind(b,"b");
     Bind(c,"c");
@@ -104,7 +104,7 @@ SocketModule::Init()
     //         c++;
     //     }
     //     printf("%i\n", i);
-        
+
     //     if(output_list[i] == '\0')
     //         break;
     //     i++;
@@ -157,33 +157,45 @@ SocketModule::ReceiveData(){
     unsigned char buffer[1024];
     int bytes_read = socket.Receive( sender, buffer, sizeof( buffer ) );
     
-    if(debugmode)
-    {
-        if ( !bytes_read ){}
+
+    if ( !bytes_read ){}
         else{   
             printf( "received packet from %d.%d.%d.%d:%d (%d bytes) (%s)\n", 
                 sender.GetA(), sender.GetB(), sender.GetC(), sender.GetD(), 
                 sender.GetPort(), bytes_read , buffer);
-                
-                size_param_x[0] = sizeof(buffer);
-                size_param_y[0] = 3;
 
-                char * buf = (char*)buffer;
+             size_param_x[0] = sizeof(buffer);
+             size_param_y[0] = 3;
 
-                printf("changing matrix\n");
+             char * buf = (char*)buffer;
 
-                copy_matrix(output_matrix_pos, ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
-                copy_matrix(output_matrix_tick, ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
+             printf("%s ; %i, %i\n", buf, (int)size_param_x[0], (int)size_param_y[0]);
 
-                printf("chaning done\n");
+             //float ** n1 = ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]);
+             //float ** n2 = ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]);
+
+             //printf("Pare DONE\n");
+
+  //print_matrix("ticks", n1, (int)size_param_x[0], (int)size_param_y[0]);
+
+  //print_matrix("values", n2, (int)size_param_x[0], (int)size_param_y[0]);
+
+             //exit(0);
+
+            printf("changing matrix\n");
+
+            copy_matrix(output_matrix_pos, ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
+            copy_matrix(output_matrix_tick, ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
+
+            printf("chaning done\n");
         }
+
     }
-}
 
 
 
 // Install the module. This code is executed during start-up.
 
-static InitClass init("SocketModule", &SocketModule::Create, "Source/UserModules/SocketModule/");
+    static InitClass init("SocketModule", &SocketModule::Create, "Source/UserModules/SocketModule/");
 
 

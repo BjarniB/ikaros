@@ -8,46 +8,71 @@
 		<affiliation>Lund University, LTH</affiliation>
 		<homepage>www.asasinnab.com</homepage>
 	</author>
+
+
+	<module
+		class = "Dynamixel"
+		name = "Dynamixel"
+		device = "/dev/ttyUSB0"
+		_device  = "/dev/cu.usbserial-A600cUuc"
+		index_mode = "indirect"
+		printf_info ="minimal"
+		use_feedback ="true"
+		baud_rate = "1000000"
+		angle_unit = "degrees"
+		/>
 		
-			<module
+		<module
 			class = "Constant"
 			name = "MyConstant"
 			outputsize  = "2"
 			data  = "1 2"
-		/>
+			/>
 
-		<module
-			class = "Interpolator"
-			name = "Interpolator"
-		/>
-		
-		<module
-			class = "SocketModule"
-			name = "SocketModule"
-			port  = "9100"
-			debugmode  = "false"
-		/>
+			<module
+				class = "Interpolator"
+				name = "Interpolator"
+				/>
 
-		        <connection sourcemodule = "MyConstant" source = "OUTPUT" targetmodule = "SocketModule" target = "INPUT" />
+				<module
+					class = "SocketModule"
+					name = "SocketModule"
+					port  = "9100"
+					debugmode  = "false"
+					/>
 
-		<connection sourcemodule  = "SocketModule" source  = "OUT_TICK" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
-		<connection sourcemodule  = "SocketModule" source  = "OUT_VALUE" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
+					<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
+
+					<connection sourcemodule = "MyConstant" source = "OUTPUT" targetmodule = "SocketModule" target = "INPUT" />
+
+					<connection sourcemodule  = "SocketModule" source  = "OUT_TICK" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
+					<connection sourcemodule  = "SocketModule" source  = "OUT_VALUE" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
 
 
-		<connection sourcemodule  = "SocketModule" source  = "SIZE_X" targetmodule = "Interpolator" target  = "SIZE_X" />
-		<connection sourcemodule  = "SocketModule" source  = "SIZE_Y" targetmodule = "Interpolator" target  = "SIZE_Y" />
+					<connection sourcemodule  = "SocketModule" source  = "SIZE_X" targetmodule = "Interpolator" target  = "SIZE_X" />
+					<connection sourcemodule  = "SocketModule" source  = "SIZE_Y" targetmodule = "Interpolator" target  = "SIZE_Y" />
 
-		<view>
-			<object class="Plot " 
-				title="input curve 0"
-				module="Interpolator"
-				source="OUTPUT"
-				x="0" y="1" w="1" h="1"
-				min="0"
-				max="360"
-				color="green"
-				select="0"
-				/> 
-			</view>
+					<view>
+						<object class="Plot " 
+							title="input curve 0"
+							module="Interpolator"
+							source="OUTPUT"
+							x="0" y="0" w="4" h="2"
+							min="0"
+							max="360"
+							color="green"
+							select="0"
+							/> 
+							<object class="Plot " 
+							title="Feedback servo plot"
+							module="Dynamixel"
+							source="FEEDBACK_PRESENT_POSITION"
+							x="0" y="2" w="4" h="2"
+							min="0"
+							max="360"
+							color="green"
+							select="0"
+							/>
+						</view>
 
-		</group>
+					</group>
