@@ -72,9 +72,9 @@ Interpolator::Tick()
 
   printf("TICK interpolate \n");
 
-  print_matrix("ticks", input_ticks, (int)input_size_x[0], (int)input_size_y[0]);
+  //print_matrix("ticks", input_ticks, (int)input_size_x[0], (int)input_size_y[0]);
 
-  print_matrix("values", input_values, (int)input_size_x[0], (int)input_size_y[0]);
+  //print_matrix("values", input_values, (int)input_size_x[0], (int)input_size_y[0]);
 
   printf("sizes: %i, %i \n", (int)input_size_x[0],(int)input_size_y[0]);
 

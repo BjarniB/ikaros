@@ -5,7 +5,7 @@
 #include <sstream>
 
 namespace parse{
-	float ** ParseValue1(char * buf, int sizeY, int buf_size){
+	float ** ParseValue1(char * buf, int buf_size, int sizeY){
 		float** mat = create_matrix(buf_size,sizeY);
 		int x = 0;
 		int y = 0;
@@ -44,7 +44,7 @@ namespace parse{
 		return mat;
 	}
 
-	float ** ParseValue2(char * buf, int sizeY, int buf_size){
+	float ** ParseValue2(char * buf, int buf_size, int sizeY){
 		float** mat = create_matrix(buf_size,sizeY);
 		int x = 0;
 		int y = 0;
