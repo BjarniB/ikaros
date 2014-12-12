@@ -142,7 +142,8 @@ SocketModule::~SocketModule()
 void
 SocketModule::Tick()
 {
-    //TODO Implement states
+    //TODO Implement states eStart, eWaitingToSend, eSending, eReceiving
+    // waiting for sync signal input for changing states from eWaitingToSend to eSending
     ReceiveData();
 
 }

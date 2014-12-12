@@ -24,7 +24,7 @@
 	<input name="SIZE_X" />
 	<input name="SIZE_Y" />
 
-	<output name="OUTPUT" description="Array of output with all curves, order is important" size_set="INPUT_TICKS" />
+	<output name="OUTPUT" description="Array of output with all curves, order is important" size_set="SIZE_Y" />
 
 	<module class="Interpolator" />
 

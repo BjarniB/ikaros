@@ -35,8 +35,8 @@
 
 	<output name="OUT_VALUE" description="Output position matrix" size_x="1024" size_y="20"/>
 	<output name="OUT_TICK" description="Output position matrix" size_x="1024" size_y="20"/>
-	<output name="SIZE_X" description="Size x of matricies" size="1"/>
-	<output name="SIZE_Y" description="Size y of matricies" size="1"/>
+	<output name="SIZE_X" description="Size x of matricies" size="3"/>
+	<output name="SIZE_Y" description="Size y of matricies" size="3"/>
 
 	<module class="SocketModule" />
 
