@@ -44,6 +44,9 @@ Interpolator::Init()
   input_ticks = GetInputMatrix("INPUT_TICKS");
   input_values = GetInputMatrix("INPUT_VALUES");
 
+  input_size_y = GetInputArray("SIZE_Y");
+  input_size_x = GetInputArray("SIZE_X");
+
   output_array = GetOutputArray("OUTPUT");
   output_array_size = GetOutputSize("OUTPUT");
 
@@ -67,13 +70,23 @@ void
 Interpolator::Tick()
 {
 
-  output_array = GetInterpolation(tick);
+  printf("TICK interpolate \n");
+
+  print_matrix("ticks", input_ticks, (int)input_size_x[0], (int)input_size_y[0]);
+
+  print_matrix("values", input_values, (int)input_size_x[0], (int)input_size_y[0]);
+
+  printf("sizes: %i, %i \n", (int)input_size_x[0],(int)input_size_y[0]);
+
+  copy_array(output_array, GetInterpolation(tick),2);
 
   
   tick++;
 
+  printf("TICK : %i\n", tick);
+
   // play from beging if reached end
-  if (tick >= input_ticks[0][input_size_y])
+  if (tick >= 400)
     tick = 0;
   
 }
@@ -94,11 +107,14 @@ Interpolator::GetInterpolation(int tick)
    //int amtCurve = 2;
    //  int amtTicks = 4;
 
-  for (int i = 0; i < input_size_x; i++) {
+  for (int i = 0; i < input_size_y[0]; i++) {
 
 
-    for (int n = 0; n < input_size_y; n++) {
-           //printf("check %i %i %f \n",i,n,atTick[i][n]);
+    for (int n = 0; n < input_size_x[0]; n++) {
+           printf("check %i %i %f \n",i,n,input_ticks[i][n]);
+      if(input_values[i][n] == -1){
+        break;
+      }
 
      if(tick < input_ticks[i][n]) {
 

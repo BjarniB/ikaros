@@ -25,10 +25,12 @@
 
 #include "IKAROS.h"
 #include "Net.h"
+#include "Parse.h"
 #include <vector>
 
 using namespace net;
 using namespace std;
+using namespace parse;
 
 class SocketModule: public Module
 {
@@ -47,9 +49,17 @@ public:
     // and integers to represent their sizes
 
     float *     input_array;
-    int         input_array_size;
 
-    float *     output_array;
+    float **    input_matrix_pos;
+    float **    input_matrix_tick;
+    int         input_matrix_sizeX;
+    int         input_matrix_sizeY;
+
+    float **    output_matrix_pos;
+    float **    output_matrix_tick;
+    float *     size_param_x;
+    float *     size_param_y;
+
 
     float *     output;
     std::vector<float*>      output_vector;
@@ -68,6 +78,9 @@ public:
     mAddress    dest;
 
     int         tick;
+
+    int *       send_size;
+    const char * send_data;
 
     // TODO add states
 };

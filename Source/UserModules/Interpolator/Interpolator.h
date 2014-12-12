@@ -44,8 +44,8 @@ public:
 
     float**     input_ticks;
     float**     input_values;
-    int         input_size_x;
-    int         input_size_y;
+    float *     input_size_x;
+    float *     input_size_y;
 
     float *     output_array;
     int         output_array_size;

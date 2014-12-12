@@ -8,16 +8,35 @@
 		<affiliation>Lund University, LTH</affiliation>
 		<homepage>www.asasinnab.com</homepage>
 	</author>
-	<module
-		class = "Interpolator"
-		name = "InterpolatorInstance"
+		
+			<module
+			class = "Constant"
+			name = "MyConstant"
+			outputsize  = "2"
+			data  = "1 2"
 		/>
+
 		<module
-			class="SocketModule"
-			name="SocketModule"
+			class = "Interpolator"
+			name = "Interpolator"
 		/>
-		<connection sourcemodule  = "SocketModule" source  = "OUTPUT" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
-		<connection sourcemodule  = "SocketModule" source  = "OUTPUT" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
+		
+		<module
+			class = "SocketModule"
+			name = "SocketModule"
+			port  = "9100"
+			debugmode  = "false"
+		/>
+
+		        <connection sourcemodule = "MyConstant" source = "OUTPUT" targetmodule = "SocketModule" target = "INPUT" />
+
+		<connection sourcemodule  = "SocketModule" source  = "OUT_TICK" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
+		<connection sourcemodule  = "SocketModule" source  = "OUT_VALUE" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
+
+
+		<connection sourcemodule  = "SocketModule" source  = "SIZE_X" targetmodule = "Interpolator" target  = "SIZE_X" />
+		<connection sourcemodule  = "SocketModule" source  = "SIZE_Y" targetmodule = "Interpolator" target  = "SIZE_Y" />
+
 		<view>
 			<object class="Plot " 
 				title="input curve 0"

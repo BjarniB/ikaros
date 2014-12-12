@@ -47,50 +47,80 @@ SocketModule::Init()
     Bind(b,"b");
     Bind(c,"c");
     Bind(d,"d");
-    Bind(destport,"destport");    
+    Bind(destport,"destport"); 
 
     output_list = GetValue("output_list");
 
-    input_array = GetInputArray("INPUT");
-    input_array_size = GetInputSize("INPUT");
+    input_matrix_pos = GetInputMatrix("INPUT");
+
+    output_matrix_pos = GetOutputMatrix("OUT_VALUE");
+    output_matrix_tick = GetOutputMatrix("OUT_TICK");
+
+    size_param_x = GetOutputArray("SIZE_X");
+    size_param_y = GetOutputArray("SIZE_Y");
+
+
+    // 2 output matrix, en matrix med servo för varje rad och position i column, en för servo per rad och ticks i column
+
+    char in[] = "120:0 200:200 120:400#90:0 50:200 90:400";
+
+    char * ins = in;
+
+    size_param_x[0] = sizeof(in);
+    size_param_y[0] = 2;
+
+printf("changing matrix\n");
+
+    copy_matrix(output_matrix_pos, ParseValue1(ins,2,sizeof(in)), (int)size_param_x[0], (int)size_param_y[0]);
+    copy_matrix(output_matrix_tick, ParseValue2(ins,2,sizeof(in)), (int)size_param_x[0], (int)size_param_y[0]);
+
+printf("chaning done\n");
+    // print_matrix("vals", vals, sizeof(in), 2);
+
+    // print_matrix("vals2", vals2, sizeof(in), 2);
+
+    //int * size;
+    //const char * send = SetupSendData(vals, vals2, sizeof(in), 2, size);
+
+
+    //printf("Size: %i, %i\n", sizeof(send), (int)size);
+
 
     // TODO loopa igenom en char parameter och skapa outputs som definieras
-
-    printf("%s : %i\n", output_list,sizeof(output_list));
-
+    //printf("%s : %i\n", output_list,sizeof(output_list));
     //Parse output_list and add outputs
     //TODO flytta skapandet av outputs till constructorn
-    char buf[10] = "";
-    int i = 0, c = 0;
-    while(true){
-        if(output_list[i] == ' ' || output_list[i] == '\0'){
-            buf[c] = '\0';
-            printf("%s\n", buf);
-            AddOutput(buf,GetInputSizeX("INPUT"),GetInputSizeY("INPUT"));
-            output_vector.push_back(GetOutputArray(buf));
-            c = 0;
-        }else{
-            buf[c] = output_list[i];
-            c++;
-        }
-        printf("%i\n", i);
+    // char buf[10] = "";
+    // int i = 0, c = 0;
+    // while(true){
+    //     if(output_list[i] == ' ' || output_list[i] == '\0'){
+    //         buf[c] = '\0';
+    //         printf("%s\n", buf);
+    //         AddOutput(buf,GetInputSizeX("INPUT"),GetInputSizeY("INPUT"));
+    //         output_vector.push_back(GetOutputArray(buf));
+    //         c = 0;
+    //     }else{
+    //         buf[c] = output_list[i];
+    //         c++;
+    //     }
+    //     printf("%i\n", i);
         
-        if(output_list[i] == '\0')
-            break;
-        i++;
-    }
+    //     if(output_list[i] == '\0')
+    //         break;
+    //     i++;
+    // }
 
     //sync_in = GetInputArray("SYNC_IN");
 
-    printf( "creating socket on port %d\n", port );
+    //printf( "creating socket on port %d\n", port );
 
-    if ( !socket.Open( port ) )
-    {
-        printf( "failed to create socket!\n" );
-        exit(0);
-    }
+    // if ( !socket.Open( port ) )
+    // {
+    //     printf( "failed to create socket!\n" );
+    //     exit(0);
+    // }
 
-    dest = mAddress(a,b,c,d,port);
+    //dest = mAddress(a,b,c,d,port);
 
     tick = 0;
 
@@ -107,11 +137,15 @@ SocketModule::~SocketModule()
 void
 SocketModule::Tick()
 {
+    printf("TICK socket\n");
     //TODO Implement states
-    ReceiveData();
+    //ReceiveData();
 
 }
 
+
+// Send data as tick:pos tick:pos#tick:pos tick:pos
+// # delimits different servos : delimits tick and position value
 void
 SocketModule::SendData(void * data){
     //TODO structure data in some special manner for interface interpretation
