@@ -70,7 +70,7 @@ public:
     bool        debugmode;
     mSocket     socket;
     int         port;
-    const char *      output_list;
+    int         packet_size;
 
     // Destination parameters
     int         a,b,c,d;

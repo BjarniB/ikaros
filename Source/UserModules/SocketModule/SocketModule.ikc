@@ -28,7 +28,7 @@
 	<parameter name="d" type="int" default="1" description="fourth part of destination address" />
 	<parameter name="destport" type="int" default="8800" description="port of destination address" />
 
-	<parameter name="output_list" type="char" description="List of output names" />
+	<parameter name="packet_size" type="int" default="1024" description="the maximum size of packets sent and received" />
 
 	<input name="INPUT" description="Input to be sent through socket" />
 	<!--<input name="SYNC_IN" description="Input for a sync in signal" />-->
