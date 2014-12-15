@@ -91,7 +91,7 @@ namespace parse{
     	return buff.str();   
 	}
 
-	const char * SetupSendData(float ** val1, float ** val2, int size_x, int size_y, int *& size){
+	std::string SetupSendData(float ** val1, float ** val2, int size_x, int size_y){
 		std::string ret = "";
 		for(int y = 0; y < size_y; ++y){
 			for(int x = 0; x < size_x; x++){
@@ -110,8 +110,7 @@ namespace parse{
 			}
 		}
 		printf("%s\n", ret.c_str());
-		size = (int*)ret.size();
-		return ret.c_str();
+		return ret;
 	}
 
 	int CalcSizeX (char * buf, int size){

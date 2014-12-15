@@ -80,7 +80,6 @@ public:
     int         tick;
 
     int *       send_size;
-    const char * send_data;
 
     // TODO add states
 };
