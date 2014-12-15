@@ -28,6 +28,13 @@
 	  angle_unit = "degrees"
 	/>
 
+				<module
+				class = "Interpolator"
+				name = "Interpolator"
+				/>
+
+		
+
 	<module
 		class = "SocketModule"
 		name = "SocketModule"
@@ -76,6 +83,17 @@
 		<connection sourcemodule = "TotalRecordKeyframe" source = "SIZE_X" targetmodule = "SocketModule" target = "IN_SIZE_X" />
 		<connection sourcemodule = "TotalRecordKeyframe" source = "SIZE_Y" targetmodule = "SocketModule" target = "IN_SIZE_Y" />
 		<connection sourcemodule = "TotalRecordKeyframe" source = "SYNC_OUT" targetmodule = "SocketModule" target = "SYNC_IN" />
+
+
+
+
+		<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
+
+		<connection sourcemodule  = "SocketModule" source  = "OUT_TICK" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
+		<connection sourcemodule  = "SocketModule" source  = "OUT_VALUE" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
+
+		<connection sourcemodule  = "SocketModule" source  = "SIZE_X" targetmodule = "Interpolator" target  = "SIZE_X" />
+		<connection sourcemodule  = "SocketModule" source  = "SIZE_Y" targetmodule = "Interpolator" target  = "SIZE_Y" />
 
 	<!-- View -->
 		<view>

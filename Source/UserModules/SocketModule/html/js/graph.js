@@ -1,4 +1,6 @@
 
+var allowSend = false;
+
 $(function () {
  $(document).ready(function() {
   Highcharts.setOptions({
@@ -10,11 +12,12 @@ $(function () {
   var chart;
   $('#container').highcharts({
    chart: {
-                animation: Highcharts.svg, // don't animate in old IE
-
+                //animation: Highcharts.svg, // don't animate in old IE
+                animation: false,
                 events: {
                   redraw: function(e) {
-                    sendCurves();
+                    if (allowSend)
+                      sendCurves();
                   },
 
                   click: function (e) {
@@ -39,15 +42,19 @@ $(function () {
                       }
                     },
                     xAxis: {
-                     type: 'tick',
-                     text: 'Tick',
-                     min: 0,
-                     tickPixelInterval: 150
-                   },
-                   yAxis: [{
+                      crosshair: {
+                        color: 'green',
+                        snap: true
+                      },
+                      type: 'tick',
+                      text: 'Tick',
+                      min: 0,
+                      tickPixelInterval: 150
+                    },
+                    yAxis: [{
                      title: {
                       text: 'Angle',
-                      min: 100,
+                      min: 0,
                       max: 360
                     },
                     plotLines: [{
@@ -80,6 +87,8 @@ $(function () {
 });
 
 
+
+
 function sendCurves(){
   var chart = $('#container').highcharts();
   var curves = chart.series;
@@ -106,6 +115,8 @@ function sendCurves(){
     }
   }
 
+
+
   $.post("index.php?send=curves",
   {
     'servo' : array
@@ -116,3 +127,39 @@ function sendCurves(){
 
 
 }
+
+
+
+function play (freq, endAt) {
+  allowSend = true;
+  $.get( "index.php?action=play", function( data ) {
+    $( ".result" ).html( data );
+
+  });
+
+  crossHairAnim(0,30, 500);
+}; 
+
+
+function crossHairAnim (i, freq, endAt) {          
+ setTimeout(function () {   
+   var chart = $('#container').highcharts();
+   chart.xAxis[0].removePlotLine('timeline_cross');
+   chart.xAxis[0].addPlotLine({
+    value: i,
+    color: 'red',
+    width: 1,
+    id: 'timeline_cross'
+  });
+   i+=(1/4);
+   if (i < endAt) crossHairAnim(i, freq, endAt);
+   else {
+
+    $.get( "index.php?action=play", function( data ) {
+      $( ".result" ).html( data );
+  //alert( "Load was performed." );
+});
+  }
+
+}, freq/4)
+}; 

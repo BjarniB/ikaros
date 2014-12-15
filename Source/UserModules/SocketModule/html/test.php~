@@ -2,7 +2,7 @@
 
 <?php
 $server_ip   = '127.0.0.1';
-$server_port = 9000;
+$server_port = 9100;
 $beat_period = 5;
 $message     = 'PyHB';
 print "Sending heartbeat to IP $server_ip, port $server_port\n";
