@@ -30,13 +30,17 @@
 
 	<parameter name="packet_size" type="int" default="1024" description="the maximum size of packets sent and received" />
 
-	<input name="INPUT" description="Input to be sent through socket" />
-	<!--<input name="SYNC_IN" description="Input for a sync in signal" />-->
+
+	<input name="SYNC_IN" description="Input for a sync in signal" />
+	<input name="IN_VALUE" description="Input matrix for value" />
+	<input name="IN_TICK" description="Input matrix for tick" />
+	<input name="IN_SIZE_X" description="Input array for x size of matrices" />
+	<input name="IN_SIZE_Y" description="Input array for y size of matrices" />
 
 	<output name="OUT_VALUE" description="Output position matrix" size_x="1024" size_y="20"/>
 	<output name="OUT_TICK" description="Output position matrix" size_x="1024" size_y="20"/>
-	<output name="SIZE_X" description="Size x of matricies" size="1"/>
-	<output name="SIZE_Y" description="Size y of matricies" size="1"/>
+	<output name="SIZE_X" description="Size x of matricies" size="3"/>
+	<output name="SIZE_Y" description="Size y of matricies" size="3"/>
 
 	<module class="SocketModule" />
 

@@ -52,8 +52,8 @@ public:
 
     float **    input_matrix_pos;
     float **    input_matrix_tick;
-    int         input_matrix_sizeX;
-    int         input_matrix_sizeY;
+    float *     input_matrix_sizeX;
+    float *     input_matrix_sizeY;
 
     float **    output_matrix_pos;
     float **    output_matrix_tick;

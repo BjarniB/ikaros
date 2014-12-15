@@ -78,7 +78,7 @@ Interpolator::Tick()
 
   printf("sizes: %i, %i \n", (int)input_size_x[0],(int)input_size_y[0]);
 
-  copy_array(output_array, GetInterpolation(tick),2);
+  copy_array(output_array, GetInterpolation(tick),(int)input_size_y[0]);
 
   
   tick++;
@@ -97,7 +97,7 @@ Interpolator::GetInterpolation(int tick)
 {
 
 
-  float* ret = create_array(2);
+  float* ret = create_array((int)input_size_y[0]);
 
 
       // linear interpolation algorithm
