@@ -159,9 +159,18 @@ SocketModule::Tick()
         printf("Sizes: %i, %i\n", (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
 
         int * s;
-        const char * sendData = SetupSendData(input_matrix_tick, input_matrix_pos, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0], s);
+        std::string data = SetupSendData(input_matrix_tick, input_matrix_pos, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
 
-        printf("%s\n", sendData);
+
+        printf("%s\n", data.c_str());
+
+        bool send = socket.Send(dest, data.c_str(), sizeof(data));
+
+        if(send)
+            printf("True\n");
+        else
+            printf("False\n");
+
         exit(0);
     }
     //TODO Implement states eStart, eWaitingToSend, eSending, eReceiving
