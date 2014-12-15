@@ -24,11 +24,16 @@
 	<input name="COMMAND" description="1 record, 2 playback, 3 pause" />
 	<input name="SPEED" description="Feedback speed" />
 	<input name="SYNC_IN" description="Sync in signal" />
-	<input name="TRIGGER" />
 
 	<output name="OUTPUT" description="Position output" size_set="INPUT" />
 	<output name="TORQUE" description="Torque limit output" size_set="INPUT" />
+
 	<output name="SYNC_OUT" description="Sync out signal" size_set="INPUT" />
+
+	<output name="OUT_VALUE" description="Output matrix for values" size_x="1024" size_y="20" />
+	<output name="OUT_TICK" description="Output matrix for ticks" size_x="1024" size_y="20" />
+	<output name="SIZE_X" description="Output array for size x of output matrices" size_set="INPUT" />
+	<output name="SIZE_Y" description="Output array for size y of output matrices" size_set="INPUT" />
 
 	<module class="TotalRecordKeyframe" />
 

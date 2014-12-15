@@ -74,18 +74,24 @@ public:
     void printFrames();
     void pre_play();
     void Reset();
+    void ExportOutputs();
+
     // pointers to inputs and outputs
     // and integers to represent their sizes
     float *     input_array;
     float *     input_speed;
     int         input_array_size;
     float *     sync_in;
-    float *     trigger;
 
     // outputs
     float *     output;
     float *     torque;
     float *     sync_out;
+
+    float **    output_values;
+    float **    output_ticks;
+    float *     output_size_x;
+    float *     output_size_y;
 
     // internal data storage
     std::vector<Keyframe> *     keyframes;

@@ -19,14 +19,22 @@
 	<module
 	  class = "Dynamixel"
 	  name = "Dynamixel"
-	  _device  = "/dev/ttyUSB0"
-	  device  = "/dev/cu.usbserial-A600cUuc"
+	  device  = "/dev/ttyUSB0"
+	  _device  = "/dev/cu.usbserial-A600cUuc"
 	  index_mode = "indirect"
 	  printf_info ="none"
 	  use_feedback ="true"
 	  baud_rate = "1000000"
 	  angle_unit = "degrees"
 	/>
+
+	<module
+		class = "SocketModule"
+		name = "SocketModule"
+		port  = "9100"
+		debugmode  = "false"
+	/>
+
 
 	<module
 		class="TotalRecordKeyframe"
@@ -60,8 +68,14 @@
 
 		<!--To Differentiator-->
 		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "MovingAverage" target = "INPUT" />
+		<connection sourcemodule = "MovingAverage" source = "OUTPUT" targetmodule = "Differentiator" target = "INPUT" /> 
 
-		<connection sourcemodule = "MovingAverage" source = "OUTPUT" targetmodule = "Differentiator" target = "INPUT" />
+		<!-- To SocketModule -->
+		<connection sourcemodule = "TotalRecordKeyframe" source = "OUT_VALUE" targetmodule = "SocketModule" target = "IN_VALUE" />
+		<connection sourcemodule = "TotalRecordKeyframe" source = "OUT_TICK" targetmodule = "SocketModule" target = "IN_TICK" />
+		<connection sourcemodule = "TotalRecordKeyframe" source = "SIZE_X" targetmodule = "SocketModule" target = "IN_SIZE_X" />
+		<connection sourcemodule = "TotalRecordKeyframe" source = "SIZE_Y" targetmodule = "SocketModule" target = "IN_SIZE_Y" />
+		<connection sourcemodule = "TotalRecordKeyframe" source = "SYNC_OUT" targetmodule = "SocketModule" target = "SYNC_IN" />
 
 	<!-- View -->
 		<view>

@@ -50,13 +50,21 @@ SocketModule::Init()
     Bind(destport,"destport");
     Bind(packet_size, "packet_size");
 
-    input_matrix_pos = GetInputMatrix("INPUT");
 
+    // Inputs
+    input_matrix_pos = GetInputMatrix("IN_VALUE");
+    input_matrix_tick = GetInputMatrix("IN_TICK");
+    input_matrix_sizeX = GetInputArray("IN_SIZE_X");
+    input_matrix_sizeY = GetInputArray("IN_SIZE_Y");
+
+    sync_in = GetInputArray("SYNC_IN");
+
+    // Outputs
     output_matrix_pos = GetOutputMatrix("OUT_VALUE");
     output_matrix_tick = GetOutputMatrix("OUT_TICK");
-
     size_param_x = GetOutputArray("SIZE_X");
     size_param_y = GetOutputArray("SIZE_Y");
+
 
 
     // 2 output matrix, en matrix med servo för varje rad och position i column, en för servo per rad och ticks i column
@@ -142,6 +150,20 @@ SocketModule::~SocketModule()
 void
 SocketModule::Tick()
 {
+    if(sync_in[0] == 1.0f){
+
+        print_matrix("ticks", input_matrix_tick, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
+
+        print_matrix("values", input_matrix_pos, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
+
+        printf("Sizes: %i, %i\n", (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
+
+        int * s;
+        const char * sendData = SetupSendData(input_matrix_tick, input_matrix_pos, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0], s);
+
+        printf("%s\n", sendData);
+        exit(0);
+    }
     //TODO Implement states eStart, eWaitingToSend, eSending, eReceiving
     // waiting for sync signal input for changing states from eWaitingToSend to eSending
     ReceiveData();
