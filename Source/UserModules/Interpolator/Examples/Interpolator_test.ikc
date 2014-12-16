@@ -43,7 +43,6 @@
 
 					<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
 
-					<connection sourcemodule = "MyConstant" source = "OUTPUT" targetmodule = "SocketModule" target = "INPUT" />
 
 					<connection sourcemodule  = "SocketModule" source  = "OUT_TICK" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
 					<connection sourcemodule  = "SocketModule" source  = "OUT_VALUE" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
