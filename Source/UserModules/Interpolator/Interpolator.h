@@ -36,7 +36,9 @@ public:
 
     void 		Init();
     void 		Tick();
-    float*      GetInterpolation(int tick);
+    float *     GetInterpolation(int tick);
+    float *     CubicInterpolationY ();
+    int         FindP2(int index_y);
 
     // pointers to inputs and outputs
     // and integers to represent their sizes

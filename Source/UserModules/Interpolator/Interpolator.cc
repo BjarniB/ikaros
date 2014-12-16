@@ -75,7 +75,7 @@ Interpolator::Tick()
 {
 
   Command cmd = (Command)input_command[0];
-  
+
   switch(current_state){
     case eStart:
       current_state = eInterpolating;
@@ -84,7 +84,8 @@ Interpolator::Tick()
       if(cmd == ePause){
         current_state = ePaused;
       }else{
-        copy_array(output_array, GetInterpolation(tick),(int)input_size_y[0]);
+        printf("TICK interpolating \n");
+        copy_array(output_array, CubicInterpolationY(),(int)input_size_y[0]);
       }
       break;
     case ePaused:
@@ -94,11 +95,10 @@ Interpolator::Tick()
       break;
   }
 
-  printf("TICK interpolate \n");
 
   //print_matrix("ticks", input_ticks, (int)input_size_x[0], (int)input_size_y[0]);
 
-  //print_matrix("values", input_values, (int)input_size_x[0], (int)input_size_y[0]);
+  print_array("output", output_array, (int)input_size_y[0]);
 
   printf("sizes: %i, %i \n", (int)input_size_x[0],(int)input_size_y[0]);
 
@@ -108,6 +108,65 @@ Interpolator::Tick()
   
 }
 
+float * 
+Interpolator::CubicInterpolationY (){
+
+  float* ret = create_array((int)input_size_y[0]);
+
+  for (int i = 0; i < input_size_y[0]; i++) {    
+    //Find all the point indexes
+    int p0,p1,p2,p3;
+    p2 = FindP2(i);
+
+    printf("P2: %i, %f \n", p2, input_values[i][p2]);
+
+    if(input_values[i][p2] == -1){
+      tick = 0;
+      break;
+    }
+
+    if(p2 == 1){
+      p0 = 0;
+      p1 = 0;
+      p3 = 2;
+    }else if(input_values[i][p2+1] == -1){
+      p0 = p2-2;
+      p1 = p2-1;
+      p3 = p2;
+    }else{
+      p0 = p2-2;
+      p1 = p2-1;
+      p3 = p2+1;
+    }
+
+    // Determine normalized t variable
+    float t = (tick-input_ticks[i][p1]) / (input_ticks[i][p2]-input_ticks[i][p1]);
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    printf("T values, %f, %f, %f \n", t, t2, t3);
+
+    // Interpolate
+    ret[i] = 0.5f * ((2.0f * input_values[i][p1]) +
+    (-input_values[i][p0] + input_values[i][p2]) * t +
+    (2.0f * input_values[i][p0] - 5.0f * input_values[i][p1] + 4 * input_values[i][p2] - input_values[i][p3]) * t2 +
+    (-input_values[i][p0] + 3.0f * input_values[i][p1] - 3.0f * input_values[i][p2] + input_values[i][p3]) * t3);
+
+  }
+  return ret;
+}
+
+int 
+Interpolator::FindP2(int index_y){
+  int index = 0;
+  for(int i = 0; i < input_size_x[0]; ++i){
+    index = i;
+    if(input_ticks[index_y][i] > tick || input_ticks[index_y][i] == -1){
+      break;
+    }
+  }
+  return index;
+}
 
 float*
 Interpolator::GetInterpolation(int tick)
@@ -150,6 +209,7 @@ Interpolator::GetInterpolation(int tick)
 
  return ret;
 }
+
 
 
 // Install the module. This code is executed during start-up.

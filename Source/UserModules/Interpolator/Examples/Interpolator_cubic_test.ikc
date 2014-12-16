@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+
+<group title="Interpolator Example">
+	
+	<author>
+		<name>Asas Innab</name>
+		<email>adi10ain@student.lu.se</email>
+		<affiliation>Lund University, LTH</affiliation>
+		<homepage>www.asasinnab.com</homepage>
+	</author>
+
+		<module
+			class = "Constant"
+			name = "Command"
+			outputsize = "3"
+			data = "0 0 0"
+		/>
+
+		<module
+			class = "Constant"
+			name = "Values"
+			outputsize  = "7"
+			data  = "100 200 100 200 100 200 -1"
+		/>
+
+		<module
+			class = "Constant"
+			name = "Ticks"
+			outputsize  = "7"
+			data  = "0 300 600 900 1000 1100 -1"
+		/>
+
+		<module
+			class = "Constant"
+			name = "SizeX"
+			outputsize  = "3"
+			data  = "7 0 0"
+		/>
+		
+		<module
+			class = "Constant"
+			name = "SizeY"
+			outputsize  = "3"
+			data  = "1 0 0"
+		/>
+
+		<module
+			class = "Interpolator"
+			name = "Interpolator"
+		/>
+
+
+		<connection sourcemodule = "Values" source = "OUTPUT" targetmodule = "Interpolator" target = "INPUT_VALUES" />
+		<connection sourcemodule = "Ticks" source = "OUTPUT" targetmodule = "Interpolator" target = "INPUT_TICKS" />
+		<connection sourcemodule = "SizeX" source = "OUTPUT" targetmodule = "Interpolator" target = "SIZE_X" />
+		<connection sourcemodule = "SizeY" source = "OUTPUT" targetmodule = "Interpolator" target = "SIZE_Y" />
+		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "Interpolator" target = "COMMAND" />
+
+		<view>
+			<object class="Plot " 
+				title="input curve 0"
+				module="Interpolator"
+				source="OUTPUT"
+				x="0" y="0" w="4" h="2"
+				min="0"
+				max="360"
+				color="green"
+				select="0"
+				/> 
+		
+		</view>
+
+	</group>
