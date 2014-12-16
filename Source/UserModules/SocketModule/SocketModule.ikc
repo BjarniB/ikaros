@@ -39,13 +39,10 @@
 
 	<output name="OUT_VALUE" description="Output position matrix" size_x="1024" size_y="20"/>
 	<output name="OUT_TICK" description="Output position matrix" size_x="1024" size_y="20"/>
-<<<<<<< HEAD
-	<output name="SIZE_X" description="Size x of matricies" size_set="3"/>
-	<output name="SIZE_Y" description="Size y of matricies" size_set="3"/>
-=======
+
 	<output name="SIZE_X" description="Size x of matricies" size_set="IN_SIZE_X"/>
 	<output name="SIZE_Y" description="Size y of matricies" size_set="IN_SIZE_Y"/>
->>>>>>> 932722a639b42cee70626b6269d34f3e34018ffe
+
 
 	<output name="COMMAND" descriptiom="Command output depending on incoming flag messages, must be a negative number" size_set="SYNC_IN" />
 

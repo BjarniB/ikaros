@@ -40,6 +40,7 @@
 		name = "SocketModule"
 		port  = "9100"
 		debugmode  = "false"
+		destport= "7777"
 	/>
 
 
@@ -59,6 +60,13 @@
 	<module
 		class="Differentiator"
 		name="Differentiator"
+	/>
+
+	<module
+		class = "Constant"
+		name = "CommandInt"
+		outputsize = "3"
+		data = "0 0 0"
 	/>
 
 	<!--Connections-->	
@@ -85,7 +93,7 @@
 		<connection sourcemodule = "TotalRecordKeyframe" source = "SYNC_OUT" targetmodule = "SocketModule" target = "SYNC_IN" />
 
 
-
+		<connection sourcemodule = "CommandInt" source ="OUTPUT" targetmodule = "Interpolator" target = "COMMAND" />
 
 		<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
 

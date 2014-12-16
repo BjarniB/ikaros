@@ -50,8 +50,7 @@
 		data  = "0 300 600 900 1000 1100 -1"
 	/>
 
-<<<<<<< HEAD
-=======
+
 	<module
 		class = "Constant"
 		name = "SizeX"
@@ -77,7 +76,7 @@
 		port  = "9100"
 		debugmode  = "false"
 	/>
->>>>>>> d2fccc485a3d26245e9e8fdd9a0a81dbfee14790
+
 
 		<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
 

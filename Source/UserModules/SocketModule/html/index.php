@@ -1,140 +1,48 @@
-<?php
-// Constants
-define("X", 0);
-define("Y", 1);
+<HTML>
+	<HEAD>
+		<TITLE>IKAROS DYNAMIXEL UI INTERACTOR</TITLE>
+		<script type="text/javascript"
+		src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+		<script src="http://code.highcharts.com/highcharts.js"></script>
+		<script src="http://code.highcharts.com/modules/exporting.js"></script>
+		<script src="js/draggable-points-master/draggable-points.js"></script>
+		<script src="js/graph.js"></script>
+		<script src="js/theme/dark.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="style/style.css">
 
 
-
-// generate sample curves
-if ($_GET['get'] == "curves") {
-	
-	$genCurves;
-	$genCurves .= "0:100 100:120 400:180";
-	$genCurves .= "#";
-	$genCurves .= "0:150 100:100 400:180";
-	$genCurves .= "#";
-	$genCurves .= "0:150 100:80 400:180";
-
-	$ret = fromStr($genCurves);
-
-	if(!($sock = socket_create(AF_INET, SOCK_DGRAM, 0)))
-	{
-		$errorcode = socket_last_error();
-		$errormsg = socket_strerror($errorcode);
-
-		die("Couldn't create socket: [$errorcode] $errormsg \n");
-	}
-
-//echo "Socket created \n";
-
-// Bind the source address
-	if( !socket_bind($sock, "127.0.0.1" , 8888) )
-	{
-		$errorcode = socket_last_error();
-		$errormsg = socket_strerror($errorcode);
-
-		die("Could not bind socket : [$errorcode] $errormsg \n");
-	}
-
-//echo "Socket bind OK \n";
-
-//Do some communication, this loop can handle multiple clients
-	while(1)
-	{
-		//echo "Waiting for data ... \n";
-
-    //Receive some data
-		$r = socket_recvfrom($sock, $buf, 512, 0, $remote_ip, $remote_port);
-
-		$buf = fromStr($buf);
-		echo json_encode($buf); 
-		break;
-    //echo "$remote_ip : $remote_port -- " . $buf;
-
-	}
-
-	socket_close($sock);
-	
-
-} else if ($_GET['send'] == "curves"){
-	$array = $_POST['servo'];
-	$send = toStr($array);
-	$send .= "\0";
-	
-
-	$server_ip   = '127.0.0.1';
-	$server_port = 9100;
-	print "Sending curves to IP $server_ip, port $server_port\n";
-
-	if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP)) {
-		
-		socket_sendto($socket, $send, strlen($send), 0, $server_ip, $server_port);
+	</HEAD>
+	<BODY>
+		<div id="container" style="min-width: 728px; height: 400px; margin: 0 auto"></div>
 
 		
-	} else {
-		print("can't create socket\n");
-	}
+</head>
+<body>
+	<div id="shiftPress" style="visibility: hidden">SHIFT IS PRESSED</div>
+
+		<!--<input type="text" name="curveName" value="curve name"><button onclick="addCurve()">Add curve</button><br>
+		<br>-->
+		<div id="setup">
+			PORT <input type="text" id="port" value="8080"> <button class="button" onClick="getCurves()">Get recorded data</button><br>
+			<input type="textbox" id="stringInput"/><button class="button" onClick="loadFromStr()">Load from string</button>
+			
 
 
+		</div>
+		<div id="interaction" style="visibility: hidden">
+			<button id="pauseButton" class="button" onClick="pause()">Pause</button>
+			<button id="playButton" class="button" onClick="play()" style="background: grey">Play</button><br><br>
+			<button class="button" onClick="saveFile()"> Save to file </button>
 
-}
+			<br><br>
 
+			PRESS SHIFT TO ADD A POINT<br>
+			
 
-
-// functions
-
-// convert matrix of curves to array of strings
-// returns an array of string representations for each curve
-// $array[curveNbr][pointNbr][x/y] -> $ret = curveNbr#x0:y0 x1:y1 x2:y2 ...
-function toStr($array) {
-	
-	$ret = "";
-	for ($i = 0; $i < count($array); $i++) {
-		if ($i > 0)
-			$ret .= "#";
+		</div>
 
 		
-		for ($n = 0; $n < count($array[$i]); $n++) {
-			if ($n > 0)
-				$ret .= " ";
-			$ret .= round($array[$i][$n][X],2).":".round($array[$i][$n][Y],2);
 
-		}
-		
-	}
-
-	return $ret;
-}
-
-//Modified after proposed format from Bjarni
-// suggestion: this format is easier to split with (curve1)tick0:val0 tick1:val1#(curve2)tick0:val0 tick1:val1 ...
-// 0:360 10:300 20:150#0:1 10:1 12:0.5
-
-// convert array of strings to matrix
-// returns a matrix for a an array of string representations of curves
-// $string = curveNbr#x0:y0 x1:y1 x2:y2 ... -> $array[curveNbr][pointNbr][x/y]
-function fromStr($string) {
-	
-
-	$array;
-
-	$curve = explode("#", $string);
-	
-	for ($i = 0; $i < count($curve); $i++) {
-		
-		$points = explode(" ", $curve[$i]);
-
-		for ($n = 0; $n < count($points); $n++) {
-			$cords = explode(":", $points[$n]);
-
-			$array[$i][$n][X] = $cords[0];
-			$array[$i][$n][Y] = $cords[1];
-
-		}
-
-	}
-
-	return $array;
-}
-
-?>
+	</BODY>
+</HTML>
