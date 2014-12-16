@@ -20,39 +20,77 @@
 		use_feedback ="true"
 		baud_rate = "1000000"
 		angle_unit = "degrees"
-		/>
+	/>
 		
-		<module
-			class = "Constant"
-			name = "MyConstant"
-			outputsize  = "2"
-			data  = "1 2"
-			/>
+	<module
+		class = "Constant"
+		name = "Sync"
+		outputsize  = "3"
+		data  = "1 0 0"
+	/>
 
-			<module
-				class = "Interpolator"
-				name = "Interpolator"
-				/>
+	<module
+		class = "Constant"
+		name = "Command"
+		outputsize = "3"
+		data = "0 0 0"
+	/>
 
-				<module
-					class = "SocketModule"
-					name = "SocketModule"
-					port  = "9100"
-					debugmode  = "false"
-					/>
+	<module
+		class = "Constant"
+		name = "Values"
+		outputsize  = "7"
+		data  = "100 200 100 200 100 200 -1"
+	/>
 
-					<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
+	<module
+		class = "Constant"
+		name = "Ticks"
+		outputsize  = "7"
+		data  = "0 300 600 900 1000 1100 -1"
+	/>
 
-					<connection sourcemodule = "MyConstant" source = "OUTPUT" targetmodule = "SocketModule" target = "INPUT" />
+	<module
+		class = "Constant"
+		name = "SizeX"
+		outputsize  = "3"
+		data  = "7 0 0"
+	/>
+	
+	<module
+		class = "Constant"
+		name = "SizeY"
+		outputsize  = "3"
+		data  = "1 0 0"
+	/>
 
-					<connection sourcemodule  = "SocketModule" source  = "OUT_TICK" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
-					<connection sourcemodule  = "SocketModule" source  = "OUT_VALUE" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
+	<module
+		class = "Interpolator"
+		name = "Interpolator"
+		/>
 
+	<module
+		class = "SocketModule"
+		name = "SocketModule"
+		port  = "9100"
+		debugmode  = "false"
+	/>
 
-					<connection sourcemodule  = "SocketModule" source  = "SIZE_X" targetmodule = "Interpolator" target  = "SIZE_X" />
-					<connection sourcemodule  = "SocketModule" source  = "SIZE_Y" targetmodule = "Interpolator" target  = "SIZE_Y" />
+		<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
 
-					<view>
+		<connection sourcemodule  = "SocketModule" source  = "OUT_TICK" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
+		<connection sourcemodule  = "SocketModule" source  = "OUT_VALUE" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
+		<connection sourcemodule  = "SocketModule" source  = "SIZE_X" targetmodule = "Interpolator" target  = "SIZE_X" />
+		<connection sourcemodule  = "SocketModule" source  = "SIZE_Y" targetmodule = "Interpolator" target  = "SIZE_Y" />
+		<connection sourcemodule  = "Command" source = "OUTPUT" targetmodule = "Interpolator" target = "COMMAND" />
+
+		<connection sourcemodule  = "Sync" source  = "OUTPUT" targetmodule = "SocketModule" target  = "SYNC_IN" />
+		<connection sourcemodule  = "Values" source  = "OUTPUT" targetmodule = "SocketModule" target  = "IN_VALUE" />
+		<connection sourcemodule  = "Ticks" source  = "OUTPUT" targetmodule = "SocketModule" target  = "IN_TICK" />
+		<connection sourcemodule  = "SizeX" source  = "OUTPUT" targetmodule = "SocketModule" target  = "IN_SIZE_X" />
+		<connection sourcemodule  = "SizeY" source = "OUTPUT" targetmodule = "SocketModule" target = "IN_SIZE_Y" />
+
+ 					<view>
 						<object class="Plot " 
 							title="input curve 0"
 							module="Interpolator"
