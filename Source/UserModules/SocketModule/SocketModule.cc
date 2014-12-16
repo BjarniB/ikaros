@@ -133,7 +133,7 @@ SocketModule::Init()
         exit(0);
     }
 
-    dest = mAddress(a,b,c,d,port);
+    dest = mAddress(a,b,c,d,destport);
 
     tick = 0;
 
@@ -167,7 +167,7 @@ SocketModule::Tick()
         bool send = socket.Send(dest, data.c_str(), sizeof(data));
 
         if(send)
-            printf("True\n");
+            printf("True, size: %i, %i\n", sizeof(data), data.size());
         else
             printf("False\n");
 
