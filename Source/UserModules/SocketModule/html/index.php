@@ -16,8 +16,45 @@ if ($_GET['get'] == "curves") {
 	$genCurves .= "0:150 100:80 400:180";
 
 	$ret = fromStr($genCurves);
+
+	if(!($sock = socket_create(AF_INET, SOCK_DGRAM, 0)))
+	{
+		$errorcode = socket_last_error();
+		$errormsg = socket_strerror($errorcode);
+
+		die("Couldn't create socket: [$errorcode] $errormsg \n");
+	}
+
+//echo "Socket created \n";
+
+// Bind the source address
+	if( !socket_bind($sock, "127.0.0.1" , 8888) )
+	{
+		$errorcode = socket_last_error();
+		$errormsg = socket_strerror($errorcode);
+
+		die("Could not bind socket : [$errorcode] $errormsg \n");
+	}
+
+//echo "Socket bind OK \n";
+
+//Do some communication, this loop can handle multiple clients
+	while(1)
+	{
+		//echo "Waiting for data ... \n";
+
+    //Receive some data
+		$r = socket_recvfrom($sock, $buf, 512, 0, $remote_ip, $remote_port);
+
+		$buf = fromStr($buf);
+		echo json_encode($buf); 
+		break;
+    //echo "$remote_ip : $remote_port -- " . $buf;
+
+	}
+
+	socket_close($sock);
 	
-	echo json_encode($ret); 
 
 } else if ($_GET['send'] == "curves"){
 	$array = $_POST['servo'];
@@ -31,12 +68,14 @@ if ($_GET['get'] == "curves") {
 
 	if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP)) {
 		
-			socket_sendto($socket, $send, strlen($send), 0, $server_ip, $server_port);
-		
+		socket_sendto($socket, $send, strlen($send), 0, $server_ip, $server_port);
+
 		
 	} else {
 		print("can't create socket\n");
 	}
+
+
 
 }
 

@@ -24,16 +24,20 @@
 
 			// POLL CURVE DATA FROM SERVER
 			function getData(){
-
+	
 
 				$.get( "index.php?get=curves", function( data, status) {
 
-					//window.alert(data + "\nStatus: " + status);
+					window.alert(data + "\nStatus: " + status);
 
 					var curves = JSON.parse(data);
 
 
 					var chart = $('#container').highcharts();
+
+					// set min and max values for y axis (0,360)
+					chart.yAxis[0].setExtremes(0,360);
+					
 					for (var i = 0; i < curves.length; i++) {
 
 					
@@ -44,7 +48,7 @@
 							dragMinY: 0,
 							dragMaxY: 360,
 							dragMinX: 0,
-							type: 'line'
+							type: 'spline'
 							
 						});
 
@@ -82,6 +86,9 @@
 		<br>-->
 		<br>
 		<button class="button" onClick="getData()">Get recorded data</button><br><br>
+
+<button class="button" onClick="play(30,400)">Play</button>
+		<br><br>
 
 		Interaction<br>
 		<input type="radio" name="interact" value="MOVE" checked>Move points

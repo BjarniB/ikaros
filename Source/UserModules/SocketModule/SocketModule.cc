@@ -136,7 +136,7 @@ SocketModule::Init()
     dest = mAddress(a,b,c,d,destport);
 
     tick = 0;
-
+    once = true;
 }
 
 
@@ -150,7 +150,7 @@ SocketModule::~SocketModule()
 void
 SocketModule::Tick()
 {
-    if(sync_in[0] == 1.0f){
+    if(sync_in[0] == 1.0f && once){
 
         print_matrix("ticks", input_matrix_tick, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
 
@@ -158,20 +158,20 @@ SocketModule::Tick()
 
         printf("Sizes: %i, %i\n", (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
 
-        int * s;
+        
         std::string data = SetupSendData(input_matrix_tick, input_matrix_pos, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
 
 
         printf("%s\n", data.c_str());
 
-        bool send = socket.Send(dest, data.c_str(), sizeof(data));
+        bool send = socket.Send(mAddress(127,0,0,1,8888), data.c_str(), data.size());
 
         if(send)
             printf("True, size: %i, %i\n", sizeof(data), data.size());
         else
             printf("False\n");
 
-        exit(0);
+        once = false;
     }
     //TODO Implement states eStart, eWaitingToSend, eSending, eReceiving
     // waiting for sync signal input for changing states from eWaitingToSend to eSending
@@ -201,12 +201,12 @@ SocketModule::ReceiveData(){
                 sender.GetA(), sender.GetB(), sender.GetC(), sender.GetD(), 
                 sender.GetPort(), bytes_read , buffer);
 
-             size_param_x[0] = sizeof(buffer);
-             size_param_y[0] = 3;
+            size_param_x[0] = sizeof(buffer);
+            size_param_y[0] = 3;
 
-             char * buf = (char*)buffer;
+            char * buf = (char*)buffer;
 
-             printf("%s ; %i, %i\n", buf, (int)size_param_x[0], (int)size_param_y[0]);
+            printf("%s ; %i, %i\n", buf, (int)size_param_x[0], (int)size_param_y[0]);
 
              //float ** n1 = ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]);
              //float ** n2 = ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]);
@@ -219,12 +219,12 @@ SocketModule::ReceiveData(){
 
              //exit(0);
 
-            printf("changing matrix\n");
+ 
 
-            copy_matrix(output_matrix_pos, ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
-            copy_matrix(output_matrix_tick, ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
+                copy_matrix(output_matrix_pos, ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
+                copy_matrix(output_matrix_tick, ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
 
-            printf("chaning done\n");
+            }
         }
 
     }

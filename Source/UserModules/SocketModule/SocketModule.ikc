@@ -26,7 +26,7 @@
 	<parameter name="b" type="int" default="0" description="second part of destination address" />
 	<parameter name="c" type="int" default="0" description="third part of destination address" />
 	<parameter name="d" type="int" default="1" description="fourth part of destination address" />
-	<parameter name="destport" type="int" default="8800" description="port of destination address" />
+	<parameter name="destport" type="int" default="9999" description="port of destination address" />
 
 	<parameter name="packet_size" type="int" default="1024" description="the maximum size of packets sent and received" />
 

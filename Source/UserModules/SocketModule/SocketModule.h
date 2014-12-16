@@ -79,8 +79,7 @@ public:
 
     int         tick;
 
-    int *       send_size;
-
+    bool once;
     // TODO add states
 };
 

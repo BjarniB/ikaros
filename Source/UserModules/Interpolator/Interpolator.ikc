@@ -14,8 +14,6 @@
 		<module
 			class="Interpolator"
 			name="Interpolator"
-			parameter1 = "3.14"
-			debug = "true"
 		/>
 	</example>
 
