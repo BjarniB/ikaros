@@ -65,6 +65,8 @@ SocketModule::Init()
     size_param_x = GetOutputArray("SIZE_X");
     size_param_y = GetOutputArray("SIZE_Y");
 
+    output_command = GetOutputArray("COMMAND");
+
 
 
     // 2 output matrix, en matrix med servo för varje rad och position i column, en för servo per rad och ticks i column
@@ -137,6 +139,8 @@ SocketModule::Init()
 
     tick = 0;
     once = true;
+
+    current_state = eStart;
 }
 
 
@@ -150,42 +154,51 @@ SocketModule::~SocketModule()
 void
 SocketModule::Tick()
 {
-    if(sync_in[0] == 1.0f && once){
-
-        print_matrix("ticks", input_matrix_tick, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
-
-        print_matrix("values", input_matrix_pos, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
-
-        printf("Sizes: %i, %i\n", (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
-
-        
-        std::string data = SetupSendData(input_matrix_tick, input_matrix_pos, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
-
-
-        printf("%s\n", data.c_str());
-
-        bool send = socket.Send(mAddress(127,0,0,1,8888), data.c_str(), data.size());
-
-        if(send)
-            printf("True, size: %i, %i\n", sizeof(data), data.size());
-        else
-            printf("False\n");
-
-        once = false;
+    switch(current_state){
+        case eStart:
+            current_state = eWaitingToSend;
+            break;
+        case eWaitingToSend:
+            if(sync_in[0] == 1.0f){
+                current_state = eSending;
+            }
+            break;
+        case eSending:
+            SendData();
+            break;
+        case eReceiving:
+            ReceiveData();
+        default:
+            break;
     }
-    //TODO Implement states eStart, eWaitingToSend, eSending, eReceiving
-    // waiting for sync signal input for changing states from eWaitingToSend to eSending
-    ReceiveData();
 
+    // if(sync_in[0] == 1.0f && once){
+
+    //     print_matrix("ticks", input_matrix_tick, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
+
+    //     print_matrix("values", input_matrix_pos, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
+
+    //     printf("Sizes: %i, %i\n", (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
+
+    //     once = false;
+    // }
 }
 
 
 // Send data as tick:pos tick:pos#tick:pos tick:pos
 // # delimits different servos : delimits tick and position value
 void
-SocketModule::SendData(void * data){
-    //TODO structure data in some special manner for interface interpretation
-    socket.Send( dest, data, sizeof(data) );
+SocketModule::SendData(){
+    std::string data = SetupSendData(input_matrix_tick, input_matrix_pos, (int)input_matrix_sizeX[0], (int)input_matrix_sizeY[0]);
+
+    printf("%s\n", data.c_str());
+
+    bool send = socket.Send(dest, data.c_str(), data.size());
+
+    if(send)
+        current_state = eReceiving;
+    else
+        printf("Failed to send data, trying again next tick\n");
 }
 
 void 
@@ -196,10 +209,14 @@ SocketModule::ReceiveData(){
     
 
     if ( !bytes_read ){}
-        else{   
-            printf( "received packet from %d.%d.%d.%d:%d (%d bytes) (%s)\n", 
-                sender.GetA(), sender.GetB(), sender.GetC(), sender.GetD(), 
-                sender.GetPort(), bytes_read , buffer);
+    else{   
+        printf( "received packet from %d.%d.%d.%d:%d (%d bytes) (%s)\n", 
+            sender.GetA(), sender.GetB(), sender.GetC(), sender.GetD(), 
+            sender.GetPort(), bytes_read , buffer);
+
+        if(buffer[0] == '-'){
+            output_command[0] = ParseFlag((char*)buffer,sizeof(buffer));    // Parse flag and output as command
+        }else{
 
             size_param_x[0] = sizeof(buffer);
             size_param_y[0] = 3;
@@ -208,26 +225,18 @@ SocketModule::ReceiveData(){
 
             printf("%s ; %i, %i\n", buf, (int)size_param_x[0], (int)size_param_y[0]);
 
-             //float ** n1 = ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]);
-             //float ** n2 = ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]);
+            //float ** n1 = ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]);
+            //float ** n2 = ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]);
+            //printf("Pare DONE\n");
+            //print_matrix("ticks", n1, (int)size_param_x[0], (int)size_param_y[0]);
+            //print_matrix("values", n2, (int)size_param_x[0], (int)size_param_y[0]);
+            //exit(0);
 
-             //printf("Pare DONE\n");
-
-  //print_matrix("ticks", n1, (int)size_param_x[0], (int)size_param_y[0]);
-
-  //print_matrix("values", n2, (int)size_param_x[0], (int)size_param_y[0]);
-
-             //exit(0);
-
- 
-
-                copy_matrix(output_matrix_pos, ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
-                copy_matrix(output_matrix_tick, ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
-
-            }
+            copy_matrix(output_matrix_pos, ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
+            copy_matrix(output_matrix_tick, ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
         }
-
-    }
+    }   
+}
 
 
 

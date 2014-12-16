@@ -53,6 +53,12 @@ public:
 
     // parameter values
     int         tick;
+
+    enum State {eStart=0, eInterpolating, ePaused};
+    State current_state;
+
+    enum Command {eNone=0, eInterpolate=-1, ePause=-2};  
+    float *     input_command;
 };
 
 #endif

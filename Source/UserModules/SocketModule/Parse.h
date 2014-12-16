@@ -124,4 +124,13 @@ namespace parse{
 		return ret;
 	}
 
+	float ParseFlag(char * buf, int size){
+		std::string val = "";
+
+		for(int i = 0; i < size; ++i){
+			val += buf[i];
+		}
+
+		return stof(val,NULL);
+	}
 }; 

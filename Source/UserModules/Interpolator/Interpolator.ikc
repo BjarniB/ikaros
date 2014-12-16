@@ -21,6 +21,7 @@
 	<input name="INPUT_VALUES" description="Input matrix of values" />
 	<input name="SIZE_X" />
 	<input name="SIZE_Y" />
+	<input name="COMMAND" />
 
 	<output name="OUTPUT" description="Array of output with all curves, order is important" size_set="SIZE_Y" />
 

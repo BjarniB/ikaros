@@ -42,7 +42,7 @@ public:
 
     void 		Init();
     void 		Tick();
-    void        SendData(void * data);
+    void        SendData();
     void        ReceiveData();
 
     // pointers to inputs and outputs
@@ -60,6 +60,7 @@ public:
     float *     size_param_x;
     float *     size_param_y;
 
+    float *     output_command;
 
     float *     output;
     std::vector<float*>      output_vector;
@@ -80,7 +81,10 @@ public:
     int         tick;
 
     bool once;
-    // TODO add states
+
+    enum State {eStart=0, eWaitingToSend, eSending, eReceiving};
+    State current_state;
+
 };
 
 #endif

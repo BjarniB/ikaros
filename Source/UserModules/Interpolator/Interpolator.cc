@@ -47,10 +47,14 @@ Interpolator::Init()
   input_size_y = GetInputArray("SIZE_Y");
   input_size_x = GetInputArray("SIZE_X");
 
+  input_command = GetInputArray("COMMAND");
+
   output_array = GetOutputArray("OUTPUT");
   output_array_size = GetOutputSize("OUTPUT");
 
   tick = 0;
+
+  current_state = eStart;
 
 }
 
@@ -70,6 +74,26 @@ void
 Interpolator::Tick()
 {
 
+  Command cmd = (Command)input_command[0];
+  
+  switch(current_state){
+    case eStart:
+      current_state = eInterpolating;
+      break;
+    case eInterpolating:
+      if(cmd == ePause){
+        current_state = ePaused;
+      }else{
+        copy_array(output_array, GetInterpolation(tick),(int)input_size_y[0]);
+      }
+      break;
+    case ePaused:
+      if(cmd == eInterpolate)
+        current_state = eInterpolating;
+    default:
+      break;
+  }
+
   printf("TICK interpolate \n");
 
   //print_matrix("ticks", input_ticks, (int)input_size_x[0], (int)input_size_y[0]);
@@ -78,16 +102,9 @@ Interpolator::Tick()
 
   printf("sizes: %i, %i \n", (int)input_size_x[0],(int)input_size_y[0]);
 
-  copy_array(output_array, GetInterpolation(tick),(int)input_size_y[0]);
-
-  
   tick++;
 
   printf("TICK : %i\n", tick);
-
-  // play from beging if reached end
-  if (tick >= 400)
-    tick = 0;
   
 }
 
@@ -113,6 +130,7 @@ Interpolator::GetInterpolation(int tick)
     for (int n = 0; n < input_size_x[0]; n++) {
            printf("check %i %i %f \n",i,n,input_ticks[i][n]);
       if(input_values[i][n] == -1){
+        tick = 0;
         break;
       }
 
