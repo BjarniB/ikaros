@@ -38,7 +38,9 @@ public:
     void 		Tick();
     float *     GetInterpolation(int tick);
     float *     CubicInterpolationY ();
+    float *     catmullRomSpline();
     int         FindP2(int index_y);
+
 
     // pointers to inputs and outputs
     // and integers to represent their sizes
@@ -51,11 +53,30 @@ public:
 
     float *     output_array;
     int         output_array_size;
-
+    float *     output_test;
+    float *     output_test2;
 
     // parameter values
     int         tick;
-
+    
+    float       tau;
+    float       M11;
+    float       M12;
+    float       M13;
+    float       M14;
+    float       M21;
+    float       M22;
+    float       M23;
+    float       M24;
+    float       M31;
+    float       M32;
+    float       M33;
+    float       M34;
+    float       M41;
+    float       M42;
+    float       M43;
+    float       M44;
+      
     enum State {eStart=0, eInterpolating, ePaused};
     State current_state;
 

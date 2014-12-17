@@ -20,14 +20,14 @@
 			class = "Constant"
 			name = "Values"
 			outputsize  = "7"
-			data  = "100 200 100 200 100 200 -1"
+			data  = "100 200 200 100 100 200 -1"
 		/>
 
 		<module
 			class = "Constant"
 			name = "Ticks"
 			outputsize  = "7"
-			data  = "0 300 600 900 1000 1100 -1"
+			data  = "0 300 600 900 1200 1500 -1"
 		/>
 
 		<module
@@ -61,12 +61,32 @@
 				title="input curve 0"
 				module="Interpolator"
 				source="OUTPUT"
-				x="0" y="0" w="4" h="2"
-				min="0"
-				max="360"
+				x="0" y="0" w="4" h="1"
+				min="100"
+				max="200"
 				color="green"
 				select="0"
-				/> 
+			/> 
+			<object class="Plot " 
+				title="input curve 0"
+				module="Interpolator"
+				source="OUTPUT_TEST"
+				x="0" y="1" w="4" h="1"
+				min="100"
+				max="200"
+				color="green"
+				select="0"
+			/> 
+			<object class="Plot " 
+				title="input curve 0"
+				module="Interpolator"
+				source="OUTPUT_TEST2"
+				x="0" y="2" w="4" h="1"
+				min="100"
+				max="200"
+				color="green"
+				select="0"
+			/> 
 		
 		</view>
 

@@ -14,8 +14,11 @@
 		<module
 			class="Interpolator"
 			name="Interpolator"
+			tau="0.001"
 		/>
 	</example>
+
+	<parameter name="tau" type="float" default="0.001" description="Tau parameter for sharpness of interpolation" />
 
 	<input name="INPUT_TICKS" description="Input matrix of ticks" />
 	<input name="INPUT_VALUES" description="Input matrix of values" />
@@ -24,6 +27,8 @@
 	<input name="COMMAND" />
 
 	<output name="OUTPUT" description="Array of output with all curves, order is important" size_set="SIZE_Y" />
+	<output name="OUTPUT_TEST" descriptiom="TEst output array" size_set="SIZE_Y" />
+	<output name="OUTPUT_TEST2" descriptiom="TEst output array" size_set="SIZE_Y" />
 
 	<module class="Interpolator" />
 
