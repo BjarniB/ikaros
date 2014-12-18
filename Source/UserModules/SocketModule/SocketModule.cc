@@ -218,10 +218,11 @@ SocketModule::ReceiveData(){
             output_command[0] = ParseFlag((char*)buffer,sizeof(buffer));    // Parse flag and output as command
         }else{
 
-            size_param_x[0] = sizeof(buffer);
-            size_param_y[0] = 3;
 
             char * buf = (char*)buffer;
+
+            size_param_x[0] = CalcSizeX(buf,sizeof(buffer));
+            size_param_y[0] = input_matrix_sizeY[0];
 
             printf("%s ; %i, %i\n", buf, (int)size_param_x[0], (int)size_param_y[0]);
 

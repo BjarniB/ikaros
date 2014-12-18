@@ -10,6 +10,28 @@
 	</author>
 
 		<module
+	  class = "Dynamixel"
+	  name = "Dynamixel"
+	  device  = "/dev/ttyUSB0"
+	  _device  = "/dev/cu.usbserial-A600cUuc"
+	  index_mode = "indirect"
+	  printf_info ="none"
+	  use_feedback ="true"
+	  baud_rate = "1000000"
+	  angle_unit = "degrees"
+	/>
+
+		<module
+	      class = "FunctionGenerator"
+	      name = "FunctionGenerator"
+	      type = "square"
+	      frequency = "0.005"
+	      offset = "100"
+	      amplitude = "100"
+	      shift = "0"
+	  	/>
+
+		<module
 			class = "Constant"
 			name = "Command"
 			outputsize = "3"
@@ -19,15 +41,17 @@
 		<module
 			class = "Constant"
 			name = "Values"
-			outputsize  = "7"
-			data  = "100 200 200 100 100 200 -1"
+			outputsize_x  = "7"
+			outputsize_y  = "3"
+			data  = "0.01 0.3 0.01 0.3 0.01 0.3 -1 0.9 0.9 0.9 0.9 0.9 0.9 -1 0.9 0.9 0.9 0.9 0.9 0.9 -1"
 		/>
 
 		<module
 			class = "Constant"
 			name = "Ticks"
-			outputsize  = "7"
-			data  = "0 300 600 900 1200 1500 -1"
+			outputsize_x  = "7"
+			outputsize_y  = "3"
+			data  = "0 500 1000 1500 2000 2500 -1 0 500 1000 1500 2000 2500 -1 0 500 1000 1500 2000 2500 -1"
 		/>
 
 		<module
@@ -41,7 +65,7 @@
 			class = "Constant"
 			name = "SizeY"
 			outputsize  = "3"
-			data  = "1 0 0"
+			data  = "3 0 0"
 		/>
 
 		<module
@@ -56,21 +80,24 @@
 		<connection sourcemodule = "SizeY" source = "OUTPUT" targetmodule = "Interpolator" target = "SIZE_Y" />
 		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "Interpolator" target = "COMMAND" />
 
+		<connection sourcemodule = "FunctionGenerator" source = "OUTPUT" targetmodule = "Dynamixel" target = "GOAL_POSITION" />
+		<connection sourcemodule = "Interpolator" source = "OUTPUT" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+
 		<view>
 			<object class="Plot " 
 				title="input curve 0"
 				module="Interpolator"
 				source="OUTPUT"
 				x="0" y="0" w="4" h="1"
-				min="100"
-				max="200"
+				min="0"
+				max="1"
 				color="green"
 				select="0"
 			/> 
 			<object class="Plot " 
 				title="input curve 0"
-				module="Interpolator"
-				source="OUTPUT_TEST"
+				module="Dynamixel"
+				source="FEEDBACK_PRESENT_POSITION"
 				x="0" y="1" w="4" h="1"
 				min="100"
 				max="200"
@@ -79,8 +106,8 @@
 			/> 
 			<object class="Plot " 
 				title="input curve 0"
-				module="Interpolator"
-				source="OUTPUT_TEST2"
+				module="FunctionGenerator"
+				source="OUTPUT"
 				x="0" y="2" w="4" h="1"
 				min="100"
 				max="200"
