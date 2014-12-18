@@ -59,6 +59,7 @@ public:
     // parameter values
     int         tick;
     
+    // Catmull Rom tau and M matrix parameters
     float       tau;
     float       M11;
     float       M12;
@@ -77,9 +78,11 @@ public:
     float       M43;
     float       M44;
       
+    // States
     enum State {eStart=0, eInterpolating, ePaused};
     State current_state;
 
+    // Command to pause
     enum Command {eNone=0, eInterpolate=-1, ePause=-2};  
     float *     input_command;
 };

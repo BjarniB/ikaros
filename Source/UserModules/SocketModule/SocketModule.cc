@@ -229,10 +229,16 @@ SocketModule::ReceiveData(){
         }
         else{
 
+<<<<<<< HEAD
             size_param_x[0] = sizeof(buffer);
             size_param_y[0] = 3; // DETTA MÅSTE GÖRAS GENERELLT
+=======
+>>>>>>> 15eeb9abea3c7c35825af26784d8949dc6525196
 
             char * buf = (char*)buffer;
+
+            size_param_x[0] = CalcSizeX(buf,sizeof(buffer));
+            size_param_y[0] = input_matrix_sizeY[0];
 
             printf("%s ; %i, %i\n", buf, (int)size_param_x[0], (int)size_param_y[0]);
 
