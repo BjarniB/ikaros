@@ -131,6 +131,18 @@ namespace parse{
 			val += buf[i];
 		}
 
+
+		return stof(val,NULL);
+	}
+
+	float ParsePlayTick(char * buf, int size){
+		std::string val = "";
+
+		for(int i = 1; i < size; ++i){
+			val += buf[i];
+		}
+
+
 		return stof(val,NULL);
 	}
 }; 

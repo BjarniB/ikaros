@@ -215,11 +215,22 @@ SocketModule::ReceiveData(){
             sender.GetPort(), bytes_read , buffer);
 
         if(buffer[0] == '-'){
+            printf("parsing\n");
             output_command[0] = ParseFlag((char*)buffer,sizeof(buffer));    // Parse flag and output as command
-        }else{
+            printf("parsing done %f\n", output_command[0] );
+
+        }
+        else if(buffer[0] == 'P'){
+            printf("parsing\n");
+            output_command[0] = ParsePlayTick((char*)buffer,sizeof(buffer));    // Parse flag and output as command
+            printf("parsing done %f\f", output_command[0] );
+            
+            
+        }
+        else{
 
             size_param_x[0] = sizeof(buffer);
-            size_param_y[0] = 3;
+            size_param_y[0] = 3; // DETTA MÅSTE GÖRAS GENERELLT
 
             char * buf = (char*)buffer;
 
