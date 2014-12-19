@@ -5,7 +5,7 @@
 #include <sstream>
 
 namespace parse{
-	
+
 	float ** ParseValue1(char * buf, int buf_size, int sizeY){
 		float** mat = create_matrix(buf_size,sizeY);
 		int x = 0;
@@ -21,7 +21,6 @@ namespace parse{
 				y++;
 				x = 0;
 				skip = false;
-				printf("\n");
 				break;
 			case ' ':
 				x++;
@@ -29,14 +28,12 @@ namespace parse{
 				break;
 			case ':':
 				mat[y][x] = stof(val,NULL);
-				printf("%f ", mat[y][x]);
 				val = "";
 				skip = true;
 				break;
 			default:
 				if(!skip){
 					val.push_back(buf[i]);
-					printf("%s\n", val.c_str());
 				}
 				break;
 			}
@@ -59,12 +56,10 @@ namespace parse{
 				mat[y][x+1] = -1;
 			case ' ':
 				mat[y][x] = stof(val,NULL);
-				printf("%f ", mat[y][x]);
 				val = "";
 				if(buf[i] == '#' || buf[i] == '\0'){
 					y++;
 					x = 0;
-					printf("\n");
 				}else{
 					x++;
 				}
@@ -76,7 +71,6 @@ namespace parse{
 			default:
 				if(!skip){
 					val.push_back(buf[i]);
-					printf("%s \n", val.c_str());
 				}
 				break;
 			}
@@ -110,7 +104,6 @@ namespace parse{
 				}
 			}
 		}
-		printf("%s\n", ret.c_str());
 		return ret;
 	}
 
@@ -143,7 +136,6 @@ namespace parse{
 		for(int i = 1; i < size; ++i){
 			val += buf[i];
 		}
-
 
 		return stof(val,NULL);
 	}

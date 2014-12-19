@@ -51,18 +51,14 @@ public:
     float **    input_matrix_tick;
     float *     input_matrix_sizeX;
     float *     input_matrix_sizeY;
+    float *     sync_in;
 
     float **    output_matrix_pos;
     float **    output_matrix_tick;
     float *     size_param_x;
     float *     size_param_y;
-
     float *     output_command;
 
-    float *     output;
-    std::vector<float*>      output_vector;
-
-    float *     sync_in;
 
     //parameter values
     bool        debugmode;

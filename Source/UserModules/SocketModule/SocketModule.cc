@@ -138,22 +138,32 @@ SocketModule::ReceiveData(){
 
     if ( !bytes_read ){}
     else{   
-        printf( "received packet from %d.%d.%d.%d:%d (%d bytes) (%s)\n", 
-            sender.GetA(), sender.GetB(), sender.GetC(), sender.GetD(), 
-            sender.GetPort(), bytes_read , buffer);
+        if(debugmode){
+            printf( "received packet from %d.%d.%d.%d:%d (%d bytes) (%s)\n", 
+                sender.GetA(), sender.GetB(), sender.GetC(), sender.GetD(), 
+                sender.GetPort(), bytes_read , buffer);
+        }
 
         // If a flag is sent
         if(buffer[0] == '-'){
-            printf("parsing\n");
+            if(debugmode)
+                printf("parsing\n");
+
             output_command[0] = ParseFlag((char*)buffer,sizeof(buffer));    // Parse flag and output as command
-            printf("parsing done %f\n", output_command[0] );
+            
+            if(debugmode)
+                printf("parsing done %f\n", output_command[0] );
 
         }
         // Package is flagged as P
         else if(buffer[0] == 'P'){
-            printf("parsing\n");
+            if(debugmode)
+                printf("parsing\n");
+            
             output_command[0] = ParsePlayTick((char*)buffer,sizeof(buffer));    // Parse flag and output as command
-            printf("parsing done %f\f", output_command[0] );
+            
+            if(debugmode)
+                printf("parsing done %f\f", output_command[0] );
                         
         }
         // Parse as usual if not flagged
@@ -163,7 +173,8 @@ SocketModule::ReceiveData(){
             size_param_x[0] = sizeof(buffer);
             size_param_y[0] = input_matrix_sizeY[0];
 
-            printf("%s ; %i, %i\n", buf, (int)size_param_x[0], (int)size_param_y[0]);
+            if(debugmode)
+                printf("%s ; %i, %i\n", buf, (int)size_param_x[0], (int)size_param_y[0]);
 
             copy_matrix(output_matrix_pos, ParseValue2(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);
             copy_matrix(output_matrix_tick, ParseValue1(buf,(int)size_param_x[0], (int)size_param_y[0]), (int)size_param_x[0], (int)size_param_y[0]);

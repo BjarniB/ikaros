@@ -107,13 +107,14 @@ Interpolator::Tick()
         printf("switching to pause\n");
         //exit(0);
       }else{
-        printf("TICK interpolating \n");
-        
+
         if (cmd > 0)  {
-          printf("cmd is %i", cmd);
+          if(debugmode)
+            printf("cmd is %i", cmd);
+          
           tick = cmd; 
         }
-        
+
         //USE CATMULL ROM WITH DEFINED TAU MATRIX
         copy_array(output_array, catmullRomSpline(), (int)input_size_y[0]);
         //copy_array(output_test, LinearInterpolation(tick), (int)input_size_y[0]);
@@ -126,16 +127,15 @@ Interpolator::Tick()
       break;
   }
 
-
-  //print_matrix("ticks", input_ticks, (int)input_size_x[0], (int)input_size_y[0]);
-
-  print_array("output", output_test2, (int)input_size_y[0]);
-
-  printf("sizes: %i, %i \n", (int)input_size_x[0],(int)input_size_y[0]);
+  if(debugmode){
+    print_array("output", output_test2, (int)input_size_y[0]);
+    printf("sizes: %i, %i \n", (int)input_size_x[0],(int)input_size_y[0]);
+  }
 
   tick++;
 
-  printf("TICK : %i\n", tick);
+  if(debugmode)
+    printf("TICK : %i\n", tick);
   
 }
 
@@ -151,7 +151,8 @@ Interpolator::catmullRomSpline() {
     int v0,v1,v2,v3;
     v2 = FindP2(i);
 
-    printf("V2: %i, %f \n", v2, input_values[i][v2]);
+    if(debugmode)
+      printf("V2: %i, %f \n", v2, input_values[i][v2]);
 
     if(input_values[i][v2] == -1){
       tick = 0;
@@ -213,7 +214,8 @@ Interpolator::LinearInterpolation(int tick)
 
 
     for (int n = 0; n < input_size_x[0]; n++) {
-           printf("check %i %i %f \n",i,n,input_ticks[i][n]);
+      if(debugmode)
+        printf("check %i %i %f \n",i,n,input_ticks[i][n]);
       if(input_values[i][n] == -1){
         tick = 0;
         break;
