@@ -38,9 +38,9 @@
 	<module
 		class = "SocketModule"
 		name = "SocketModule"
-		port  = "9100"
+		port  = "9200"
 		debugmode  = "false"
-		destport= "7777"
+		destport= "1338"
 	/>
 
 
@@ -76,6 +76,7 @@
 		<connection sourcemodule = "TotalRecordKeyframe" source = "TORQUE" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
 
 		<!--To keyframe rec-->
+
 		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "COMMAND" />
 		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "TotalRecordKeyframe" target = "INPUT" />
 		<connection sourcemodule = "Differentiator" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "SPEED" />
@@ -92,10 +93,13 @@
 		<connection sourcemodule = "TotalRecordKeyframe" source = "SIZE_Y" targetmodule = "SocketModule" target = "IN_SIZE_Y" />
 		<connection sourcemodule = "TotalRecordKeyframe" source = "SYNC_OUT" targetmodule = "SocketModule" target = "SYNC_IN" />
 
-
+<!-- added by asas -->
+		<connection sourcemodule = "SocketModule" source="COMMAND" targetmodule = "Interpolator" target="COMMAND" />
+<!--
 		<connection sourcemodule = "CommandInt" source ="OUTPUT" targetmodule = "Interpolator" target = "COMMAND" />
-
+-->
 		<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
+
 
 		<connection sourcemodule  = "SocketModule" source  = "OUT_TICK" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
 		<connection sourcemodule  = "SocketModule" source  = "OUT_VALUE" targetmodule = "Interpolator" target  = "INPUT_VALUES" />

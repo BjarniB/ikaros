@@ -118,6 +118,9 @@ TotalRecordKeyframe::Tick()
    
     Command cmd = (Command)command[0];
 
+ 
+
+
     if(current_state == eStart){
         for(int i = 0; i < input_array_size; ++i){
             output[i] = input_array[i];

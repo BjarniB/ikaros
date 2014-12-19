@@ -107,9 +107,17 @@ Interpolator::Tick()
       if(cmd == ePause){
         // perhaps use a bool attribute to finish playing the current motion before changing state
         current_state = ePaused;
+        printf("switching to pause\n");
+        //exit(0);
       }else{
         printf("TICK interpolating \n");
         //USE CATMULL ROM WITH DEFINED TAU MATRIX
+        
+        if (cmd > 0)  {
+          printf("cmd is %i", cmd);
+          tick = cmd;
+          
+        }
         copy_array(output_array, catmullRomSpline(), (int)input_size_y[0]);
         copy_array(output_test2, CubicInterpolationY(),(int)input_size_y[0]);
         //copy_array(output_test, GetInterpolation(tick), (int)input_size_y[0]);

@@ -4,104 +4,96 @@ define("X", 0);
 define("Y", 1);
 
 
+// server at Ikaros
+$server_ip = '127.0.0.1';
+$send_port = '9200'; // send to this port
 
-// generate sample curves
-if ($_GET['get'] == "curves") {
-	
-	$genCurves;
-	$genCurves .= "0:100 100:120 400:180";
-	$genCurves .= "#";
-	$genCurves .= "0:150 100:100 400:180";
-	$genCurves .= "#";
-	$genCurves .= "0:150 100:80 400:180";
+// default receive port
+$recieve_port = '1337'; // receive at this port
 
-	$ret = fromStr($genCurves);
+// create the socket
+$socket = createSocket();
 
-	//echo json_encode($ret);
 
-	$port = 8080;
+
+// handle get commands
+if (isset($_GET['get'])) {
+
+	// use userdefined port if set from WEB UI
 	if (isset($_GET['port']))
-		$port = $_GET['port'];
+		$recieve_port = $_GET['port'];
 
-	//echo $port;
+	// Bind the socket to server sender
+	bindSocket($socket, $server_ip, $recieve_port);
 
 
-
-
-	if(!($sock = socket_create(AF_INET, SOCK_DGRAM, 0)))
-	{
-		$errorcode = socket_last_error();
-		$errormsg = socket_strerror($errorcode);
-
-		die("Couldn't create socket: [$errorcode] $errormsg \n");
-	}
-
-//echo "Socket created \n";
-
-// Bind the source address
-	if( !socket_bind($sock, "127.0.0.1" , $port) )
-	{
-		$errorcode = socket_last_error();
-		$errormsg = socket_strerror($errorcode);
-
-		die("Could not bind socket : [$errorcode] $errormsg \n");
-	}
-
-//echo "Socket bind OK \n";
-
-//Do some communication, this loop can handle multiple clients
+	//Waiting to receive
 	while(1)
 	{
-		//echo "Waiting for data ... \n";
-
-    //Receive some data
-		$r = socket_recvfrom($sock, $buf, 512, 0, $remote_ip, $remote_port);
+		$r = socket_recvfrom($socket, $buf, 512, 0, $remote_ip, $remote_port);
 
 		$buf = fromStr($buf);
 		echo json_encode($buf); 
 		break;
-    //echo "$remote_ip : $remote_port -- " . $buf;
-
 	}
 
-	socket_close($sock);
-	
 
-} else if ($_GET['send'] == "curves"){
-	$array = $_POST['curves'];
-	$send = toStr($array);
+// handle send commands
+} else if (isset($_GET['send'])){
+
+
+	switch ($_GET['send']) {
+
+		case "pause":
+			$send = "-2"; // Pause flag 
+			break;
+
+		case "play":
+			$send = "-1"; // Play flag 
+
+			if (isset($_GET['tick']))
+				$send = "P".$_GET['tick']; // P - play tick flag
+			break;
+
+		case "curves":
+			$send = $_POST['curves'];
+			$send = toStr($send);
+			break;
+		
+		default:
+			$send = "send command not recognized";
+	}
+	
 	$send .= "\0";
-	
-
-	$server_ip   = '127.0.0.1';
-	$server_port = 9100;
-	print "Sending curves to IP $server_ip, port $server_port\n";
-
-	if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP)) {
-		
-		socket_sendto($socket, $send, strlen($send), 0, $server_ip, $server_port);
-
-		
-	} else {
-		print("can't create socket\n");
-	}
+	sendData($socket, $server_ip, $send_port, $send);
 
 
-
-} else if ($_GET['format'] == "toString") {
+// handle format requests
+} else if (isset($_GET['format'])) {
 	$array = $_POST['curves'];
-	$string = toStr($array);
+	$string = "";
+
+
+	switch ($_GET['format']) {
+
+		case "toString":
+			$string = toStr($array);
+			break;
+
+		case "fromString":
+			$array = fromStr($array);
+			$string = json_encode($array);
+			break;
+
+		default:
+			$string = "format command not recognized";
+	}
 	
 	echo $string;
-} else if ($_GET['format'] == "fromString") {
-	$string = $_POST['string'];
-	$array = fromStr($string);
-	
-	echo json_encode($array);
-
-}
+} 
 
 
+socket_close($sock);
 
 // functions
 
@@ -157,4 +149,38 @@ function fromStr($string) {
 	return $array;
 }
 
-?>
+
+
+// creates and returns a variable of the socket
+function createSocket() {
+// create socket
+	if(!($sock = socket_create(AF_INET, SOCK_DGRAM, 0)))
+	{
+		$errorcode = socket_last_error();
+		$errormsg = socket_strerror($errorcode);
+
+		die("Couldn't create socket: [$errorcode] $errormsg \n");
+	}
+
+	return $sock;
+
+}
+
+// sends data to a socket
+function sendData($socket, $ip, $port, $msg) {
+	socket_sendto($socket, $msg, strlen($msg), 0, $ip, $port);
+}
+
+// Bind a socket to a dest address
+function bindSocket($socket, $ip, $port) {
+	if( !socket_bind($socket, $ip , $port) )
+	{
+		$errorcode = socket_last_error();
+		$errormsg = socket_strerror($errorcode);
+
+		die("Could not bind socket : [$errorcode] $errormsg \n");
+	}
+}
+
+
+	?>
