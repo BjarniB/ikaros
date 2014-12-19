@@ -1,12 +1,10 @@
 
-var allowSend = false;
+var pause = true; // 
 var shiftDown = false; // if shift key is down
-var selectedSeries;
+var ctrlDown = false; // if ctrl  key is down
 
 var tickEnd; //movement ends at this tick
-
-
-
+var selectedSeries; // curve that was selected last
 
 
 $(function () {
@@ -18,28 +16,37 @@ $(function () {
 });
 
   var chart;
+  $('#container').mousemove(move);
   $('#container').highcharts({
    chart: {
-                //animation: Highcharts.svg, // don't animate in old IE
-                animation: false,
-                events: {
-                  redraw: function(e) {
-                    if (allowSend)
-                      sendCurves();
-                  },
+    animation: false,
+    events: {
 
-                  click: function (e) {
+      // send keyframes on plot redraw
+      redraw: function(e) {
+        if (!pause)
+          sendCurves();
+      },
 
-
-
-
+      click: function (e) {
                     // if shift key is pressed
                     if (shiftDown) {
+                      var chart = $('#container').highcharts();
+
+                      var axisIndex;
+                      $(chart.yAxis).each(function(i, yAxis){
+                       if (yAxis == selectedSeries.yAxis)
+                        axisIndex = i;
+                    });
+
 
                       var x =  e.xAxis[0].value,
-                      y = e.yAxis[0].value,
-                      z = e.yAxis[0].value;
+                      y = e.yAxis[axisIndex].value,
+                      z = e.yAxis[axisIndex].value;
                       selectedSeries.addPoint([x, y], true, false);
+
+
+
                     }
 
 
@@ -49,10 +56,7 @@ $(function () {
                 }
               },
               xAxis: {
-                crosshair: {
-                  color: 'red',
-                  snap: true
-                },
+
                 type: 'tick',
                 text: 'Tick',
                 min: 0,
@@ -62,14 +66,39 @@ $(function () {
                title: {
                 text: 'Angle',
                 min: 0,
-                max: 360
+                max: 360,
+
+
+
               },
+              tickPositions: [0, 90, 180, 270, 360]
+              ,
               plotLines: [{
                 value: 0,
                 width: 1,
                 color: '#808080'
               }]
-            }],
+            },
+            { // Secondary yAxis (speed / torque)
+              gridLineWidth: 0,
+              title: {
+                text: 'speed / torque',
+                min: 0,
+                max: 1,
+                style: {
+                  color: Highcharts.getOptions().colors[0]
+                }
+                
+              },
+              labels: {
+                style: {
+                  color: Highcharts.getOptions().colors[0]
+                }
+              },
+              opposite: true
+
+            }
+            ],
             tooltip: {
              formatter: function() {
 
@@ -103,31 +132,27 @@ $(function () {
 
 });
 
-
+// send request to PHP server to parse a string to array of curves
 function loadFromStr() {
   var string = document.getElementById('stringInput').value;
   $.post("handler.php?format=fromString",
   {
-    'string' : string
+    'curves' : string
   },
   function(data,status){
-    //alert(data);
     var curves = JSON.parse(data);
-    //window.alert(data + "\nStatus: " + status);
-
     genCurves(curves);
   });
 
 }
 
 
+// send array of curves 
 function sendCurves(){
   var chart = $('#container').highcharts();
   var curves = chart.series;
 
   var array = [[[]]];
-
-
 
 
   for (var i = 0; i < curves.length; i++) {
@@ -188,18 +213,21 @@ function sendCurves(){
         // generates and adds curves from a string
         function genCurves(curves) {
 
-        var interactionDiv = document.getElementById('interaction');
-        var setupDiv = document.getElementById('setup');
+          var interactionDiv = document.getElementById('interaction');
+          var shiftDiv = document.getElementById('shift');
+          var setupDiv = document.getElementById('setup');
 
 
-        interactionDiv.style.visibility='visible';
-        setupDiv.style.visibility='hidden';
+          interactionDiv.style.visibility='visible';
+          shiftDiv.style.visibility='visible';
+          setupDiv.style.visibility='hidden';
 
 
-         var chart = $('#container').highcharts();
+          var chart = $('#container').highcharts();
 
-          // set min and max values for y axis (0,360)
+          // set min and max values for y axes
           chart.yAxis[0].setExtremes(0,360);
+          chart.yAxis[1].setExtremes(0,1);
 
           for (var i = 0; i < curves.length; i++) {
 
@@ -215,11 +243,11 @@ function sendCurves(){
 
             });
 
+            var index = chart.series.length-1;
+
             for (var n = 0; n < curves[i].length; n++) {
               var x = parseFloat(curves[i][n][0]);
               var y = parseFloat(curves[i][n][1]);
-
-              var index = chart.series.length-1;
 
 
               chart.series[index].addPoint([x, y], true, false);
@@ -227,75 +255,124 @@ function sendCurves(){
               tickEnd = x;
             }
 
-
-          }
-        }
+            var color = chart.series[index].color;
 
 
-        
+            // Use to add different style curves for servo and torque
+            /*
+            chart.addSeries({
+              name: "speed "+i,
+              yAxis: 1,
+              draggableX: true,
+              draggableY: true,
+              dragMinY: 0,
+              dragMaxY: 1,
+              dragMinX: 0,
+              type: 'spline',
+              color: color,
+              visible: false,
+              dashStyle: 'ShortDot',
+              data: [[0,1], [tickEnd,1]]
 
-        function play () {
-          var play = document.getElementById('playButton');
-          var pause = document.getElementById('pauseButton');
-          play.style.background='blue';
-          pause.style.background='grey';
-
-
-
-          var chart = $('#container').highcharts();
-          var curves = chart.series;
-
-          var freq = 30;
-
-
-          allowSend = true;
-          
-
-          $.get( "handler.php?action=play", function( data ) {
-            $( ".result" ).html( data );
-
-
-          });
-
-          crossHairAnim(0,freq, tickEnd);
-        }; 
-
-        function pause () {
-              var play = document.getElementById('playButton');
-          var pause = document.getElementById('pauseButton');
-          play.style.background='grey';
-          pause.style.background='blue';
-          allowSend = false;
-        }
-
-
-
-        function crossHairAnim (i, freq, endAt) {          
-         setTimeout(function () {   
-           var chart = $('#container').highcharts();
-           chart.xAxis[0].removePlotLine('timeline_cross');
-           chart.xAxis[0].addPlotLine({
-            value: i,
-            color: 'red',
-            width: 1,
-            id: 'timeline_cross'
-          });
-           i+=(1/4);
-           if (i < endAt) crossHairAnim(i, freq, endAt);
-           else {
-
-            $.get( "handler.php?action=play", function( data ) {
-              $( ".result" ).html( data );
             });
-          }
 
-        }, freq/4)
-       }; 
+
+            
+
+
+            chart.addSeries({
+              name: "torque "+i,
+              yAxis: 1,
+              draggableX: true,
+              draggableY: true,
+              dragMinY: 0,
+              dragMaxY: 1,
+              dragMinX: 0,
+              type: 'spline',
+              color: color,
+              visible: false,
+              dashStyle: 'Dash',
+              data: [[0,1], [tickEnd,1]]
+
+            });
+*/
+
+}
+}
+
+
+
+
+function playClick () {
+  var playBTN = document.getElementById('playButton');
+  var pauseBTN = document.getElementById('pauseButton');
+  playBTN.style.background='blue';
+  pauseBTN.style.background='grey';
+
+
+  var chart = $('#container').highcharts();
+  var curves = chart.series;
+
+
+  pause = false;
+
+
+  $.get( "handler.php?send=play", function( data ) {
+    $( ".result" ).html( data );
+  });
+
+
+  sendCurves();
+}; 
+
+function pauseClick () {
+  var playBTN = document.getElementById('playButton');
+  var pauseBTN = document.getElementById('pauseButton');
+  playBTN.style.background='grey';
+  pauseBTN.style.background='blue';
+  pause = true;
+
+  $.get( "handler.php?send=pause", function( data ) {
+    $( ".result" ).html( data );
+  });
+}
+function playTick (tick) {
+
+  $.get( "handler.php?send=play&tick="+tick, function( data ) {
+    $( ".result" ).html( data );
+  });
+  pause = false;
+}
+
+function smoothReset () {
+  var chart = $('#container').highcharts();
+  var curves = chart.series;
+
+
+  tickEnd += 50;
+  endX = tickEnd;
+
+  for (var i = 0; i < curves.length; i++) {
+
+
+    var endY = curves[i].data[0].y;
+
+    curves[i].addPoint([endX, endY], true, false);
+  }nd
+
+
+
+  addedSmoothing = true;
+}
+
+
+
 
 //function to handle if shift key event
 $(function() {                           
  $(document).on('keyup keydown', function(e){
   shiftDown = e.shiftKey;
+  ctrlDown = e.ctrlKey;
 
 
   var shiftDiv = document.getElementById('shiftPress');
@@ -355,6 +432,34 @@ function saveFile () {
   });
 
 
+
+
+}
+
+function move(event) {
+
+  if (ctrlDown) {
+
+
+
+    var chart = $('#container').highcharts();
+
+
+    var x = chart.xAxis[0].toValue(event.pageX)-2;
+
+
+  //var x =  Math.round(e.xAxis[0].value);
+
+  playTick(x);
+  
+  chart.xAxis[0].removePlotLine('timeline_cross');
+  chart.xAxis[0].addPlotLine({
+    value: x,
+    color: 'red',
+    width: 1,
+    id: 'timeline_cross'
+  });
+}
 
 
 }

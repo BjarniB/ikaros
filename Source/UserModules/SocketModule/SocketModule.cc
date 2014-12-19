@@ -215,14 +215,26 @@ SocketModule::ReceiveData(){
             sender.GetPort(), bytes_read , buffer);
 
         if(buffer[0] == '-'){
+            printf("parsing\n");
             output_command[0] = ParseFlag((char*)buffer,sizeof(buffer));    // Parse flag and output as command
-        }else{
+            printf("parsing done %f\n", output_command[0] );
+
+        }
+        else if(buffer[0] == 'P'){
+            printf("parsing\n");
+            output_command[0] = ParsePlayTick((char*)buffer,sizeof(buffer));    // Parse flag and output as command
+            printf("parsing done %f\f", output_command[0] );
+            
+            
+        }
+        else{
+
 
 
             char * buf = (char*)buffer;
 
-            size_param_x[0] = CalcSizeX(buf,sizeof(buffer));
-            size_param_y[0] = input_matrix_sizeY[0];
+            size_param_x[0] = sizeof(buffer);
+            size_param_y[0] = 3;
 
             printf("%s ; %i, %i\n", buf, (int)size_param_x[0], (int)size_param_y[0]);
 

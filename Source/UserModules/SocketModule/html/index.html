@@ -23,20 +23,28 @@
 
 		<!--<input type="text" name="curveName" value="curve name"><button onclick="addCurve()">Add curve</button><br>
 		<br>-->
-		<center><div id="shiftPress" style="visibility: hidden">SHIFT IS PRESSED</div></center>
+		<center>
+		<div id="shift" style="visibility: hidden">
+		<br>
+		HOLD 'shift' to add keyframe 
+		<br>
+		HOLD/RELEASE 'ctrl' to play a specific timeframe
+		<div id="shiftPress" class="button" style="background: green; width:400px;visibility: hidden"> Shift is pressed</div>
+		
+		</div>
+		</center>
 		<div id="setup">
-			PORT <input type="text" id="port" value="8080"> <button class="button" onClick="getCurves()">Get recorded data</button><br><br>
-			<input type="textbox" id="stringInput"/><button class="button" onClick="loadFromStr()">Load from string</button>
+			Load recorded motion <br>
+			PORT <input type="text" id="port" value="1337"><br> <button class="button" onClick="getCurves()">Get recorded data</button><br><br>
+			Load saved motion<br>
+			<textarea id="stringInput" cols="50" rows="5">1:175.78 192:169.7 251.69:112.95 474:180.2 524:175.78#1:40.26 195:48.32 267.51:161.1 474:39.34 524:40.26#1:221.79 213:215.03 261.35:176.43 474:230.22 524:221.79</textarea><br>
+			<button class="button" onClick="loadFromStr()">Load from string</button>
 		</div>
 		<div id="interaction" style="visibility: hidden">
-			<button id="pauseButton" class="button" onClick="pause()">Pause</button>
-			<button id="playButton" class="button" onClick="play()" style="background: grey">Play</button><br><br>
+		<button id="smoothReset" class="button" onClick="smoothReset()">Add smooth reset</button>
+			<button id="pauseButton" class="button" onClick="pauseClick()">Pause</button>
+			<button id="playButton" class="button" onClick="playClick()" style="background: grey">Play</button><br><br>
 			<button class="button" onClick="saveFile()"> Save to file </button>
-
-			<br><br>
-
-			<center>PRESS SHIFT TO ADD A POINT</center><br>
-			
 
 		</div>
 
