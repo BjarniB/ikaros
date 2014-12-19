@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+
+<group title="Example">
+	<!-- Modules -->
+
+	<module
+		class = "Constant"
+		name = "Command"
+		outputsize  = "1"
+		data  = "0"
+	/>
+
+	<module
+	class = "Constant"
+	name = "Sync"
+	outputsize  = "1"
+	data  = "1"
+	/>
+
+	<module
+	  class = "Dynamixel"
+	  name = "Dynamixel"
+	  device  = "/dev/ttyUSB0"
+	  _device  = "/dev/cu.usbserial-A600cUuc"
+	  index_mode = "indirect"
+	  printf_info ="none"
+	  use_feedback ="true"
+	  baud_rate = "1000000"
+	  angle_unit = "degrees"
+	/>
+
+	<module
+		class = "Interpolator"
+		name = "Interpolator"
+	/>
+
+		
+
+	<module
+		class = "SocketModule"
+		name = "SocketModule"
+		port  = "9200"
+		debugmode  = "false"
+		destport= "1338"
+	/>
+
+
+	<module
+		class="TotalRecordKeyframe"
+		name="TotalRecordKeyframe"
+		repeat = "true"
+		debug="false"
+	/>
+
+	<module
+		class = "MovingAverage"
+		name = "MovingAverage"
+		buffer_length = "20"
+	/>
+
+	<module
+		class="Differentiator"
+		name="Differentiator"
+	/>
+
+	<module
+		class = "Constant"
+		name = "CommandInt"
+		outputsize = "3"
+		data = "0 0 0"
+	/>
+
+	<!--Connections-->	
+
+		<!-- TO dynamixel-->
+		<connection sourcemodule = "TotalRecordKeyframe" source = "TORQUE" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
+
+		<!--To keyframe rec-->
+
+		<connection sourcemodule = "Command" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "COMMAND" />
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "TotalRecordKeyframe" target = "INPUT" />
+		<connection sourcemodule = "Differentiator" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "SPEED" />
+		<connection sourcemodule = "Sync" source = "OUTPUT" targetmodule = "TotalRecordKeyframe" target = "SYNC_IN" />
+
+		<!--To Differentiator-->
+		<connection sourcemodule = "Dynamixel" source = "FEEDBACK_PRESENT_POSITION" targetmodule = "MovingAverage" target = "INPUT" />
+		<connection sourcemodule = "MovingAverage" source = "OUTPUT" targetmodule = "Differentiator" target = "INPUT" /> 
+
+		<!-- To SocketModule -->
+		<connection sourcemodule = "TotalRecordKeyframe" source = "OUT_VALUE" targetmodule = "SocketModule" target = "IN_VALUE" />
+		<connection sourcemodule = "TotalRecordKeyframe" source = "OUT_TICK" targetmodule = "SocketModule" target = "IN_TICK" />
+		<connection sourcemodule = "TotalRecordKeyframe" source = "SIZE_X" targetmodule = "SocketModule" target = "IN_SIZE_X" />
+		<connection sourcemodule = "TotalRecordKeyframe" source = "SIZE_Y" targetmodule = "SocketModule" target = "IN_SIZE_Y" />
+		<connection sourcemodule = "TotalRecordKeyframe" source = "SYNC_OUT" targetmodule = "SocketModule" target = "SYNC_IN" />
+
+		<!-- To Interpolator-->
+		<connection sourcemodule  = "SocketModule" source  = "COMMAND" targetmodule = "Interpolator" target  = "COMMAND" />
+		<connection sourcemodule  = "SocketModule" source  = "OUT_TICK" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
+		<connection sourcemodule  = "SocketModule" source  = "OUT_VALUE" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
+		<connection sourcemodule  = "SocketModule" source  = "SIZE_X" targetmodule = "Interpolator" target  = "SIZE_X" />
+		<connection sourcemodule  = "SocketModule" source  = "SIZE_Y" targetmodule = "Interpolator" target  = "SIZE_Y" />
+
+	<!-- View -->
+		<view>
+		<object class="Plot " 
+			module="Dynamixel"
+			source="FEEDBACK_PRESENT_POSITION" 
+			x="0" y="0" w="1" h="1"
+			min="0"
+			max="360"
+		/>
+		<object class="Plot " 
+			module="TotalRecordKeyframe" 
+			source="OUTPUT" 
+			x="1" y="0" w="1" h="1"
+			min="0"
+			max="360"
+		/>
+
+		<object class="Plot " 
+			module="Dynamixel"
+			source="FEEDBACK_PRESENT_SPEED" 
+			x="2" y="0" w="2" h="2"
+			min="-1"
+			max="1"
+		/>
+
+
+		<object class="Button"  title = "Record" module="Command" parameter="data" x="0" y="2"  min="0" max="1"/>
+		<object class="Button"  title ="Process" module="Command" parameter="data" x="2" y="2" min="0" max="4"  />
+		<object class="Button"  title = "Pause" module="Command" parameter="data" x="1" y="2"  min="0" max="3"/>
+
+		</view>
+
+</group>
