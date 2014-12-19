@@ -250,10 +250,16 @@ TotalRecordKeyframe::checkFrame(int index, int i){
 void
 TotalRecordKeyframe::movingAverage(){
 
+    if(frames[0].size() < 25){
+        printf("Size: %i", (int)frames[0].size());
+        return;
+    }
+
     std::vector<Frame> * raw = frames;
     frames = new std::vector<Frame>[input_array_size];
 
     for(int i = 0; i < input_array_size; ++i){
+
         printf("Moving Average for servo: %i \n", i);
         
         float sum = 0;
