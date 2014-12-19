@@ -104,9 +104,6 @@ $(function () {
 
               selectedSeries = this.series;
 
-              var shiftDiv = document.getElementById('shiftPress');
-              shiftDiv.innerHTML="ADDING POINT TO "+selectedSeries.name;
-
               return Highcharts.numberFormat(this.x, 2) +'<br/>'+
               Highcharts.numberFormat(this.y, 2);
             },
@@ -116,10 +113,6 @@ $(function () {
             }
           },
           legend: {
-           enabled: true
-         },
-
-         exporting: {
            enabled: true
          },
          title: {
@@ -191,11 +184,17 @@ function sendCurves(){
 
       // POLL CURVE DATA FROM SERVER
       function getCurves(){
+
         var port = document.getElementById('port').value;
+
+        var getRecordedBtn = document.getElementById('getRecordedBtn');
+        getRecordedBtn.innerHTML="Listening for keyframes at "+port;
+
+        
 
         $.get( "handler.php?get=curves&port="+ port, function( data, status) {
 
-          window.alert(data + "\nStatus: " + status);
+          window.alert("Received keyframes!");
 
           var curves = JSON.parse(data);
           
@@ -218,10 +217,10 @@ function sendCurves(){
           var setupDiv = document.getElementById('setup');
 
 
-          interactionDiv.style.visibility='visible';
-          shiftDiv.style.visibility='visible';
-          setupDiv.style.visibility='hidden';
 
+
+          interactionDiv.style.display = 'inline';
+          setupDiv.style.display = 'none';
 
           var chart = $('#container').highcharts();
 
@@ -313,6 +312,7 @@ function playClick () {
   var chart = $('#container').highcharts();
   var curves = chart.series;
 
+ chart.xAxis[0].removePlotLine('timeline_cross');
 
   pause = false;
 
@@ -375,13 +375,21 @@ $(function() {
   ctrlDown = e.ctrlKey;
 
 
+
+  var shiftColor = (shiftDown ? "green" : "grey");
+  var ctrlColor = (ctrlDown ? "green" : "grey");
+
+
+
   var shiftDiv = document.getElementById('shiftPress');
+  var ctrlDiv = document.getElementById('ctrlPress');
+
+  shiftDiv.style.background=shiftColor;
+  ctrlDiv.style.background=ctrlColor;
 
 
-  if(shiftDown)
-    shiftDiv.style.visibility='visible';
-  else
-    shiftDiv.style.visibility='hidden';
+
+
 
 } );
 
