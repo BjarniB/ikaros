@@ -43,6 +43,7 @@ Interpolator::Init()
 {   
 
   Bind(tau,"tau");
+  Bind(debugmode,"debug");
 
   input_ticks = GetInputMatrix("INPUT_TICKS");
   input_values = GetInputMatrix("INPUT_VALUES");

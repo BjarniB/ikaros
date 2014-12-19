@@ -12,9 +12,11 @@
 			class="Interpolator"
 			name="Interpolator"
 			tau="0.001"
+			debug="true"
 		/>
 	</example>
 
+	<parameter name="debug" type="bool" default="false" description="Debug mode" />
 	<parameter name="tau" type="float" default="0.001" description="Tau parameter for sharpness of interpolation, between 0 and 1 but perferrably close to 0" />
 
 	<input name="INPUT_TICKS" description="Input matrix of ticks" />

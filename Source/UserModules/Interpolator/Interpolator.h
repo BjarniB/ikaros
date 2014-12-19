@@ -57,6 +57,7 @@ public:
 
     // parameter values
     int         tick;
+    bool        debugmode;
     
     // Catmull Rom tau and M matrix parameters
     float       tau;
