@@ -47,9 +47,6 @@ public:
 
     // pointers to inputs and outputs
     // and integers to represent their sizes
-
-    float *     input_array;
-
     float **    input_matrix_pos;
     float **    input_matrix_tick;
     float *     input_matrix_sizeX;

@@ -36,8 +36,7 @@ public:
 
     void 		Init();
     void 		Tick();
-    float *     GetInterpolation(int tick);
-    float *     CubicInterpolationY ();
+    float *     LinearInterpolation(int tick);
     float *     catmullRomSpline();
     int         FindP2(int index_y);
 

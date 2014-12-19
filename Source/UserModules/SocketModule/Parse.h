@@ -5,6 +5,7 @@
 #include <sstream>
 
 namespace parse{
+	
 	float ** ParseValue1(char * buf, int buf_size, int sizeY){
 		float** mat = create_matrix(buf_size,sizeY);
 		int x = 0;
@@ -113,6 +114,7 @@ namespace parse{
 		return ret;
 	}
 
+	// UNUSED something is wrong with this implementation, oversized x is used instead
 	int CalcSizeX (char * buf, int size){
 		int ret = 0;
 

@@ -21,7 +21,7 @@
 	<input name="INPUT_VALUES" description="Input matrix of values" />
 	<input name="SIZE_X" description="Input array for size x of the matrices"/>
 	<input name="SIZE_Y" description="Input array for size y of the matrices"/>
-	<input name="COMMAND" description="Input command, currently unused"/>
+	<input name="COMMAND" description="Input command"/>
 
 	<output name="OUTPUT" description="Array of output with interpolated values" size_set="SIZE_Y" />
 	<output name="OUTPUT_TEST" descriptiom="Test output array" size_set="SIZE_Y" />

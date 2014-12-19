@@ -38,7 +38,7 @@
 	<output name="SIZE_X" description="Size x of output matrices" size_set="IN_SIZE_X"/>
 	<output name="SIZE_Y" description="Size y of output matrices" size_set="IN_SIZE_Y"/>
 
-	<output name="COMMAND" descriptiom="Command output depending on incoming flag messages, must be a negative number, currently unused" size_set="SYNC_IN" />
+	<output name="COMMAND" descriptiom="Command output depending on incoming flag messages" size_set="SYNC_IN" />
 
 
 	<module class="SocketModule" />
