@@ -91,7 +91,7 @@ public:
     float *     output_size_x;
     float *     output_size_y;
 
-    // internal data storage
+    // Frame and Keyframe vectors
     std::vector<Keyframe> *     keyframes;
     std::vector<Frame> *        frames;
 
@@ -105,7 +105,6 @@ public:
     int *       tickCounter;
     int         tick;
 
-    // Frame and Keyframe vectors
     
     // State handling
     enum State {eStart=0, eRecording, eProcessing, ePlaying, ePaused, eRecord_Paused, ePlay_Paused, eReady_To_Play};

@@ -9,6 +9,7 @@
 		outputsize  = "1"
 		data  = "0"
 	/>
+
 	<module
 	class = "Constant"
 	name = "Sync"
@@ -28,10 +29,10 @@
 	  angle_unit = "degrees"
 	/>
 
-				<module
-				class = "Interpolator"
-				name = "Interpolator"
-				/>
+	<module
+		class = "Interpolator"
+		name = "Interpolator"
+	/>
 
 		
 
@@ -73,6 +74,7 @@
 
 		<!-- TO dynamixel-->
 		<connection sourcemodule = "TotalRecordKeyframe" source = "TORQUE" targetmodule = "Dynamixel" target = "TORQUE_LIMIT" />
+		<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
 
 		<!--To keyframe rec-->
 
@@ -92,17 +94,10 @@
 		<connection sourcemodule = "TotalRecordKeyframe" source = "SIZE_Y" targetmodule = "SocketModule" target = "IN_SIZE_Y" />
 		<connection sourcemodule = "TotalRecordKeyframe" source = "SYNC_OUT" targetmodule = "SocketModule" target = "SYNC_IN" />
 
-<!-- added by asas -->
-		<connection sourcemodule = "SocketModule" source="COMMAND" targetmodule = "Interpolator" target="COMMAND" />
-<!--
-		<connection sourcemodule = "CommandInt" source ="OUTPUT" targetmodule = "Interpolator" target = "COMMAND" />
--->
-		<connection sourcemodule = "Interpolator" source="OUTPUT" targetmodule = "Dynamixel" target="GOAL_POSITION" />
-
-
+		<!-- To Interpolator-->
+		<connection sourcemodule  = "SocketModule" source  = "COMMAND" targetmodule = "Interpolator" target  = "COMMAND" />
 		<connection sourcemodule  = "SocketModule" source  = "OUT_TICK" targetmodule = "Interpolator" target  = "INPUT_TICKS" />
 		<connection sourcemodule  = "SocketModule" source  = "OUT_VALUE" targetmodule = "Interpolator" target  = "INPUT_VALUES" />
-
 		<connection sourcemodule  = "SocketModule" source  = "SIZE_X" targetmodule = "Interpolator" target  = "SIZE_X" />
 		<connection sourcemodule  = "SocketModule" source  = "SIZE_Y" targetmodule = "Interpolator" target  = "SIZE_Y" />
 
