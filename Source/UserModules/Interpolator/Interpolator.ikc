@@ -3,10 +3,7 @@
 <group name="Interpolator" description="minimal example module">
 
 	<description type="text">
-		Module that can be used as a start for a new module.
-		Simply change all occurrences of "Interpolator" to the name of your new module in
-		Interpolator.cc, MyModule.h and MyModule.ikc (this file), rename the files, and fill
-		in the new code and documentation. This module is located in the
+		Interpolation module that interpolates points between two points in either a linear manner or cubic (Catmull Rom Spline) manner.
 		UserModules directory.
 	</description>
 
@@ -18,23 +15,23 @@
 		/>
 	</example>
 
-	<parameter name="tau" type="float" default="0.001" description="Tau parameter for sharpness of interpolation" />
+	<parameter name="tau" type="float" default="0.001" description="Tau parameter for sharpness of interpolation, between 0 and 1 but perferrably close to 0" />
 
 	<input name="INPUT_TICKS" description="Input matrix of ticks" />
 	<input name="INPUT_VALUES" description="Input matrix of values" />
-	<input name="SIZE_X" />
-	<input name="SIZE_Y" />
-	<input name="COMMAND" />
+	<input name="SIZE_X" description="Input array for size x of the matrices"/>
+	<input name="SIZE_Y" description="Input array for size y of the matrices"/>
+	<input name="COMMAND" description="Input command, currently unused"/>
 
-	<output name="OUTPUT" description="Array of output with all curves, order is important" size_set="SIZE_Y" />
-	<output name="OUTPUT_TEST" descriptiom="TEst output array" size_set="SIZE_Y" />
-	<output name="OUTPUT_TEST2" descriptiom="TEst output array" size_set="SIZE_Y" />
+	<output name="OUTPUT" description="Array of output with interpolated values" size_set="SIZE_Y" />
+	<output name="OUTPUT_TEST" descriptiom="Test output array" size_set="SIZE_Y" />
+	<output name="OUTPUT_TEST2" descriptiom="Test output array" size_set="SIZE_Y" />
 
 	<module class="Interpolator" />
 
 	<author>
-		<name>Trond Arild Tjöstheim</name>
-		<email>kog13ttj@student.lu.se</email>
+		<name>Bjarni Birgisson</name>
+		<email>adi10bbi@student.lu.se</email>
 		<affiliation>Lund University Cognitive Science</affiliation>
 		<homepage></homepage>
 	</author>
