@@ -14,16 +14,13 @@
 		/>
 	</example>
 
-	<parameter name="repeat" type="bool" default="false" description="Repeat playback" />
 	<parameter name="debug" type="bool" default="false" description="Enable debug info" />
-	<parameter name="angle_tolerance" type="float" default="1.0" description="Tolerance for reaching goal position" />
 
 	<input name="INPUT" description="Data input to be recorded" />
 	<input name="COMMAND" description="Command input for telling the module what to do: 1 record, 2 pause, 3 process and ouput" />
 	<input name="SPEED" description="Feedback speed" />
 	<input name="SYNC_IN" description="Sync in signal" />
 
-	<output name="OUTPUT" description="Position output" size_set="INPUT" />
 	<output name="TORQUE" description="Torque limit output" size_set="INPUT" />
 
 	<output name="SYNC_OUT" description="Sync out signal to indicate that values have been outputted" size_set="INPUT" />
