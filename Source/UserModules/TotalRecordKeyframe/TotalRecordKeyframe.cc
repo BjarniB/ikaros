@@ -30,16 +30,12 @@
 // this is preferred to using math.h
 
 using namespace ikaros;
-const float ckeyframes = 0.f;
-const float cPlayback = 1.f;
 
 void
 TotalRecordKeyframe::Init()
 {
  
-    Bind(repeat, "repeat");
-    Bind(debug, "debug");
-    Bind(angle_tolerance, "angle_tolerance");
+    Bind(debugmode, "debug");
 
     input_array = GetInputArray("INPUT");
     input_speed = GetInputArray("SPEED");
@@ -51,7 +47,6 @@ TotalRecordKeyframe::Init()
 
 
     // Do the same for the outputs
-    output = GetOutputArray("OUTPUT");
     torque = GetOutputArray("TORQUE");
     sync_out = GetOutputArray("SYNC_OUT");
 
@@ -63,25 +58,20 @@ TotalRecordKeyframe::Init()
     printf("Init outputs set\n");
 
     keyframes = new std::vector<Keyframe>[input_array_size];
-    keyframe_iterator = new std::vector<Keyframe>::iterator[input_array_size];
-
+  
     frames = new std::vector<Frame>[input_array_size];
-    frame_iterator = new std::vector<Frame>::iterator[input_array_size];
-
+  
     printf("Init vectors set\n");
 
     for (int i = 0; i < input_array_size; ++i)
     {
         keyframes[i].reserve(10);
-        //keyframe_iterator[i] = keyframes[i].begin();
     }
 
     prevsign = new float[input_array_size];
     reset_array(prevsign, input_array_size);
 
-    prevtrigger = new float[input_array_size];
-    set_array(prevtrigger, -1.f, input_array_size);
-
+    // TODO cleanup remnants of pause frames
     tickCounter = new int[input_array_size];
 
     current_state = eStart;
@@ -99,12 +89,9 @@ TotalRecordKeyframe::~TotalRecordKeyframe()
 {
     // Destroy data structures that you allocated in Init.
     delete[] keyframes;
-    delete[] keyframe_iterator;
     delete[] prevsign;
     delete[] tickCounter;
     delete[] frames;
-    delete[] frame_iterator;
-    delete[] prevtrigger;
     // Do NOT destroy data structures that you got from the
     // kernel with GetInputArray, GetInputMatrix etc.
     printf("Frames Stored: %i \n", tick);
@@ -117,16 +104,6 @@ TotalRecordKeyframe::Tick()
 {
    
     Command cmd = (Command)command[0];
-
- 
-
-
-    if(current_state == eStart){
-        for(int i = 0; i < input_array_size; ++i){
-            output[i] = input_array[i];
-            //printf("Set servo %i pos %f \n", i, input_array[i]);
-        }
-    }
 
     switch(current_state){
         case eStart:
@@ -158,33 +135,12 @@ TotalRecordKeyframe::Tick()
             ExportOutputs();
             sync_out[0] = 1.0f;
             break;
-        case ePlaying: //TODO no playback to be used in this module instead send keyframes as output matrices once
-            if(cmd == ePause){
-                current_state=ePlay_Paused;
-            }else{
-                sync_out[0] = 0.0;
-                play();
-            }
-            break;
         case eRecord_Paused:
             if(cmd == eProcess){
                 current_state = eProcessing;
-            }else if (cmd == ePlay){
-                current_state = eReady_To_Play;
             }else if (cmd == eRecord){
                 current_state = eRecording;
             }
-            break;
-        case ePlay_Paused:
-            if (cmd == ePlay){
-                current_state = eReady_To_Play;
-                sync_out[0] = 0.0f;
-            }
-            break;
-        case eReady_To_Play:
-            if(!reset)
-                Reset();
-            pre_play();
         default:
             break;
     }
@@ -202,50 +158,22 @@ TotalRecordKeyframe::record()
     for (int i = 0; i < input_array_size; ++i)
     {
         (frames[i]).push_back(Frame(tick, input_array[i], input_speed[i]));
-        printf("%i : %i : %f : %f \n",i, tick, input_array[i], input_speed[i]);
+        if(debugmode)
+            printf("%i : %i : %f : %f \n",i, tick, input_array[i], input_speed[i]);
         // Simply outputs the input
         //output[i] = input_array[i];
     }
     tick++;
 }
 
-/**
-*   Set all start positions and send out sync signal
-*/
-void
-TotalRecordKeyframe::pre_play(){
-    bool start = true;
-    for(int i = 0; i < input_array_size; ++i){
-        if(!equal(input_array[i], keyframe_iterator[i]->val, angle_tolerance)){
-            start = false;
-            break;
-        }
-    }
-    if(start){
-        current_state=ePlaying;
-        sync_out[0] = 1.0f;
-        reset = false;
-    }
-}
-
-// UNUSED METHOD
-void
-TotalRecordKeyframe::Reset(){
-    printf("Keyframes reset\n");
-    for (int i = 0; i < input_array_size; ++i){
-        keyframe_iterator[i] = keyframes[i].begin();
-        output[i] = keyframe_iterator[i]->val;
-    }
-    reset = true;
-    set_array(prevtrigger, -1.f, input_array_size);
-}
-
-// TODO remove pause frames and simply put a keyframe there with the ticks
+// TODO cleanup of pause frames to be done
 void
 TotalRecordKeyframe::process()
 {
     for(int i = 0; i < input_array_size; ++i){
-        printf("Enter process: %i \n", i);
+        if(debugmode)
+            printf("Enter process: %i \n", i);
+        
         bool pauseFrame = false;
         int type;
         int index = 0;
@@ -253,14 +181,15 @@ TotalRecordKeyframe::process()
         // First keyframe
         Keyframe prev = Keyframe(0, (frames[i]).at(index).tick, frames[i].at(index).val);
         (keyframes[i]).push_back(prev);
-        printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, (frames[i]).at(index).val);
+        
+        if(debugmode)
+            printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, (frames[i]).at(index).val);
         
         for(index = 1; index < frames[i].size(); index++){
-            
-            // TODO fix keyframes so pause frames dont exist a pause is just a period where it doesnt move between 2 keyframes
-            // like tick 100 val 200 -> tick 200 val 200
+
             int key = checkFrame(index,i);
 
+            // TODO Some cleanup here
             if(key == 1){
                 if(!pauseFrame){
                     pauseFrame = true;
@@ -270,9 +199,6 @@ TotalRecordKeyframe::process()
                 }
             }else if (key == 0){
                 if(pauseFrame){
-                    //keyframes[i].push_back(Keyframe(1, tickCounter[i], prev.val));
-                    //printf("%i : %i : %i : %f \n",i, 1, tickCounter[i], prev.val);
-                
                     keyframes[i].push_back(Keyframe(0, frames[i].at(index).tick, frames[i].at(index).val));
                     printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, frames[i].at(index).val);
                     pauseFrame = false;
@@ -285,18 +211,18 @@ TotalRecordKeyframe::process()
         
         // Last keyframe
         (keyframes[i]).push_back(Keyframe(0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val));
-        printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val);
-        printf("End of process %i: last frame: %i, %f index: %i \n", i, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val,index);
-        
-        //reset counter for further use
-        tickCounter[i] = 1;
-
+        if(debugmode){
+            printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val);
+            printf("End of process %i: last frame: %i, %f index: %i \n", i, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val,index);
+        }
         //set torque for playback
     }
         set_array(torque,0.9f,input_array_size);
 }
 
-
+/**
+ *  Method for checking if the frame at index is a keyframe
+ */
 int
 TotalRecordKeyframe::checkFrame(int index, int i){
 
@@ -322,15 +248,25 @@ TotalRecordKeyframe::checkFrame(int index, int i){
     return ret;
 }
 
-
+/**
+ *  Moving average method for removing recorded noise
+ */
 void
 TotalRecordKeyframe::movingAverage(){
+
+    if(frames[0].size() < 25){
+        if(debugmode)
+            printf("Size: %i\n", (int)frames[0].size());
+        return;
+    }
 
     std::vector<Frame> * raw = frames;
     frames = new std::vector<Frame>[input_array_size];
 
     for(int i = 0; i < input_array_size; ++i){
-        printf("Moving Average for servo: %i \n", i);
+
+        if(debugmode)
+            printf("Moving Average for servo: %i \n", i);
         
         float sum = 0;
         int count = 0;
@@ -346,7 +282,9 @@ TotalRecordKeyframe::movingAverage(){
 
         for(int j = 1; j <= index; j++){
             frames[i].push_back(Frame(raw[i].at(j).tick, sum, raw[i].at(j).moving_speed));
-            printf("ma stored servo: %i, tick: %i, sum: %f, speed: %f \n", i, raw[i].at(j).tick, sum,raw[i].at(j).moving_speed);
+            
+            if(debugmode)
+                printf("ma stored servo: %i, tick: %i, sum: %f, speed: %f \n", i, raw[i].at(j).tick, sum,raw[i].at(j).moving_speed);
         }
         index++;
 
@@ -362,101 +300,25 @@ TotalRecordKeyframe::movingAverage(){
             sum = sum / count;
             
             frames[i].push_back(Frame(raw[i].at(index).tick, sum, raw[i].at(index).moving_speed));
-            printf("ma stored servo: %i, index: %i tick: %i, sum: %f speed: %f \n", i, index, raw[i].at(index).tick, sum,raw[i].at(index).moving_speed);
+            if(debugmode)
+                printf("ma stored servo: %i, index: %i tick: %i, sum: %f speed: %f \n", i, index, raw[i].at(index).tick, sum,raw[i].at(index).moving_speed);
             index++;
         }
 
         //last value and set every value after it as same
         for(int j = index; j < raw[i].size()-1; j++){
             frames[i].push_back(Frame(raw[i].at(j).tick, sum, raw[i].at(j).moving_speed));
-            printf("ma stored servo: %i, tick: %i, sum: %f speed: %f \n", i, raw[i].at(j).tick, sum, raw[i].at(j).moving_speed);
+            if(debugmode)
+                printf("ma stored servo: %i, tick: %i, sum: %f speed: %f \n", i, raw[i].at(j).tick, sum, raw[i].at(j).moving_speed);
         }
     }
     delete[] raw;
-
-/*
-    for (int i = 0; i < input_array_size; ++i)
-    {
-
-        float prev = 0;
-        float curr = 0;
-        float next = 0;
-        for(int index = 1; index < frames[i].size(); ++index){
-            int count = 0;
-            if(index != 1){
-                prev = frames[i].at(index-1).val;
-                count++;   
-            }
-            
-            if(index < frames[i].size()-1){
-                next = frames[i].at(index+1).val;
-                count++;
-            }
-            else
-                next = 0;
-
-            curr = frames[i].at(index).val;
-            count++;
-
-            frames[i].at(index).val = (prev + curr + next) / count;
-        }
-    }
-    */
-}
-
-// UNUSED METHOD
-void 
-TotalRecordKeyframe::play()
-{
-    bool end = true;
-    for(int i = 0; i < input_array_size; ++i){
-        if(keyframe_iterator[i] != keyframes[i].end()){
-            end = false;
-            break;
-        }
-    }
-
-    for (int i = 0; i < input_array_size; ++i){
-        if(keyframe_iterator[i]->type == 1){
-            if(tickCounter[i] == -1){
-                tickCounter[i] = keyframe_iterator[i]->tick;
-            }else if(tickCounter[i] == 0){
-                tickCounter[i] = -1;
-                keyframe_iterator[i]++;
-            }else{
-                tickCounter[i]--;
-            }
-        }else{
-            output[i] = keyframe_iterator[i]->val;
-            // if(prevtrigger[i] != trigger[i]
-            //     && keyframe_iterator[i] != keyframes[i].end())
-            // {
-            //     keyframe_iterator[i]++;
-            //     prevtrigger[i] = trigger[i];
-            // }
-        }
-        if((end && keyframe_iterator[i] == keyframes[i].end()) || sync_in[0] == 1.f){
-            if(repeat){
-                printf("Resetting\n");
-                current_state = eReady_To_Play;
-                tickCounter[i] = -1;
-            }
-        }
-
-    }
 }
 
 // Setups for output matrices
 // test with socket module and print the matrices out in the socket module
 void
 TotalRecordKeyframe::ExportOutputs(){
-    int sizeX = GetOutputSizeX("OUT_VALUE");
-    int sizeY = GetOutputSizeY("OUT_VALUE");
-
-    //print_matrix("ticks", output_ticks, sizeX, sizeY);
-    //print_matrix("values",, output_values, sizeX, sizeY);
-
-    printf("sizes: %i, %i\n", sizeX, sizeY);
 
     int biggest = 0;
     for(int i = 0; i < input_array_size; ++i){
@@ -466,8 +328,6 @@ TotalRecordKeyframe::ExportOutputs(){
 
     output_size_y[0] = input_array_size;
     output_size_x[0] = keyframes[biggest].size()+1;
-    //float ** o_vals = create_matrix((int)output_size_x[0],(int)output_size_y[0]);
-    //float ** o_ticks = create_matrix((int)output_size_x[0],(int)output_size_y[0]);
 
     for(int i = 0; i < input_array_size; i++){
 
@@ -482,19 +342,12 @@ TotalRecordKeyframe::ExportOutputs(){
         }
     }
 
-    //print_matrix("ticks", o_ticks, (int)output_size_x[0], (int)output_size_y[0]);
-    //print_matrix("values", o_vals, (int)output_size_x[0], (int)output_size_y[0]);
-
-    //printf("Keyframe recorder print new matrix, sizes: %i, %i \n", (int)output_size_x[0], (int)output_size_y[0]);
-
-    //copy_matrix(output_values, o_vals, (int)output_size_x[0], (int)output_size_y[0]);
-    //copy_matrix(output_ticks, o_ticks, (int)output_size_x[0], (int)output_size_y[0]);
-
-    print_matrix("ticks", output_ticks, (int)output_size_x[0], (int)output_size_y[0]);
-    print_matrix("values", output_values, (int)output_size_x[0], (int)output_size_y[0]);
+    if(debugmode){
+        print_matrix("ticks", output_ticks, (int)output_size_x[0], (int)output_size_y[0]);
+        print_matrix("values", output_values, (int)output_size_x[0], (int)output_size_y[0]);
     
-    printf("Keyframe recorder print output matrix done\n");
-
+        printf("Keyframe recorder print output matrix done\n");
+    }
 }
 
 // Install the module. This code is executed during start-up.

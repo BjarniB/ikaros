@@ -43,6 +43,7 @@ Interpolator::Init()
 {   
 
   Bind(tau,"tau");
+  Bind(debugmode,"debug");
 
   input_ticks = GetInputMatrix("INPUT_TICKS");
   input_values = GetInputMatrix("INPUT_VALUES");
@@ -86,9 +87,6 @@ Interpolator::Init()
 Interpolator::~Interpolator()
 {
     // Destroy data structures that you allocated in Init.
-  destroy_matrix(input_ticks);
-  destroy_matrix(input_values);
-  destroy_array(output_array);
 }
 
 
@@ -110,17 +108,17 @@ Interpolator::Tick()
         printf("switching to pause\n");
         //exit(0);
       }else{
-        printf("TICK interpolating \n");
-        //USE CATMULL ROM WITH DEFINED TAU MATRIX
-        
+
         if (cmd > 0)  {
-          printf("cmd is %i", cmd);
-          tick = cmd;
+          if(debugmode)
+            printf("cmd is %i", cmd);
           
+          tick = cmd; 
         }
+
+        //USE CATMULL ROM WITH DEFINED TAU MATRIX
         copy_array(output_array, catmullRomSpline(), (int)input_size_y[0]);
-        copy_array(output_test2, CubicInterpolationY(),(int)input_size_y[0]);
-        //copy_array(output_test, GetInterpolation(tick), (int)input_size_y[0]);
+        //copy_array(output_test, LinearInterpolation(tick), (int)input_size_y[0]);
       }
       break;
     case ePaused:
@@ -130,20 +128,19 @@ Interpolator::Tick()
       break;
   }
 
-
-  //print_matrix("ticks", input_ticks, (int)input_size_x[0], (int)input_size_y[0]);
-
-  print_array("output", output_test2, (int)input_size_y[0]);
-
-  printf("sizes: %i, %i \n", (int)input_size_x[0],(int)input_size_y[0]);
+  if(debugmode){
+    print_array("output", output_test2, (int)input_size_y[0]);
+    printf("sizes: %i, %i \n", (int)input_size_x[0],(int)input_size_y[0]);
+  }
 
   tick++;
 
-  printf("TICK : %i\n", tick);
+  if(debugmode)
+    printf("TICK : %i\n", tick);
   
 }
 
-// Catmull Rom interpolation, uses the M values defined above controlled by the tau value
+// Catmull Rom cubic interpolation, uses the M values defined above controlled by the tau value
 float* 
 Interpolator::catmullRomSpline() {
 
@@ -155,7 +152,8 @@ Interpolator::catmullRomSpline() {
     int v0,v1,v2,v3;
     v2 = FindP2(i);
 
-    printf("V2: %i, %f \n", v2, input_values[i][v2]);
+    if(debugmode)
+      printf("V2: %i, %f \n", v2, input_values[i][v2]);
 
     if(input_values[i][v2] == -1){
       tick = 0;
@@ -206,25 +204,19 @@ Interpolator::FindP2(int index_y){
 
 // Linear interpolation function
 float*
-Interpolator::GetInterpolation(int tick)
+Interpolator::LinearInterpolation(int tick)
 {
 
 
   float* ret = create_array((int)input_size_y[0]);
 
-
-      // linear interpolation algorithm
-
       //iterate through all curves
-
-   //int amtCurve = 2;
-   //  int amtTicks = 4;
-
   for (int i = 0; i < input_size_y[0]; i++) {
 
 
     for (int n = 0; n < input_size_x[0]; n++) {
-           printf("check %i %i %f \n",i,n,input_ticks[i][n]);
+      if(debugmode)
+        printf("check %i %i %f \n",i,n,input_ticks[i][n]);
       if(input_values[i][n] == -1){
         tick = 0;
         break;
@@ -245,55 +237,6 @@ Interpolator::GetInterpolation(int tick)
  }
 
  return ret;
-}
-
-//UNUSED OLD VERSION OF CUBIC INTERPOLATION
-float * 
-Interpolator::CubicInterpolationY (){
-
-  float* ret = create_array((int)input_size_y[0]);
-
-  for (int i = 0; i < input_size_y[0]; i++) {    
-    //Find all the point indexes
-    int p0,p1,p2,p3;
-    p2 = FindP2(i);
-
-    printf("P2: %i, %f \n", p2, input_values[i][p2]);
-
-    if(input_values[i][p2] == -1){
-      tick = 0;
-      break;
-    }
-
-    if(p2 == 1){
-      p0 = 0;
-      p1 = 0;
-      p3 = 2;
-    }else if(input_values[i][p2+1] == -1){
-      p0 = p2-2;
-      p1 = p2-1;
-      p3 = p2;
-    }else{
-      p0 = p2-2;
-      p1 = p2-1;
-      p3 = p2+1;
-    }
-
-    // Determine normalized t variable
-    float t = (tick-input_ticks[i][p1]) / (input_ticks[i][p2]-input_ticks[i][p1]);
-    float t2 = t * t;
-    float t3 = t2 * t;
-
-    printf("T values, %f, %f, %f \n", t, t2, t3);
-
-    // Interpolate
-    ret[i] = 0.5f * ((2.0f * input_values[i][p1]) +
-    (-input_values[i][p0] + input_values[i][p2]) * t +
-    (2.0f * input_values[i][p0] - 5.0f * input_values[i][p1] + 4 * input_values[i][p2] - input_values[i][p3]) * t2 +
-    (-input_values[i][p0] + 3.0f * input_values[i][p1] - 3.0f * input_values[i][p2] + input_values[i][p3]) * t3);
-
-  }
-  return ret;
 }
 
 // Install the module. This code is executed during start-up.

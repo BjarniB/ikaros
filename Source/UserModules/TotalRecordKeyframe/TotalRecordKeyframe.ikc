@@ -3,32 +3,27 @@
 <group name="TotalRecordKeyframe" description="minimal example module">
 
 	<description type="text">
-		Records position data based on changes in a derivative input. When derivative changes sign, the current position will be recorded, along with the current tick. On playback, the module will output position on POSITION output and corresponding tick on SYNC output.
+		Records position data and then processes it to determine keyframes to then be output as matricees of tick and value.
 	</description>
 
 	<example description="A simple example">
 		<module
 			class="TotalRecordKeyframe"
 			name="TotalRecordKeyframe"
-			repeat = "true"
 			debug="false"
-			equality_tolerance="0.1"
 		/>
 	</example>
 
-	<parameter name="repeat" type="bool" default="false" description="Repeat playback" />
 	<parameter name="debug" type="bool" default="false" description="Enable debug info" />
-	<parameter name="angle_tolerance" type="float" default="1.0" description="Tolerance for reaching goal position" />
 
-	<input name="INPUT" description="Position data input" />
-	<input name="COMMAND" description="1 record, 2 playback, 3 pause" />
+	<input name="INPUT" description="Data input to be recorded" />
+	<input name="COMMAND" description="Command input for telling the module what to do: 1 record, 2 pause, 3 process and ouput" />
 	<input name="SPEED" description="Feedback speed" />
 	<input name="SYNC_IN" description="Sync in signal" />
 
-	<output name="OUTPUT" description="Position output" size_set="INPUT" />
 	<output name="TORQUE" description="Torque limit output" size_set="INPUT" />
 
-	<output name="SYNC_OUT" description="Sync out signal" size_set="INPUT" />
+	<output name="SYNC_OUT" description="Sync out signal to indicate that values have been outputted" size_set="INPUT" />
 
 	<output name="OUT_VALUE" description="Output matrix for values" size_x="1024" size_y="20" />
 	<output name="OUT_TICK" description="Output matrix for ticks" size_x="1024" size_y="20" />
@@ -38,10 +33,9 @@
 	<module class="TotalRecordKeyframe" />
 
 	<author>
-		<name>Christian Balkenius</name>
-		<email>christian.balkenius@lucs.lu.se</email>
+		<name>Bjarni Birgisson</name>
+		<email>adi10bbi@student.lu.se</email>
 		<affiliation>Lund University Cognitive Science</affiliation>
-		<homepage>http://www.lucs.lu.se/Christian.Balkenius</homepage>
 	</author>
 
    <files>

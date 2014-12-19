@@ -84,10 +84,8 @@ public:
     float *     sync_in;
 
     // outputs
-    float *     output;
     float *     torque;
     float *     sync_out;
-
     float **    output_values;
     float **    output_ticks;
     float *     output_size_x;
@@ -99,21 +97,16 @@ public:
 
     // parameter values
     float equality_tolerance;
-    float angle_tolerance;
-    bool        repeat;
-    bool        debug;
+    bool        debugmode;
     bool        reset;
     
     // internals
     float *     prevsign;
-    float *     prevtrigger;
     int *       tickCounter;
     int         tick;
 
     // Frame and Keyframe vectors
-    std::vector<Keyframe>::iterator * keyframe_iterator;
-    std::vector<Frame>::iterator * frame_iterator;
-
+    
     // State handling
     enum State {eStart=0, eRecording, eProcessing, ePlaying, ePaused, eRecord_Paused, ePlay_Paused, eReady_To_Play};
     State current_state;
