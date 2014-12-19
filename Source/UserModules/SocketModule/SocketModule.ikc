@@ -12,11 +12,12 @@
 			name="SocketModule"
 			port="1234"
 			destport="4321"
+			debug="true"
 		/>
 	</example>
 
 	<parameter name="port" type="int" default="8080" description="port to bind socket to for listening to incoming packets" />
-	<parameter name="debug" type="bool" default="true" description="Turns on or off debugmode" />
+	<parameter name="debug" type="bool" default="false" description="Turns on or off debugmode" />
 
 	<parameter name="a" type="int" default="127" description="first part of destination address" />
 	<parameter name="b" type="int" default="0" description="second part of destination address" />

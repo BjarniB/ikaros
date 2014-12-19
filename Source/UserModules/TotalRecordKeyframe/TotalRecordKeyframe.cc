@@ -30,14 +30,12 @@
 // this is preferred to using math.h
 
 using namespace ikaros;
-const float ckeyframes = 0.f;
-const float cPlayback = 1.f;
 
 void
 TotalRecordKeyframe::Init()
 {
  
-    Bind(debug, "debug");
+    Bind(debugmode, "debug");
 
     input_array = GetInputArray("INPUT");
     input_speed = GetInputArray("SPEED");
@@ -160,7 +158,8 @@ TotalRecordKeyframe::record()
     for (int i = 0; i < input_array_size; ++i)
     {
         (frames[i]).push_back(Frame(tick, input_array[i], input_speed[i]));
-        printf("%i : %i : %f : %f \n",i, tick, input_array[i], input_speed[i]);
+        if(debugmode)
+            printf("%i : %i : %f : %f \n",i, tick, input_array[i], input_speed[i]);
         // Simply outputs the input
         //output[i] = input_array[i];
     }
@@ -172,7 +171,9 @@ void
 TotalRecordKeyframe::process()
 {
     for(int i = 0; i < input_array_size; ++i){
-        printf("Enter process: %i \n", i);
+        if(debugmode)
+            printf("Enter process: %i \n", i);
+        
         bool pauseFrame = false;
         int type;
         int index = 0;
@@ -180,7 +181,9 @@ TotalRecordKeyframe::process()
         // First keyframe
         Keyframe prev = Keyframe(0, (frames[i]).at(index).tick, frames[i].at(index).val);
         (keyframes[i]).push_back(prev);
-        printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, (frames[i]).at(index).val);
+        
+        if(debugmode)
+            printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, (frames[i]).at(index).val);
         
         for(index = 1; index < frames[i].size(); index++){
 
@@ -208,9 +211,10 @@ TotalRecordKeyframe::process()
         
         // Last keyframe
         (keyframes[i]).push_back(Keyframe(0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val));
-        printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val);
-        printf("End of process %i: last frame: %i, %f index: %i \n", i, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val,index);
-
+        if(debugmode){
+            printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val);
+            printf("End of process %i: last frame: %i, %f index: %i \n", i, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val,index);
+        }
         //set torque for playback
     }
         set_array(torque,0.9f,input_array_size);
@@ -251,7 +255,8 @@ void
 TotalRecordKeyframe::movingAverage(){
 
     if(frames[0].size() < 25){
-        printf("Size: %i", (int)frames[0].size());
+        if(debugmode)
+            printf("Size: %i\n", (int)frames[0].size());
         return;
     }
 
@@ -260,7 +265,8 @@ TotalRecordKeyframe::movingAverage(){
 
     for(int i = 0; i < input_array_size; ++i){
 
-        printf("Moving Average for servo: %i \n", i);
+        if(debugmode)
+            printf("Moving Average for servo: %i \n", i);
         
         float sum = 0;
         int count = 0;
@@ -276,7 +282,9 @@ TotalRecordKeyframe::movingAverage(){
 
         for(int j = 1; j <= index; j++){
             frames[i].push_back(Frame(raw[i].at(j).tick, sum, raw[i].at(j).moving_speed));
-            printf("ma stored servo: %i, tick: %i, sum: %f, speed: %f \n", i, raw[i].at(j).tick, sum,raw[i].at(j).moving_speed);
+            
+            if(debugmode)
+                printf("ma stored servo: %i, tick: %i, sum: %f, speed: %f \n", i, raw[i].at(j).tick, sum,raw[i].at(j).moving_speed);
         }
         index++;
 
@@ -292,14 +300,16 @@ TotalRecordKeyframe::movingAverage(){
             sum = sum / count;
             
             frames[i].push_back(Frame(raw[i].at(index).tick, sum, raw[i].at(index).moving_speed));
-            printf("ma stored servo: %i, index: %i tick: %i, sum: %f speed: %f \n", i, index, raw[i].at(index).tick, sum,raw[i].at(index).moving_speed);
+            if(debugmode)
+                printf("ma stored servo: %i, index: %i tick: %i, sum: %f speed: %f \n", i, index, raw[i].at(index).tick, sum,raw[i].at(index).moving_speed);
             index++;
         }
 
         //last value and set every value after it as same
         for(int j = index; j < raw[i].size()-1; j++){
             frames[i].push_back(Frame(raw[i].at(j).tick, sum, raw[i].at(j).moving_speed));
-            printf("ma stored servo: %i, tick: %i, sum: %f speed: %f \n", i, raw[i].at(j).tick, sum, raw[i].at(j).moving_speed);
+            if(debugmode)
+                printf("ma stored servo: %i, tick: %i, sum: %f speed: %f \n", i, raw[i].at(j).tick, sum, raw[i].at(j).moving_speed);
         }
     }
     delete[] raw;
@@ -332,11 +342,12 @@ TotalRecordKeyframe::ExportOutputs(){
         }
     }
 
-    print_matrix("ticks", output_ticks, (int)output_size_x[0], (int)output_size_y[0]);
-    print_matrix("values", output_values, (int)output_size_x[0], (int)output_size_y[0]);
+    if(debugmode){
+        print_matrix("ticks", output_ticks, (int)output_size_x[0], (int)output_size_y[0]);
+        print_matrix("values", output_values, (int)output_size_x[0], (int)output_size_y[0]);
     
-    printf("Keyframe recorder print output matrix done\n");
-
+        printf("Keyframe recorder print output matrix done\n");
+    }
 }
 
 // Install the module. This code is executed during start-up.

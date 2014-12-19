@@ -86,7 +86,6 @@ public:
     // outputs
     float *     torque;
     float *     sync_out;
-
     float **    output_values;
     float **    output_ticks;
     float *     output_size_x;
@@ -98,12 +97,11 @@ public:
 
     // parameter values
     float equality_tolerance;
-    bool        debug;
+    bool        debugmode;
     bool        reset;
     
     // internals
     float *     prevsign;
-    float *     prevtrigger;
     int *       tickCounter;
     int         tick;
 
