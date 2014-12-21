@@ -98,7 +98,6 @@ TotalRecordKeyframe::~TotalRecordKeyframe()
 }
 
 
-// TODO change states from to do eStart, eRecording, eProcessing, eSendData
 void
 TotalRecordKeyframe::Tick()
 {
@@ -157,25 +156,28 @@ TotalRecordKeyframe::record()
     // start recording when moving speed != 0 to avoid alot of frames with speed 0 at start
     for (int i = 0; i < input_array_size; ++i)
     {
+
+        // ATTENTION: This is where conversion to seconds should occur using GetTimeBase
+        // float time = tick * (GetTimeBase() / 1000) // provided GetTimeBase() returns in ms
+        //(frames[i]).push_back(Frame(speed, input_array[i], input_speed[i])); // would need to change tick in frames struct to float
+
         (frames[i]).push_back(Frame(tick, input_array[i], input_speed[i]));
         if(debugmode)
             printf("%i : %i : %f : %f \n",i, tick, input_array[i], input_speed[i]);
-        // Simply outputs the input
-        //output[i] = input_array[i];
     }
     tick++;
 }
 
-// TODO cleanup of pause frames to be done
+/**
+ *  Method for processing the frames vector and pick out all the keyframes of it
+ */
 void
 TotalRecordKeyframe::process()
 {
     for(int i = 0; i < input_array_size; ++i){
         if(debugmode)
             printf("Enter process: %i \n", i);
-        
-        bool pauseFrame = false;
-        int type;
+
         int index = 0;
 
         // First keyframe
@@ -184,28 +186,18 @@ TotalRecordKeyframe::process()
         
         if(debugmode)
             printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, (frames[i]).at(index).val);
-        
+
+        // Iterate through all frames        
         for(index = 1; index < frames[i].size(); index++){
 
+            // Check for keyframe
             int key = checkFrame(index,i);
 
-            // TODO Some cleanup here
-            if(key == 1){
-                if(!pauseFrame){
-                    pauseFrame = true;
-                    tickCounter[i] = 1;
-                }else{
-                    tickCounter[i]++;
-                }
-            }else if (key == 0){
-                if(pauseFrame){
-                    keyframes[i].push_back(Keyframe(0, frames[i].at(index).tick, frames[i].at(index).val));
-                    printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, frames[i].at(index).val);
-                    pauseFrame = false;
-                }else{
-                    keyframes[i].push_back(Keyframe(0, frames[i].at(index).tick, frames[i].at(index).val));
+            // If it is a keyframe, insert one into the keyframes vector
+            if (key == 0 || key == 1){
+                keyframes[i].push_back(Keyframe(0, frames[i].at(index).tick, frames[i].at(index).val));
+                if(debugmode)
                     printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index).tick, (frames[i]).at(index).val);
-                }
             }
         }
         
@@ -215,9 +207,9 @@ TotalRecordKeyframe::process()
             printf("%i : %i : %i : %f \n",i, 0, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val);
             printf("End of process %i: last frame: %i, %f index: %i \n", i, (frames[i]).at(index-1).tick, (frames[i]).at(index-1).val,index);
         }
-        //set torque for playback
     }
-        set_array(torque,0.9f,input_array_size);
+    //set torque for playback
+    set_array(torque,0.9f,input_array_size);
 }
 
 /**
@@ -230,6 +222,7 @@ TotalRecordKeyframe::checkFrame(int index, int i){
     int ret = -1;
 
     if(index < frames[i].size()){
+        //Some remnants of pause frames here, cleanup avoided to avoid breaking code
         if(!equal(frames[i].at(index).moving_speed, 0, equality_tolerance)){
             currentsign = frames[i].at(index).moving_speed < 0?-1:1;
             equality_tolerance = 0;
@@ -243,13 +236,16 @@ TotalRecordKeyframe::checkFrame(int index, int i){
         }
     }
 
-    //printf("Check Frame: %i, %i, currentsign=%f, prevsign=%f\n",i, tick, currentsign, prevsign[i] );                
+    if(debugmode)
+        printf("Check Frame: %i, %i, currentsign=%f, prevsign=%f\n",i, tick, currentsign, prevsign[i] );                
+    
     prevsign[i] = currentsign;
     return ret;
 }
 
 /**
- *  Moving average method for removing recorded noise
+ *  Moving average method for removing recorded noise, checks 10 values ahead and 10 behind
+ *  the first and last 10 values are set as same
  */
 void
 TotalRecordKeyframe::movingAverage(){
@@ -315,8 +311,9 @@ TotalRecordKeyframe::movingAverage(){
     delete[] raw;
 }
 
-// Setups for output matrices
-// test with socket module and print the matrices out in the socket module
+/** 
+ *  Setups for output matrices
+ */
 void
 TotalRecordKeyframe::ExportOutputs(){
 

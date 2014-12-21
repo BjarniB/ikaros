@@ -95,6 +95,10 @@ void
 Interpolator::Tick()
 {
 
+        // ATTENTION: This is where conversion to ticks should occur using GetTimeBase
+        // if conversion to seconds has occurred in the recorder then the matrix input_ticks would be full of seconds
+        // So this matrix would have to be divided by (GetTimeBase()/1000) to convert to ticks
+
   Command cmd = (Command)input_command[0];
 
   switch(current_state){
@@ -115,6 +119,7 @@ Interpolator::Tick()
           
           tick = cmd; 
         }
+
 
         //USE CATMULL ROM WITH DEFINED TAU MATRIX
         copy_array(output_array, catmullRomSpline(), (int)input_size_y[0]);
